@@ -19,18 +19,9 @@ RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrad
 
 # Create a user and a directory for the app code
 RUN mkdir -p /app
-RUN useradd -u 1001 -r -g 0 -d /app default
 WORKDIR /app
-RUN chown -R 1001:0 /app && chmod -R ug+rwx /app 
-
-USER 1001
-
-# Setting env up
-ENV RAILS_ENV='development'
-ENV NODE_ENV='development'
 
 # Adding gems
-ADD Gemfile /app
-# COPY Gemfile.lock Gemfile.lock
+ADD Gemfile yarn.lock package.json /app/
 
-RUN bundle install 
+RUN bundle install && yarn install
