@@ -1,0 +1,10 @@
+= simple_form_for(@archived_week) do |f|
+  = f.error_notification
+
+
+  .form-inputs
+
+    = f.input :reset_reason
+
+  .form-actions
+    = f.button :submit

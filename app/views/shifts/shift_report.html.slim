@@ -1,0 +1,50 @@
+- if (current_user.cm? && current_user.customer_id == @user.customer_id) || (current_user.proxy_cm? && current_user.customer_id == @user.customer_id)|| (current_user.pm? && current_user.projects_users.collect(&:user_id).include?(@user.id)) || (@project_shift && @project_shift.shift_supervisor_id == current_user.id)
+
+  h1 Shift Report for #{shift_name_and_hours(@shift.name, @shift.start_time, @shift.end_time)}
+  = form_tag "/shift_report/#{params[:id]}", method: :get
+  table
+    -if @print_report == "true"
+      p Date:
+        #{params[:date]}
+      p Project:
+        #{Project.find(params[:project]).name if !params[:project].blank? }
+    -else
+      thead
+        tr
+          th Project
+          th Start Date
+          th End date
+
+      tbody
+        tr
+          td = select_tag :project, options_from_collection_for_select(@shift.projects, "id", "name", params[:project].to_i), :include_blank => true, class: "form-control"
+          = hidden_field_tag 'hidden_print_report', false
+          = hidden_field_tag :type, params[:type]
+          = hidden_field_tag :customer_id, params[:customer_id]
+          td = date_field_tag :start_date, params[:start_date], {required: "required", class: "form-control"}
+          td = date_field_tag :end_date, params[:end_date], {required: "required", class: "form-control"}
+          /= hidden_field_tag 'id', @user.id
+          td = button_tag "Shift Report", class: "orange-button"
+  table class="table" id="shift_report" style="width:80%"
+    thead
+      tr
+        td Employee Name
+        
+        td Total Permissible Hours
+        td Logged Hours
+        td Other Hours
+        td Overtime
+
+    tbody
+
+      - @hash.each do |user, data|
+        -u = User.find_by_id user
+        tr
+          td.date = u.name
+          td.hour = data[0]
+          td.hour =data[1]
+          td.task = data[2]
+          td.task = data[3]
+            
+- else
+  h1 You are not allowed to access this page.

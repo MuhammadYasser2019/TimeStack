@@ -1,0 +1,1 @@
+json.partial! "holiday_exceptions/holiday_exception", holiday_exception: @holiday_exception

@@ -1,0 +1,27 @@
+h1 Listing Holiday Exceptions
+
+table
+  thead
+    tr
+      th User
+      th Project
+      th Customer
+      th Holiday
+      th
+      th
+      th
+
+  tbody
+    - @holiday_exceptions.each do |holiday_exception|
+      tr
+        td = User.find(holiday_exception.user_id).email
+        td = Project.find(holiday_exception.project_id).name
+        td = Customer.find(holiday_exception.customer_id).name
+        td = holiday_exception.holiday_ids
+        td = link_to 'Show', holiday_exception
+        td = link_to 'Edit', edit_holiday_exception_path(holiday_exception)
+        td = link_to 'Destroy', holiday_exception, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New Holiday exception', new_holiday_exception_path

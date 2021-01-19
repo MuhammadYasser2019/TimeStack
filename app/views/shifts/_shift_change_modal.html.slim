@@ -1,0 +1,32 @@
+div class="modal fade" id="shiftchangeModal" tabindex="-1" role="dialog" aria-hidden="true"
+  div class="modal-dialog" role="document"
+   div class="modal-content" style="left:-240px;"
+     div class="modal-header" style="padding:0px;"
+       h1 Add/Remove users from Shift for '#{@project.name}'
+       button type="button" class="close" data-dismiss="modal" aria-label="Close"
+         span aria-hidden="true" &times;
+         
+    
+     div class="modal-body"
+		table.table
+			thead
+				th Current Shift
+				th Users
+
+			tbody
+				- @project_shifts.each do |ps|
+					- @project_users.where(project_shift_id: ps.id).each do |pu|
+						tr
+							td= ps.shift_name
+							td= pu.user.name
+
+
+		div id="shift_change_users"
+			= render partial: 'shifts/change_shift'
+
+javascript: 
+	$('#shiftchangeModal').on('hidden.bs.modal', function () {
+ 		location.reload();	
+	});					
+						
+		

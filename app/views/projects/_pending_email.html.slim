@@ -1,0 +1,16 @@
+table
+  tr
+    td Email
+    td Start Date
+    td Employment Type
+
+  tbody
+  tr
+    td
+      = @user.email
+    td
+      = @user.invitation_start_date
+    td
+      = EmploymentType.find(@user.employment_type).name if @user.employment_type
+button.close-button aria-label=("Close modal") data-close="" type="button" 
+  span aria-hidden="true"  &times;

@@ -1,0 +1,19 @@
+div class="modal fade" id="usersProject" tabindex="-1" role="dialog" aria-hidden="true"
+	div class="modal-dialog" role="document"
+		div class="modal-content" style="left:-240px;"
+			div class="modal-header" style="padding:0px;"
+				h1 Users on the #{@project.name}
+				button type="button" class="close" data-dismiss="modal" aria-label="Close"
+				span aria-hidden="true" &times;
+         
+     		div class="modal-body"
+				table class="display" width="100%" cellspacing="0"
+					thead
+				    	tr
+				      		th project
+				      		th users
+				    tbody
+					    - @project.users.active_users.each do |u|
+					    	tr
+					    		td= @project.name
+					    		td= u.name		    			

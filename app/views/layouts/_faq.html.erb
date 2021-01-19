@@ -1,0 +1,61 @@
+<!-- Modal -->
+<div id="faqModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content" id="modal-css">
+      <div class="modal-header">
+        <h4 class="modal-title" style="text-align: center;">Frequently Asked Questions</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+         span aria-hidden="true"> &times;</button>
+          
+        </div>
+        <input style="margin:2px; width:50%" class="form-control"  type="text" id="myNewInput" onkeyup="FAQFunction()"placeholder="Search for questions..." />
+      <div class="modal-body" style="overflow-y: scroll;height:400px" id="quotationSearch">
+        <%= @faq.feature_data.html_safe %>
+      </div>
+      
+    </div>
+
+  </div>
+</div>
+
+<script type="text/javascript">
+  
+  function FAQFunction() {
+  // Declare variables
+  var input, filter, div, h5, i, txtValue;
+  input = document.getElementById("myNewInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("quotationSearch");
+  h5 = div.getElementsByTagName("h5");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < h5.length; i++) {
+    
+    
+      txtValue = h5[i].textContent || h5[i].innerHTML;      
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        h5[i].style.display = "";
+      } else {
+        h5[i].style.display = "none";
+      }
+    
+  }
+  }
+  $('p').css("display", "none");
+  $('h5').addClass('data_toggle glyphicon glyphicon-plus')
+  $('.data_toggle').click(function (argument) {
+    $(this).next('p').toggle();
+    
+  })
+</script>
+<style>
+h5{
+  font-size: 17px;
+}
+p{
+   font-style: italic;
+   font-size: 12px;
+}
+</style>

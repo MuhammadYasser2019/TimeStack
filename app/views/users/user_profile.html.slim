@@ -1,0 +1,58 @@
+div.report
+	h4 User Details
+	table class="table"
+		thead
+			tr
+				th Image
+				th First Name
+				th Last Name
+				th Emergency Contact
+				th Parent User
+				th Employment Type
+				th User Employer
+				th Login as Parent
+		tbody
+			tr	
+				td= image_tag  @user.image.url , style: "height: 100px; width:100px;" if @user.image.present?
+				td= @user.first_name
+				td= @user.last_name
+				td= @user.emergency_contact
+				td
+					-if current_user.parent.present?
+						= @user.parent.name
+				td = EmploymentType.find(@user.employment_type).name
+				td
+					-if !@user.customer_id.nil?
+						= Customer.find(@user.customer_id).name
+				td
+					-if current_user.parent.present?
+						= link_to "Login as parent", "/login_user/#{current_user.parent.id}"
+			tr
+				td Projects:
+				- @user.projects.each_with_index do |project,index|
+        			- if index%2==0
+             			td = project.name
+        			- else 
+             			td = project.name
+	    	tr
+	     	 	td My Vacation Balance:
+				-if !@user_hash[@user.email].nil?
+					- @user_hash[@user.email].each do |id, hrs|
+						- vt = VacationType.find id
+						td 
+							= "#{vt.vacation_title}: #{hrs}"
+	= link_to "Manage Profiles", manage_profiles_path, class: "orange-button small-2 cell", style: "margin-left: 42%;" if current_user.parent_user_id.blank?
+	= link_to "Change Password and User Information", edit_user_registration_path
+	h4 Set Default Project
+	= form_tag "/set_default_project", method: :get do
+		table
+			thead
+				tr 
+					th Project
+					th Task
+					th Set Default
+			tbody	
+				tr
+					td = select_tag :default_project_id, options_from_collection_for_select(@user.projects,"id", "name",@default_project),class: "default_project_id", :include_blank => true
+					td = select_tag :default_task_id, options_from_collection_for_select(@project_tasks,"id", "description",@default_task ), class: "default_task_id", :include_blank => true
+					td = button_tag "Set Defaults", class: "tiny orange-button"

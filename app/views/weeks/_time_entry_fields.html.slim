@@ -1,0 +1,86 @@
+- if f.object.date_of_activity.strftime('%Y-%m-%d') <= Time.now.strftime('%Y-%m-%d')
+  td.date1
+    = f.label f.object.date_of_activity.strftime("%A")
+    = f.label f.object.date_of_activity.strftime('%Y-%m-%d'), :class =>"timesheet-date date-#{f.object.date_of_activity.strftime('%Y-%m-%d')}"
+
+  =f.hidden_field :id
+  =f.hidden_field :date_of_activity
+
+  td.project
+   -if f.object.week.status_id == 2 || f.object.week.status_id == 3
+    - if f.object.project_id != nil
+      = Project.find(f.object.project_id).name
+   -else
+    -if f.object.date_of_activity.strftime("%A") == "Saturday" || f.object.date_of_activity.strftime("%A") == "Sunday" 
+      -if !get_project_id(f.object.project_id).nil?
+        = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name", get_project_id(f.object.project_id)), {include_blank: true}, {class: "project_id form-control"})
+      -else
+        -if !@week_user.default_project.nil?
+          = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name",@week_user.default_project ), {include_blank: true}, {class: "project_id form-control"})
+        -else
+          = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name", get_project_id(f.object.project_id)), {include_blank: true}, {class: "project_id form-control"})
+    -else
+      -if !get_project_id(f.object.project_id).nil?
+        = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name", get_project_id(f.object.project_id)), {include_blank: true}, {class: "project_id form-control", required: true})
+      -else
+        -if !@week_user.default_project.nil?
+          = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name",@week_user.default_project ), {include_blank: true}, {class: "project_id form-control", required: true})
+        -else
+          = f.select(:project_id, options_from_collection_for_select(@projects, "id", "name", get_project_id(f.object.project_id)), {include_blank: true}, {class: "project_id form-control", required: true})
+  td.task      
+   - if !f.object.task_id.nil?
+    - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+      - if f.object.task_id != nil
+        = Task.find(f.object.task_id).description
+    - else
+     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: f.object.project_id), "id", "description", f.object.task_id), {}, {:class =>'task_id form-control'})
+   - else
+    - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+      - if f.object.task_id != nil
+        = Task.find(f.object.task_id).description
+    - else
+     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: @week_user.default_project), "id", "description", @week_user.default_task ), {}, {:class =>'task_id form-control'})
+  td(class="hour")
+
+    div(class="toggle hours-field")
+     - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+      = f.object.hours
+     - else
+      -if f.object.date_of_activity.strftime("%A") == "Saturday" || f.object.date_of_activity.strftime("%A") == "Sunday" 
+          = f.number_field :hours, step: :any, :class =>'form-control input-sm hours-input' 
+      -else
+        = f.number_field :hours, step: :any, :class =>'form-control input-sm hours-input', min: "0", required: true   
+    div(class="toggle enter_time")
+      Strong(class="thisisit") In:
+      = f.time_select(:time_in, ampm: true,ignore_date: true, include_blank: true,:default => {:hour => '', :minute => ''}, class: "time-in-move form-control" )
+      strong(class="thisisit") Out:
+      = f.time_select(:time_out, ampm: true,ignore_date: true, include_blank: true, class: "form-control", :default => {:hour => '', :minute => ''})
+    - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+      div.partial
+        div.partial-text = "Partial Day?"
+        = f.check_box :partial_day, {class: "partial_day form-control", disabled: true}, params[:partial_day]
+    - else
+      div.partial
+        div.partial-text = "Partial Day?"
+        = f.check_box :partial_day, {class: "partial_day form-control", checked: f.object.partial_day == "true" ? true : false}, true, false
+  td.activity_log
+   - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+    = f.object.activity_log 
+   - else
+    = f.text_area :activity_log, :class =>'form-control input-lg', :maxlength => 500
+    div (class="char_count")
+   = link_to image_tag("plus.jpg", :width => 15, :height => 15, class: 'previous_comment_image'), "javascript:void()", id: "previous_comments_#{@week_user.id}_#{@count}", class: "previous_commment_icon", type: "link", data: {toggle: "modal", target: "#userPreviousComments"}
+  td.vacation_type
+    - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+      = f.select(:vacation_type_id, options_from_collection_for_select(@vacation_types, "id", "vacation_title", selected: f.object.vacation_type_id), {include_blank: true}, disabled: true, class: "vacation-change form-control")
+    - else
+      = f.select(:vacation_type_id, options_from_collection_for_select(@vacation_types, "id", "vacation_title", selected: f.object.vacation_type_id), {include_blank: true}, class: "vacation-change form-control")
+
+  td.add
+   - if f.object.week.status_id == 2 || f.object.week.status_id == 3
+   -else
+    = link_to "Add Row", "javascript:void(0)", class: "add_row orange-button", date_stamp: f.object.date_of_activity, day_value: f.object.date_of_activity.strftime("%A")
+   = f.button "Enter Time", id: "add_time", class: "tiny secondary add-time orange-button", type: "button"
+  = f.hidden_field :updated_by, value: current_user.id
+
+

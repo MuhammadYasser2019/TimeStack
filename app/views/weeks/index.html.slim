@@ -1,0 +1,116 @@
+.white-background
+	h1 Enter and Manage Time
+	
+	table
+	  thead
+	    tr
+	      th Start date
+	      th End date
+	      th Status
+	      th Report
+	      th Copy from the <br> previous week/ Clear
+	      th New Week
+		  
+	      
+	  tbody
+	    - @weeks.each do |week|
+	      tr
+	        td = week.start_date.strftime('%Y-%m-%d')
+	        td = week.end_date.strftime('%Y-%m-%d')
+	        td= link_to find_status(week), find_status(week) == "NEW" || "REJECTED" ? edit_week_path(week): week_path(week)
+			td = link_to "Report", "/weeks/#{week.id}/report" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
+			td
+				-if (find_status(week) == "NEW") && @weeks.last.id != week.id
+					= link_to "COPY", "/copy_timesheet/#{week.id}" 
+				-elsif (find_status(week) == @hours_sum) && @weeks.last.id != week.id
+					= link_to "CLEAR", "/clear_timesheet/#{week.id}" 
+		    td= link_to "Add New Week",new_week_path(start_date: week.start_date ,end_date: week.end_date), title: "This will add an additional week for the same time period" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
+	
+	    - if current_week_available(current_user).blank?
+		    tr
+		      td = link_to "Enter Time for Current Week", "/weeks/new", id:"new_week" 
+		      td
+		      td
+		      td
+		      td
+	    tr
+	      td = link_to "Show Old Timesheets","show_old_timesheets", target: :_blank
+	      td
+	      td
+	      td
+	      td
+	    - if user_represents_customers(current_user) || (can? :manage, Customer)
+		    tr
+		      td = link_to "Manage Customers", "customers" 
+		      td
+		      td
+		      td
+		      td
+		- if user_represents_projects(current_user) || (can? :manage, Project)
+		    tr 
+		      td = link_to "Manage Projects", "projects"
+		      td
+		      td
+		      td
+		      td
+		- if user_have_adhoc_permission(current_user)
+		    tr
+		      td = link_to "Adhoc PM", projects_path(adhoc: true) 
+		      td
+		      td
+		      td
+		      td
+		- if current_user.proxy
+		    tr
+		      td = link_to "Manage Proxy Projects", "/users/#{current_user.id}/proxies" 
+		      td
+		      td
+		      td
+		      td
+	    tr
+	      td = link_to "User Report", "/show_user_reports/#{current_user.id}" 
+	      td
+	      td
+	      td
+	      td
+        - if @shift_supervisor_project_shift
+            tr
+              td = link_to 'Shift Report', "/show_shift_reports?id=#{@shift_supervisor_project_shift.id}&type=shift_supervisor"
+              td
+              td
+              td
+              td
+	    - if current_user.parent_user_id.blank?
+		    tr
+		      td = link_to "Vacation Request", "/vacation_request" 
+		      td
+		      td
+		      td
+		      td
+
+		- if current_user.parent_user_id.blank?
+			tr
+		    	td= link_to "Shift Change Request", "/shift_change_request"
+		    	td
+		    	td
+		    	td
+		    	td  
+		- if current_user.admin      
+		    tr
+		      td = link_to "Admin", "/admin" 
+		      td
+		      td
+		      td
+		      td
+    div.row(style="margin-left: auto; margin-right:auto;")
+     div.col-md-3(style="margin-left: auto; margin-right:auto;")
+      a(href="https://play.google.com/store/apps/details?id=com.resourcestack.chronstack" target="_blank" style="display: block;float: left;")
+       = image_tag("google.png", style: "width:130px;margin-top: 8px;")
+      a(href="https://apps.apple.com/app/id1514665138" target="_blank" style="display: block;float: right;")
+       = image_tag("apple_store.png", style: "width:130px;")
+	- if !current_user.default_project? && current_user.parent_user_id.blank?
+		== render partial: 'users/default_projects'
+	- if !@terms_modal_show.present?
+		== render partial: 'users/terms_and_condition'
+	- if @announcement.present? && !current_user.user_announcements.where(announcement_id: @announcement.id).present?
+		==render partial: 'announcements/new_announcement'

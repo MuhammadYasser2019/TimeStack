@@ -1,0 +1,29 @@
+div class="modal fade" id="announcemntModal" tabindex="-1" role="dialog" aria-hidden="true"
+  div class="modal-dialog" role="document"
+   div class="modal-content" style="left:-240px;"
+     div class="modal-header" style="padding:0px;"
+       h1 Create Announcements 
+       button type="button" class="close" data-dismiss="modal" aria-label="Close"
+         span aria-hidden="true" &times;
+         
+    
+     div class="modal-body"
+		span class="announcement_message" style="color: green;"
+		= form_tag announcements_path, id: "announcement_page_content", method: :post, remote: true
+			-if @announcement.present?
+				= hidden_field_tag 'announcement_id', @announcement.id
+			table			
+				tr
+					td	Title
+					td = text_field_tag :announcement_type, (@announcement.present? && @announcement.announcement_type.present?) ? @announcement.announcement_type : "", placeholder: "Announcement Type", required: "required", style:'width:850px', class:'form-control'				
+				tr
+					td Active					
+					td = check_box_tag :active, true, (@announcement.present?)? @announcement.active? : true
+				tr
+					td	Content					
+					td = cktext_area_tag :text_content, (@announcement.present? && @announcement.announcement_text.present?) ? @announcement.announcement_text.html_safe : "" ,cols:38 
+				tr
+					td = submit_tag "Submit"
+
+	
+					

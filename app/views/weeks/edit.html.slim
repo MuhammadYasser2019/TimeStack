@@ -1,0 +1,14 @@
+.proxy-message(style="position:fixed;top: 5px; right: 5px;") = User.find(@week.user_id).first_name
+- if @week.status_id == 2
+  h3(style="text-align:center;") This Timesheet is currently awaiting Approval
+- else
+
+  h1 Editing week
+  - if flash[:alert]
+  	.alert= flash[:alert]
+  
+  == render 'form'
+
+= link_to 'Back', weeks_path, class: 'orange-button back-btn'
+
+

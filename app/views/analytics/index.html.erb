@@ -1,0 +1,151 @@
+<% if (current_user.cm? && @customer.user_id == current_user.id) || (current_user.proxy_cm? && @customer.id == current_user.customer_id) %>
+	<%#= REPORTS FOR CUSTOMER "@customer_name" %>
+	<div class = "white-background" >
+		<div class = "project_vacation_graph" >
+			<div class = "project_users_graph">
+				<h6>Number of users per Project</h6>
+
+				<div class ="toggle bar-field"> 
+					<%= bar :bar_chart, @barSize, @bar_data_2.to_json, @bar_options %>
+				</div>
+
+				<div class ="toggle table-field"> 
+					<table>
+						<tr>
+							<th> Project</th>
+							<th> Number of Users </th>
+						</tr>
+						<% @project_ids.each do |pi| %>
+
+						<tr>
+							<td><%= Project.find(pi).name %></td>
+							<td><%= Project.find(pi).users.count %></td>
+						</tr>
+						<% end %>
+					</table>
+				</div>
+
+			</div>
+
+			<div class = "vacation_request_graph" >
+				<h6>Bar Graph for vacation Request</h6>
+				<div class = "vacation_request_bar">
+					<%= bar :bar_chart_3, @barSize, @bar_data_3.to_json %>
+				</div>
+
+				<div class = "vacation_request_table">
+				<table>
+					<tr>
+						<th> Vaction Types</th>
+						<th> Number of Vacation Requests </th>
+					</tr>
+					<% @vacation_types.each_with_index do |cemp, i| %>
+						<tr>
+							<td><%=  @vacation_types[i] %></td>
+							<td><%=  @vac_req_count[i] %></td>
+						</tr>
+					<% end %>
+				</table>
+				</div>
+				<div class = "vacation_request_users" >
+					<table>
+						<tr>
+							<th>User name</th>
+							<th>Project name</th>
+							<th>Vacation Request Date</th>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<div class = "employment_types_graph">
+				<h6 >Pie Graph for Employment Types</h6>
+				<div class = "pie_employment_types" >
+					<%= pie :pie_chart, @pieSize, @pie_data_2.to_json %>
+				</div>
+
+				<div class = "employment_types_table">
+					<table>
+						<tr>
+							<th> Employment Types</th>
+							<th> Number of users </th>
+						</tr>
+						<% @cus_emp_types.each_with_index do |cemp, i| %>
+							<tr>
+								<td><%=  @cus_emp_names[i] %></td>
+								<td><%=  @user_emp_count[i] %></td>
+							</tr>
+						<% end %>
+					</table>
+				</div>
+			</div>
+		</div>
+		<br>
+		<br>
+		<%#= bar :bar_chart, @barSize, @bar_data_2.to_json %>
+		<%#= bar :bar_chart, @barSize, @bar_data_3.to_json %>
+
+
+
+		<%#= h_funnel :h_bar, @barSize, @bar_data_2.to_json %>
+		<div class = "timesheets_graph">
+			<h6>Timesheets for Each Month</h6>
+			<div class = "toggle line_graph">
+				<%= line :line_chart, @lineSize, @line_data.to_json %>
+			</div>
+
+			<div class ="toggle timesheets-table-field"> 
+				<table>
+					<tr>
+						<th> Months</th>
+						<th> New Timesheets </th>
+						<th> Submitted Timesheets </th>
+						<th> Approved Timesheets </th>
+						<th> Rejected Timesheets </th>
+					</tr>
+					<% @month_names.each_with_index do |mn,i| %>
+					<tr>
+						<td><%= mn %></td>
+						<td><%= @new_count_array[i] %></td>
+						<td><%= @submitted_count_array[i] %></td>
+						<td><%= @approved_count_array[i] %></td>
+						<td><%= @rejected_count_array[i] %></td>
+					</tr>
+					<%end %>
+				</table>
+			</div>
+		</div>
+
+		<br>
+		<div class="report_button">
+			<div class = "orange-button customer-reports" style="float:left;margin: 10px" >
+				<%= link_to('User Activities', "user_activities/#{@customer.id}", target: :_blank ) %>
+			</div>
+			<div class = "orange-button customer-reports" style="float:left;margin: 10px">
+				<%= link_to('Reports', "/customers/#{@customer.id}/customer_reports", target: :_blank ) %>
+			</div>
+			<div class = "orange-button vacation-reports" style="float:left;margin: 10px">
+				<%= link_to('Vacation Reports',"vacation_reports/customer/#{@customer.id}", target: :_blank) %>
+			</div>
+			<div class = "orange-button inventory-reports" style="float:left;margin: 10px">
+				<%= link_to('Inventory Reports', "/inventory_reports/#{@customer.id}", target: :_blank ) %>
+			</div>
+			<div class = "orange-button inventory-reports" style="float:left;margin: 10px">
+				<%= link_to('Project Reports', "/customers/#{@customer.id}/project_reports", target: :_blank ) %>
+			</div>
+			<% if flash[:alert] %>
+		      <div class="notification is-danger global-notification" style ="width: 50%; margin: 0 auto;" >
+		        <p class="alert"><%= alert %></p>
+		      </div>
+		     <% else %>
+		     <div class = "orange-button vacation-reports" style="float:left;margin: 10px">
+				<%= link_to('Paid Vacation Balances',"vacation_types_summary/#{@customer.id}", target: :_blank) %>
+			</div>
+		    <% end %>
+		
+
+		</div>
+	</div>
+<% else %>
+<h1>You are not allowed to access this page</h1>
+<% end %>

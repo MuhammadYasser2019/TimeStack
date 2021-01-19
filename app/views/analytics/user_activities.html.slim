@@ -1,0 +1,20 @@
+- if (current_user.cm? && @customer.user_id == current_user.id) || (current_user.proxy_cm? && @customer.id == current_user.customer_id)
+  <br>
+  table
+    tr
+      th User
+      th Emergency Contact
+      th Last Logged In
+      th Sign in Count
+
+    tbody
+      - customer = Customer.where(id: @customer_id).first
+      - customer.projects.flat_map(&:users).uniq.each do |user|
+        tr
+          td= user.first_name
+          td= user.emergency_contact
+          td= user.last_sign_in_at 
+          td= user.sign_in_count
+
+-else
+  h1 You are not allowed to access this page.

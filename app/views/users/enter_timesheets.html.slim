@@ -1,0 +1,16 @@
+h1 Timesheets for #{Project.find(@project_id).name}
+= form_tag "show_timesheet_dates", method: :get
+  table
+    thead
+      tr
+        th Period Start Date
+        th Period End Date
+        th
+
+    tbody
+      tr
+        td = date_field_tag 'proj_report_start_date', params[:proj_report_start_date].present? ? params[:proj_report_start_date] : Date.today.beginning_of_week, {required: "required", style: 'margin: 0;'}
+        
+        = hidden_field_tag 'id', @project_id
+        td = date_field_tag 'proj_report_end_date', params[:proj_report_end_date].present? ? params[:proj_report_end_date] : Date.today.end_of_week, {required: "required", style: 'margin: 0;'}
+        td = submit_tag "Show dates", class:"orange-button"

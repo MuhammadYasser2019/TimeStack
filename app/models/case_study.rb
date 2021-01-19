@@ -1,0 +1,3 @@
+class CaseStudy < ApplicationRecord
+ 
+end

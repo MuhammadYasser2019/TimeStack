@@ -1,0 +1,42 @@
+<table>
+  <thead>
+    <tr>
+      <th>
+        <h2>Invite Users</h2>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>
+        <%= simple_form_for(User.new, url: user_invitation_path, html: {class: 'form-inline'}) do |f| %>
+          <%= f.input :email, placeholder: 'Email', label: false, class: "invitation_email" %>
+          <%= f.hidden_field :customer_id, value: @customer.id %>
+          <%= f.hidden_field :invited_by_id, value:  current_user.id %>
+          <%= f.submit 'Invite Users', class: 'btn-primary invite_user_button' %>
+      </th>
+    </tr>
+  </tbody>
+</table>
+<h1> Pending Users</h1>
+<table>
+  <thead>
+    <tr>
+      <th> User Email</th>
+      <th> Invitation Sent At</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @invited_users.each do |user| %>
+      <% if user.invitation_accepted_at.nil? %>
+        <tr>
+          <td>
+            <%= user.email %></td>
+          <td>
+            <%= user.invitation_sent_at %></td>
+          <td>
+            <%= button_to "Resend Invitation","/invitation/resend_invite?email=#{user.email}&invited_by_id=#{user.invited_by_id}", class: "secondary tiny" %></td>
+  		</tr>
+  </tbody>
+</table>

@@ -1,0 +1,26 @@
+div class="modal fade" id="hoursapproved" tabindex="-1" role="dialog" aria-hidden="true"
+	div class="modal-dialog" role="document"
+		div class="modal-content" style="left:-240px;"
+			div class="modal-header" style="padding:0px;"
+				h1 Hours Approved
+				button type="button" class="close" data-dismiss="modal" aria-label="Close"
+				span aria-hidden="true" &times;
+         
+     		div class="modal-body"
+
+				table class="display" width="100%" cellspacing="0"
+				  thead
+				    tr
+				      th Project Users
+				      th Hours Approved
+				      
+				    tbody
+				    	
+					    - @users.each do |u|
+					    	tr
+					    		td= u.user.name
+					    		td=TimeEntry.where(project_id: @project_id, user_id: u.user_id, task_id: @task_id, status_id: 3, project_shift_id: @shift_id, date_of_activity: @start_date..@end_date).sum(:hours)
+
+
+		    				
+		    			

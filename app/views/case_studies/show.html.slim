@@ -1,0 +1,25 @@
+div.grid-x style="width:100%;"
+  h1 style="padding:10px;background:#5296ce;" #{@case_study.case_study_name}
+  div.main_div style="font-size:20px;border: 2px solid #5296ce;width:80%;margin-left:100px;height:400px;"
+    == @case_study.case_study_data
+
+.front-row.full-width.footer style=("height:325px;margin-bottom: 0 !important;") 
+  div style=("background:black;color: white;height:100px;font-size: 30px;text-align: center;") 
+    p CONTACT RESOURCE STACK
+  div style=("background:#5296ce;color: black;height:125px;font-size: 30px;text-align: center;padding:10px;") 
+    p sameer.sharma@resourcestack.com
+    p style=("color:white;font-size: 30px;text-align: center;")  571-223-6741
+  .footer_section style=("height:80px;background-color: white;") 
+    .icons style=("height:80px;float:left;padding: 40px;margin-left: 20px;") 
+      a href="#" style=("padding: 40px;")
+        = image_tag "/assets/linkedin"
+      a href="#"
+        = image_tag "/assets/facebook"
+    .address style=("height:80px;float:right;margin-right:70px;margin-top: 10px;") 
+      p
+        | Resource Stack, INC.
+        | 626 Grant Street Suite D
+        | Herndon, VA 20170
+  p style=("padding-left: 38%;background-color: white;q")  &copy; 2017 Resource Stack, Inc. All Rights Reserved
+
+== render partial: 'static_pages/login_form'

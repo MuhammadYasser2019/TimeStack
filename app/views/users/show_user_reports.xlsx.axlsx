@@ -1,0 +1,138 @@
+wb = xlsx_package.workbook
+total = 0
+#logger.debug "#{@consultant_hash.inspect}"
+#logger.debug "#{@dates_array.inspect}"
+if @user.customer_id != nil
+  customer = Customer.find(@user.customer_id)
+else
+  customer = nil
+end
+if !@user.report_logo.nil?
+  logo = File.expand_path("#{Dir.pwd}/public/#{ReportLogo.find(@user.report_logo).report_logo}", __FILE__)
+  size = FastImage.size("#{Dir.pwd}/public/#{ReportLogo.find(@user.report_logo).report_logo}")
+elsif !customer.nil? && customer.logo.present?
+  logo = File.expand_path("#{Dir.pwd}/public/#{customer.logo}", __FILE__)
+  size = FastImage.size("#{Dir.pwd}/public/#{customer.logo}")
+else
+  logo = File.expand_path("#{Dir.pwd}/app/assets/images/RSILogo.png", __FILE__)
+  size = FastImage.size("#{Dir.pwd}/app/assets/images/RSILogo.png")
+end
+nil_array = Array.new
+empty_array = Array.new
+ten_array = Array.new
+@dates_array.count.times do
+  empty_array << ""
+  nil_array << nil
+  ten_array << 10
+end
+logger.debug "LOGO:::    #{logo}"
+wb.styles do |s|
+  gridstyle_border =  s.add_style :bg_color => "ffeb99", :border => { :style => :thin, :color =>"000000" }
+  gridstyle_bolder = s.add_style :b => true, :bg_color => "ffeb99", :border => { :style => :thin, :color =>"000000" }
+  bold = s.add_style :b => true
+  bold_right = s.add_style :b => true, :alignment=>{:horizontal => :right, :vertical => :top}
+  border_top = s.add_style :border_top => {:style => :thick, :color => "000000"}
+  orange = s.add_style :bg_color => "ffcc99", :border => { :style => :thin, :color =>"000000" }
+  gray =  s.add_style :bg_color => "e4d3ab", :border => { :style => :thin, :color =>"000000" }
+
+  wb.add_worksheet(name: "#{@user.first_name} #{@user.last_name[0]} Timesheet") do |sheet|
+    sheet.sheet_view.show_grid_lines = false
+    sheet.add_row []
+    sheet.add_row []
+    sheet.add_image(:image_src => logo, :noSelect => true, :noMove => true) do |image|
+      image.width=size[0]
+      image.height=size[1]
+      image.start_at 0, 0
+    end
+    sheet.add_row []
+    sheet.add_row ["","","","","", "IMPORTANT:", "Complete information accurately to
+ensure prompt processing. "], :style => [nil,nil,nil,nil,nil,bold_right,nil],:height => 25
+    sheet.add_row ["Employee/Consultant Name: ", "", "#{@user.first_name} #{@user.last_name}", "","", ""], :style => bold
+    sheet.add_row ["Period From: ", "", "#{@start_date} To: #{@end_date}"], :style => bold
+
+    sheet.add_row ["", @days_of_week, "TOTAL"].flatten, :style => gridstyle_bolder
+    sheet.add_row ["", @dates_array, ""].flatten, :style => gridstyle_bolder
+    sheet['A7:A8'].each { |c| c.style = Axlsx::STYLE_THIN_BORDER }
+    @consultant_hash.keys.each do |c|
+      array = Array.new
+      @dates_array.each do |d|
+        if !@consultant_hash[c][:daily_hash][d].nil?
+          logger.debug "#{d}"
+          logger.debug "#{@consultant_hash[c][:daily_hash][d]}"
+          array << @consultant_hash[c][:daily_hash][d][:hours]
+        else
+          logger.debug "#{d}"
+          logger.debug "#{@consultant_hash[c][:daily_hash][d]}"
+          array << 0
+        end
+
+      end
+      logger.debug "array: #{array}"
+      array << @consultant_hash[c][:total_hours]
+      total += @consultant_hash[c][:total_hours]
+      sheet.add_row array.unshift("Client Billable Hours - #{Customer.find(c).name}"), :style => gridstyle_border
+      logger.debug "COUNT #{sheet.rows.count}"
+
+      @weekend_days.each do |d|
+        sheet.rows.last.cells[d].style = gray
+      end
+
+      sheet.rows.last.cells[-1].style = orange
+    end
+      sheet.add_row ["Additional Billable Hours (exempt only", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+      sheet.add_row ["Additional Billable Hours (exempt only", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+      sheet.add_row ["Overtime (non-exempt ONLY", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+      sheet.add_row ["Paid Time Off (PTO)", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+      sheet.add_row ["Holiday (H)", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+      sheet.add_row ["Leave W/O Pay (LWOP)", empty_array, ""].flatten, :style => gridstyle_border
+    sheet.rows.last.cells[-1].style = orange
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+
+      sheet.add_row [], :style => gridstyle_border
+      sheet.add_row [], :style => gridstyle_border
+
+      sheet.add_row ["Daily Total", @daily_totals, @daily_totals.sum].flatten, :style => gridstyle_bolder
+    sheet.rows.last.cells[-1].style = orange
+
+    @weekend_days.each do |d|
+      sheet.rows.last.cells[d].style = gray
+    end
+
+    sheet.add_row []
+    sheet.add_row []
+    sheet.add_row []
+    sheet.add_row ["Employee's Signature:" "________________________________________________", "Date", "_______/_________/__________"]
+    sheet.add_row []
+    sheet.add_row []
+    sheet.add_row ["Approval Signature:" "________________________________________________", "Date", "_______/_________/__________"]
+    sheet.add_row []
+    sheet.add_row []
+
+    sheet.column_widths *[50, 10, 10, nil, nil, 10, 10].flatten
+
+    logger.debug "#{sheet.rows.last}"
+  end
+end

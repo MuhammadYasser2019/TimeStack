@@ -1,0 +1,9 @@
+table {id= "project_left_table", class="project_table"}
+	thead
+		tr
+			th Name
+			th Customer
+			th Inactive?
+			th
+	tbody{id = "all_projects"}
+		== render partial: "all_projects", locals: {projects: @projectsss}	

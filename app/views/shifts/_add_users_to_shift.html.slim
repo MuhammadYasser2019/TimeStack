@@ -1,0 +1,18 @@
+h3 style="text-align: center;" Add Users
+= form_tag assign_shift_path, remote: true do 
+	= hidden_field_tag "project_id", @project.id
+	table class="table" 
+		thead
+			tr
+              th Shift
+              th Users
+              th Action
+              th Change Shift
+      	tbody
+
+			td = select_tag :project_shift_id, options_from_collection_for_select(@project_shifts, "id", "shift_name"), required: 'required', class: "form-control", prompt: "Select Shift"
+
+			td = select_tag('user_id', options_for_select(@available_users.collect{ |p| [p.name, p.id]}, params[:user_id]), prompt: "Select user", required: 'required', class: 'existing_users')
+
+			td= submit_tag "Add User"
+			td = link_to(image_tag("switch.jpeg", :width => 50, :height => 50), 'javascript:void(0)', title: "Change shift", class: 'change_shift')

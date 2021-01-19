@@ -1,0 +1,3 @@
+class UserAnnouncement < ApplicationRecord
+ 
+end

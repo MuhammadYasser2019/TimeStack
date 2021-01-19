@@ -1,0 +1,40 @@
+= form_for @week do |f|
+  - if @week.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@week.errors.count, "error")} prohibited this week from being saved:"
+      ul
+        - @week.errors.full_messages.each do |message|
+          li = message
+
+  .field
+    = f.label :start_date
+    = f.text_field :start_date, class: :range_date_time_picker, readonly: true
+  .field
+    = f.label :end_date
+    = f.text_field :end_date, readonly: true
+  .field
+    = f.select :status_id, options_from_collection_for_select(@statuses, "id", "status", f.object.status_id), :class =>'form-control', readonly: true
+  fieldset class="form-inline"
+  table border="1"
+    thead
+      tr
+        td Date 
+        td Day
+        td Project 
+        td Task
+        td Hours
+        td Description
+    tbody
+    = f.fields_for :time_entries do |cf|
+      tr
+        td.date = cf.label cf.object.date_of_activity, :class =>'form-control', readonly: true  
+        td.date = cf.label cf.object.date_of_activity.strftime("%A"), :class =>'form-control', readonly: true 
+        cf.hidden_field :id
+        td.project = cf.select :project_id, options_from_collection_for_select(@projects, "id", "name", cf.object.project_id), :class =>'form-control', disabled: true
+        td.task = cf.select :task_id, options_from_collection_for_select(@tasks, "id", "description", cf.object.task_id), :class =>'form-control', disabled: true 
+        td.hour 
+          = cf.text_field :hours, :class =>'form-control input-sm',  readonly: true
+        td.activity_log
+          = cf.text_area :activity_log, :class =>'form-control input-sm', readonly: true
+  //.actions = f.submit
+  = link_to "Back to index", :weeks

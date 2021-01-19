@@ -1,0 +1,7 @@
+$("#customer_name_<%= @customer.id %>").text('<%= @customer.name %>');
+$("#customer_address_<%= @customer.id %>").text('<%= @customer.address %>');
+$("#customer_city_<%= @customer.id %>").text('<%= @customer.city %>');
+$("#customer_state_<%= @customer.id %>").text('<%= @customer.state %>');
+$("#customer_zipcode_<%= @customer.id %>").text('<%= @customer.zipcode %>');
+$('#dynamic_customers').html("<%= j render(:partial => 'customers/new_edit_form') %>")
+

@@ -1,0 +1,79 @@
+h1,h2,h3,h4,h5{
+  background-color: #ffdd9e;
+}
+
+.tabs dd.active a, .tabs .tab-title.active a {
+  background-color: #ffe6c0;
+}
+
+input, select, textarea{
+  border-color: #ffedda !important;
+}
+
+input[type="submit"]{
+  background-color: #ffd079 !important;
+}
+
+input[type="submit"]:hover{
+  background-color: orange !important;
+  transition: all .15s ease-in-out;
+}
+
+.orange-button{
+  background-color: #ffd079 !important;
+}
+
+.orange-button:hover{
+  background-color: orange !important;
+  transition: all .15s ease-in-out;
+}
+
+.red-button{
+  background-color: #ff0000 !important;
+  padding: 9px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: black;
+}
+
+#holidays {
+  
+     .grid-x{
+        .small-8{
+          border-color: #ffedda !important;
+          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+           h3{
+             background-color:#ffdd9e;
+           }
+        }
+     }
+}
+
+thead{
+  background: rgba(255, 165, 0, 0.38) !important;
+  border: 3px solid orange;
+
+}
+
+table tr:nth-of-type(even) {
+      background: rgba(255, 176, 57, 0.19);
+}
+
+.session-timeout-prompter-modal {
+  .modal-content{
+    border: 2px solid #ffedda;
+    margin-left: -350px;
+  }
+}
+
+.dark_row{
+  background-color:#ffd079 
+}
+
+.holiday-row:nth-of-type(even) {
+  background-color: white;
+}
+
+.holiday-row:nth-of-type(odd) {
+  background-color: #fff0db;
+}

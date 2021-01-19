@@ -1,0 +1,22 @@
+h1 Listing time_entries
+
+table
+  thead
+    tr
+      th Day
+      th Task
+      th Hours
+      th Comments
+      th
+      th
+
+
+  tbody
+    - @time_entries.each_with_index do |t,i|
+      tr
+        td = @weekdays[i]
+        td = t.task
+        td = t.hours
+        td = t.activity_log
+        td
+br

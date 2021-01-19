@@ -1,0 +1,18 @@
+Hi <%= @pm.name %>,
+<br/>
+<%= "Below is the list of user(s) who did not fill their timesheet last week:" %>
+<table border='2'>
+	<tr>
+		<th>Project</th>
+    	<th>Team Member</th> 
+ 	</tr>
+	<% @projects.each do|project_id,users| %>
+		<%project = Project.find project_id %>
+	<tr>
+		<td><%= project.name %></td>
+		<td>
+		<%= users.flatten.join(",")%> 
+   		</td>
+   	</tr>
+	<% end %> 
+</table>

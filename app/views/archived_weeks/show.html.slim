@@ -1,0 +1,51 @@
+p#notice = notice
+
+p
+  strong Start Date
+  = @archived_week.start_date
+p
+  strong End Date
+  = @archived_week.end_date
+p
+  strong Created At
+  = @archived_week.created_at
+p
+  strong Update At
+  = @archived_week.updated_at
+p
+  strong User ID
+  = @user.email
+p
+  strong Status ID
+  = @statuses.status
+p
+  strong Approved Date
+  = @archived_week.approved_date
+p
+  strong Approved By
+  = @archived_week.approved_by
+p
+  strong Comments
+  = @archived_week.comments
+p
+  strong Time Sheet
+  = @archived_week.time_sheet
+p
+  strong Proxy User ID
+  = @archived_week.proxy_user_id
+p
+  strong Proxy Updated Date
+  = @archived_week.proxy_updated_date
+p
+  strong Reason For Reset
+  = @archived_week.reset_reason
+p
+  strong Reset By
+  = @archived_week.reset_by
+p
+  strong Date Of Reset
+  = @archived_week.reset_date
+
+
+
+= link_to 'Back', archived_weeks_path

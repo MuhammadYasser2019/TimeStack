@@ -1,0 +1,45 @@
+<div id="disciplinaryModel" class= "modal" style="display:none;"> 
+	<div class = "modal-content">
+     	<div class="modal-header">
+     		<p style="position: relative;text-align: left;float: left;left: 37%;"><strong> Please Leave Your Disciplinary Comments!</strong> </p>  
+         	<span class = "close dis_close"> &times;</span>
+        </div>
+        
+        	<%= form_tag add_multiple_user_disciplinary_path , remote: true  do |form| %>
+         	<%= hidden_field_tag "disc_user_ids", ''  %>
+         	<%= hidden_field_tag "project_id", @project.id %>
+         	 <div class="form-group">
+                <label>Adding disciplinary for user(s):</label>
+                <p class="disc_selected_users"></p>
+            </div>
+            <div class="form-group">
+          		<strong>Disciplinary:</strong>
+            	<%= text_area_tag :disciplinary, "", rows: 4, cols:20, class: 'form-control' %>
+        		<br>
+        		<%= submit_tag "Add Disciplinary", class: "btn oragne-button", id: "disciplinary_button" %>
+            </div>
+        	<% end  %>
+     </div> 
+</div>
+
+
+<script type="text/javascript">
+
+$('.disciplinary-button').click(function() {
+ 	var all_ids = [];
+ 	var sel_users = []
+	$('.recommend:checked').map(function(i) {
+    	all_ids[i] = $(this).val();
+    	sel_users[i] = $("#show_" +$(this).val()).text();
+		}).get().join(', ');
+
+	$('#disc_user_ids').val(all_ids);
+	$('.disc_selected_users').text(sel_users);
+
+
+ 	$(".dis_close").click(function(){
+    	$("#disciplinaryModel").modal('hide');
+    });
+
+});
+</script> 

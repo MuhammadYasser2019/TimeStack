@@ -1,0 +1,8 @@
+
+  - @approved_week.each do |x|
+	tr id = "939"
+		td = x.start_date.strftime('%Y-%m-%d')
+		td = x.end_date.strftime('%Y-%m-%d')
+		td = text_area_tag "reason", nil, size: "25x1", class: "r_comment", id: "reset_text", required: true, placeholder: "Enter reason for reset" 
+		td = button_tag 'Reset Week', class: "reset_reason button", type: "button", id: "week_id_#{x.id}", disabled: true
+

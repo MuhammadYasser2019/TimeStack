@@ -1,0 +1,50 @@
+<%= month_calendar events: @project_shifts do |date, shifts| %>
+ <a href="#" data-toggle="modal" data-target="#shiftchangeModal">
+  <b><%= date %></b>
+  
+  
+  <% shifts.each do |shift| %>
+
+    <div>
+      <b>SHIFT:</b> <%= shift.shift.name %>
+    </div>
+    <% if shift.users.present? %>
+      <div><b>USERS:</b>
+    <% users = shift.users.collect(&:name) %>
+      <%= users.join(",") %>
+    </div>
+    
+    <% end %>
+  <% end %>
+</a>
+<% end %>
+<div id="change_shift">
+<%= render partial: 'shifts/shift_change_modal' %>
+</div>
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+  $('.calendar-heading a').addClass('orange-button');
+  $('.calendar-heading a').css('display', 'inline')
+  $('.simple-calendar table').addClass('shift_calender_report')
+
+
+  $('.shift_calender_report').DataTable({
+    dom: 'lBfrtip',
+    "retrieve": true,
+    buttons: [
+      {
+        extend: 'excel',
+        title: "Shift Report",
+      },
+      {
+        extend: 'pdf',
+        title: "Shift Report",
+        orientation:'landscape',
+        pageSize: 'TABLOID'
+      }
+    ]
+  })
+});
+ 
+</script>>

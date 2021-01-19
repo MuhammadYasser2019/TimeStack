@@ -1,0 +1,71 @@
+h1 Shifts
+table class="table" style="width:80%;"
+  thead
+    tr
+      th Shift Name
+      - if params[:type] == 'customer' && (current_user.cm || current_user.proxy_cm)
+        th Projects
+      th #Employees
+      th Employee Name
+      
+      
+  tbody
+
+  - if params[:type] == 'customer' && (current_user.cm || current_user.proxy_cm)
+    - @shifts.each do |shift|
+      - no_of_employees = 0
+      - shift_array = []
+      - shift.project_shifts.map{ |shift| no_of_employees += shift.users.count}
+      - shift.project_shifts.each do |project_shift|
+
+        - if project_shift.users.present?
+          - project_shift.users.each do |shift_users|
+            tr
+              td
+                - if !shift_array.include?(shift.id)
+                  = link_to project_shift.shift.name, "/shift_report/#{shift.id}"
+              td = project_shift.project.name
+              td
+                - if !shift_array.include?(shift.id)
+                  = no_of_employees
+                
+              td = shift_users.name
+              
+            - shift_array << shift.id
+        - else
+          tr
+            td 
+              = link_to project_shift.shift.name, "/shift_report/#{shift.id}"
+            td
+              = project_shift.users.count
+            td = "N/A"
+
+     
+  - elsif params[:type] == 'project'  && (current_user.cm || current_user.pm)
+    - shift_array = []
+    - @project_shifts.each do |project_shift|
+      - if project_shift.users.present?
+        - project_shift.users.each do |shift_users|
+          tr
+            td
+              - if !shift_array.include?(project_shift.id)
+                = project_shift.shift.name
+            td
+              - if !shift_array.include?(project_shift.id)
+                = project_shift.users.count
+            td = shift_users.name
+          - shift_array << project_shift.id
+      - else
+        tr
+          td = project_shift.shift.name
+          td = project_shift.users.count
+          td = "N/A"
+
+      
+
+  - elsif params[:type] == 'shift_supervisor' && @project_shift.shift_supervisor_id == current_user.id
+    tr
+      td = link_to @project_shift.shift.name, "/shift_report/#{@project_shift.id}?type=shift_supervisor&project=#{@project_shift.project_id}"
+      td = @project_shift.shift.start_time
+      td = @project_shift.shift.end_time
+      td = @project_shift.users.count

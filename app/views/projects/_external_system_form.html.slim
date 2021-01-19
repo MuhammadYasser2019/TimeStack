@@ -1,0 +1,18 @@
+= form_tag create_project_from_system_path, id: "system_form", method: :post
+		= hidden_field_tag :customer_id, current_user.customer_id.present? ? current_user.customer_id : Customer.find_by_name("Resource Stack, Inc.").id
+		table
+			thead
+				tr
+					th External System
+					th Select Project
+					th
+			
+			tbody
+				tr
+					td
+						= select_tag :system_type, options_for_select(Customer::EXTERNAL_SYSTEMS), required: true, include_blank: true, class: "fetch_project"
+					td
+						= select_tag :system_project,'', :include_blank => true, required: true
+					td
+						= submit_tag 'Import'
+				

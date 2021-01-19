@@ -1,0 +1,11 @@
+<p>Hi, <%= @user.name %>,</p>
+<p>Your password for your ChronStack account expires in 4 day(s). To reset your ChronStack account password, click the link below.</p><br>
+
+<%= link_to 'Reset your password', edit_password_url(@user, reset_password_token: @token) %>
+
+<p>This link will expire in 24 hours, so be sure to use it right away.</p>
+<p>Please note: If you do not change your ChronStack account password within the next 4 days, it will expire, and you will not be able to log in to your account until you change your password.If you have any issues, questions, or concerns, please contact our support team at technicalsupport@resourcestack.com</p>
+<p>Thank you for using ChronStack!</p>
+
+<p>ChronStack Technical Support</p>
+<p>technicalsupport@resourcestack.com</p>

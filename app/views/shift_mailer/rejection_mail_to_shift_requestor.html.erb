@@ -1,0 +1,5 @@
+<% user = User.find_by_email(@user_email) %>
+<% mngr = User.find_by_email(@customer_manager_email)%>
+
+<p> Hi <%=user.first_name%></p>
+<p><%= mngr.first_name%> <%= mngr.last_name%> has rejected your shift change request from <%= @request_start_date.strftime('%Y-%m-%d')%> to <%= @request_end_date.strftime('%Y-%m-%d')%></p>

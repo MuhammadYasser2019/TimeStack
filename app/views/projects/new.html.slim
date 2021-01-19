@@ -1,0 +1,24 @@
+h1 New project
+- if flash[:alert]
+  p.alert = alert
+div.new_project_page
+	- if @configuration.present?
+		p What would you like to do
+
+		= radio_button_tag :import_from_system, '', false
+		label Import from External Systems
+		= radio_button_tag :create_new_project, '', false
+		label Create New Project
+
+		div.new_project style="display:none;"
+			== render 'new_form'
+		div.import style="display:none;"
+			== render 'external_system_form'
+	-else
+		= radio_button_tag :create_new_project, '', false
+		label Create New Project
+
+		div.new_project style="display:none;"
+			== render 'new_form'
+		
+= link_to 'Back', projects_path

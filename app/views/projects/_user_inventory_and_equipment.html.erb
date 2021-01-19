@@ -1,0 +1,40 @@
+<div id="inventoryModel" class= "modal"> 
+	<div class = "modal-content">
+    <div class="modal-header">
+   		<p style="position: relative;text-align: left;float: left;left: 37%;"><strong> Please Add Inventory And Equipment Details!</strong> </p>  
+       	<span class = "close inv_close"> &times;</span>
+      </div>
+      <%= form_tag add_multiple_user_inventory_path , remote: true  do |form| %>
+   
+        <%= hidden_field_tag "inv_user_ids", sel_inv_ids %>
+        <%= hidden_field_tag "project_id", project_id  %> 
+
+        <div class="form-group">
+          <label>Add Inventory And Equipment for user(s):</label>
+        </div>      
+        <table class="table">
+          <thead>
+          <tr>
+              <th>User</th>
+              <th>Equipment Name</th>
+              <th>Equipment Number:</th>
+              <th>Issued Date</th>
+             <!--  <th>Submitted Date</th> -->
+          </tr>
+          </thead>
+          <tbody>
+          <% inv_users.each do |user| %>
+            <tr>
+              <td><%= user.email %></td>
+              <td><%= text_field_tag "equipment_name_#{user.id}", "", required: true %></td>
+              <td><%= text_field_tag "equipment_number_#{user.id}", "" %></td>
+              <td><%= date_field_tag("issued_date_#{user.id}", Date.today, required: true )%></td>
+             <!--  <td><%= date_field_tag("submitted_date_#{user.id}", Date.today)%></td> -->
+            </tr>
+          <% end %>
+        </tbody>
+        </table>
+        <%= submit_tag "Add Inventory", class: "btn oragne-button", id: "inventory_button" %>
+      <% end %>
+    </div>   
+  </div> 

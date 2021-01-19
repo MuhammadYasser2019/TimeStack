@@ -1,0 +1,56 @@
+p#notice = notice
+
+p
+  strong Date of Activity
+  = @archived_time_entry.date_of_activity
+p
+  strong Hours
+  = @archived_time_entry.hours
+p
+  strong Activity Log
+  = @archived_time_entry.activity_log
+p
+  strong Task ID
+  = @task.description
+p
+  strong Week ID
+  = @archived_time_entry.week_id
+p
+  strong User ID
+  = @archived_time_entry.user_id
+p
+  strong Create at
+  = @archived_time_entry.created_at
+p
+  strong Update at
+  = @archived_time_entry.updated_at
+p
+  strong Project ID
+  = @projects.name
+p
+  strong Sick
+  = @archived_time_entry.sick
+p
+  strong Personal Day
+  = @archived_time_entry.personal_day
+p
+  strong Update by
+  = @archived_time_entry.updated_by
+p
+  strong Status ID
+  = @statuses.status
+p
+  strong Approved By
+  = @archived_time_entry.approved_by
+p
+  strong Approved Date
+  = @archived_time_entry.approved_date
+p
+  strong Time In
+  = @archived_time_entry.time_in
+p
+  strong Time Out
+  = @archived_time_entry.time_out
+
+
+= link_to 'Back', archived_time_entries_path

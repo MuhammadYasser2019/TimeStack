@@ -1,0 +1,75 @@
+div.report
+  h1 Report For: #{ @user_name.first_name}, #{@user_name.last_name}
+  p Start Date:
+   #{@week.start_date.strftime('%Y-%m-%d')}
+  p End Date:
+   #{@week.end_date.strftime('%Y-%m-%d')}
+  p Status:
+   #{Status.find(@week.status_id).status}
+  = form_tag(params.permit!,id: "report_form", :method => :get) do
+      -if @print_report == "true"
+
+      -else
+        = select_tag :project, options_from_collection_for_select(@projects, "id", "name", params[:project]), :include_blank => true, :style=> "width:32%;margin-right:10px;outline:1px solid orange;"
+        = hidden_field_tag 'hidden_print_report', false
+        = submit_tag "Change Project"
+
+  table border="1"
+    thead
+      tr
+        td Date 
+        td Day
+        td Project 
+        td Task
+        td Hours
+        td Description
+        td Partial Day
+        td Vacation Type
+        td Approved By
+    tbody
+    - @time_entries.each do |t|
+      tr
+        td.date = t.date_of_activity.strftime('%Y-%m-%d')
+        td.date = t.date_of_activity.strftime("%A") 
+        td.project = t.project.name if !t.project.nil?
+        td.task = t.task.description if !t.task.nil?
+        td.hour 
+          = t.hours
+        td.active_log
+          = t.activity_log
+        td.partial
+          = t.partial_day == "true" ? "Yes" : "No"
+        td.vacation_type
+         - if t.vacation_type.present?
+           = t.vacation_type.vacation_title
+         - else
+           = ""
+        td.approved_by
+         - if t.approved_by?
+          span = "#{User.find(t.approved_by).first_name} #{User.find(t.approved_by).last_name}"
+    tr
+      td
+      td
+      td
+      td Total Hours:
+      td = @hours_sum
+      td
+      td
+      td
+
+  -if @print_report == "false"
+    - @week.upload_timesheets.each do |t|
+      - if t.time_sheet.present?
+        div = link_to "You have attached: #{t.time_sheet_identifier} on #{t.created_at.to_date}", t.time_sheet.url, :target => "_blank"
+  - if @expenses.present?
+    == render "etable"
+
+    = button_tag "Print", class: "print-report secondary tiny", type: "button"
+
+  - if @week.status_id == 2
+      div.sig Manager's Signature __________________________________________________
+
+  - if @week.status_id == 3
+     div.approver "Approved by #{@approved_by.first_name} #{@approved_by.last_name} on #{@week.approved_date.strftime(('%Y-%m-%d'))}"
+
+

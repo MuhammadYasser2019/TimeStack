@@ -1,0 +1,35 @@
+.grid-x
+	.small-6.white-background
+		h3 Notifications
+		table
+			tr
+				th Type
+				th Date
+				th
+			- @notifications.each do |notif|
+				tr
+					= hidden_field_tag 'user_notification_id', notif.id
+					- if notif.visited.present?
+						td= "#{notif.notification_type}"
+
+						td
+							<a href= "/users_notification_date?notification_id=#{notif.id}&week_id=#{notif.week_id}" id="notif_date#{notif.created_at.to_date}">#{notif.created_at.to_date}</a>
+
+						td
+							<a id= "notification_#{notif.id}" class= "notification_dialog orange-button btn" style="width:70px; type="link" data-toggle="user_notification" data-target="#user_notification" href="javascript:void(0);">View</a>
+					-else
+						td
+							<strong>#{notif.notification_type}</strong>
+						td
+							<a href= "/users_notification_date?notification_id=#{notif.id}&week_id=#{notif.week_id}" id="notif_date#{notif.created_at.to_date}"><strong>#{notif.created_at.to_date}</strong></a>
+
+						td
+							<a id= "notification_#{notif.id}" class= "notification_dialog orange-button btn" style="width:70px; type="link" data-toggle="user_notification" data-target="#user_notification" href="javascript:void(0);">View</a>
+
+			div(id="user_notification" class="modal" aria-hidden="true" role="dialog")
+
+		      div(class = "modal-content")
+		       
+		        div(class="modal_body add_data")
+		          
+		      

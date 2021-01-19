@@ -1,0 +1,54 @@
+h6 Configurate External Systems
+h1 Projects
+p By setting up and allowing Chronstack your specific external systems credential. 
+p This will allow projects to automatically populate and be modified within both.
+h6 New Configuration Setup
+
+=form_tag add_configuration_path, id: "add_configuration_form", method: :post, remote: true
+
+	table.configuration_table
+		tr.dark_row
+			th External System
+			th Email
+			th Password
+		tr 
+
+			td = select_tag :system_type, options_for_select(Customer::EXTERNAL_SYSTEMS), required: true, include_blank: true
+			
+			td = text_field_tag :jira_email, '' , required: true
+			td = password_field_tag :password, '', required: true
+		tr.dark_row
+			th External Url
+			th
+			th Confirm Password
+		tr 
+			td = text_field_tag :url, '', required: true
+			td
+			
+			td = password_field_tag :confirm_password,'', required: true
+
+			td = submit_tag 'Submit', id: 'check_password'
+
+
+h6 Active External Systems
+
+-if @current_systems.present?
+	table
+		tr.dark_row 
+			th (style= "width: 25%;") External System
+			th (style= "width: 25%;") External Url
+			th (style= "width: 25%;") Username
+			th (style= "width: 25%;") Action
+		- @current_systems.each do |sys|
+			tr
+				td = sys.system_type
+				td = sys.url
+				td = sys.jira_email
+				td = link_to 'Remove', remove_configuration_path(id: params[:customer_id], sys_id: sys.id), remote: true
+- else
+	p There are curreltly no active external systems that have been setup
+
+h5 Accounting
+h5 Other
+
+

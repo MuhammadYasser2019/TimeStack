@@ -1,0 +1,42 @@
+.left-row-adhoc
+	h1 Assign Employment
+	= form_tag assign_employment_types_path,id: "assign_employment_form", method: :post, remote: true
+		= hidden_field_tag 'customer_id', @customer.id
+		table
+			tr
+				th Vacation Type
+				td = select_tag :vacation_type_id, options_from_collection_for_select(@vacation_types, "id", "vacation_title"), include_blank: true, required: 'required', class: "form-control"
+			tr
+				th
+				td Employment Type
+			- @employment_type.each do |e|
+				tr 
+					th = e.name
+					td = check_box_tag "employment_type_#{e.id}"
+						
+		.actions = submit_tag 'Assign to Employment'
+	= link_to "Manage Vacation Type", vacation_types_path(:customer_id => @customer.id), id: "#{@customer.id}", class: "orange-button", style: "margin-top:30px;"
+
+
+.right-row-adhoc
+	h1 Vacation With Employment Type
+	table class="table"
+		thead
+			tr
+				th Vacation Type
+				th Employment Type
+				th
+		tbody	 
+			- count = 0
+			- @vacation_types.each do |p|
+				- p.employment_types.each do |e|
+				  
+				  tr (id = "emp_#{count}")
+					td = p.vacation_title		
+					td = e.name
+					td = td = button_tag "Remove", id: "#{p.id}_#{e.id}", class: "button alert remove-emp-type orange-button"
+				  - count += 1
+
+div style="clear:both;"
+
+				

@@ -1,0 +1,4 @@
+<% mngr = User.find_by_email(@customer_manager_email) %>
+<% u = User.find_by_email(@user_email) %>
+<%= "#{mngr.first_name}, #{mngr.last_name}" %>,<br/>
+<%= "#{u.first_name} #{u.last_name}" %> has request for vacation from <%= @vacation_start_date %> to <%= @vacetion_end_date %>

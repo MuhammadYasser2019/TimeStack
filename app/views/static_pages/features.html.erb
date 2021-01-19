@@ -1,0 +1,91 @@
+<div class="container-fluid">
+  <div class="row front-row">
+    <div id="features-div">
+      <div class="image-banner-text col-md-8" style="height: 150px; top: 57%; position: relative;">
+        <p class="inside-image-banner">Efficient and Flexible Time Entry
+        </p>
+
+        <div data-border-width="3" id="text-partial-underline" class="col-md-5"></div>
+        <div id="under-image-banner-text" class="col-md-7">
+        </div>
+      </div>
+    </div>
+    <div data-border-width="3" id="front-div-underline" class="col-md-10"></div>
+
+  </div>
+  <div class="row text-row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <%= @feature_2.feature_data.html_safe if @feature_2 && @feature_2.feature_data.present? %></div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row front-row">
+    <div id="features-div-2">
+      <div class="image-banner-text col-md-7" style="height: 150px; top: 57%; position: relative;">
+        <p class="inside-image-banner">Easy Submission and Approval
+        </p>
+
+        <div data-border-width="3" id="text-partial-underline" class="col-md-5"></div>
+        <div id="under-image-banner-text" class="col-md-7">
+        </div>
+      </div>
+    </div>
+    <div data-border-width="3" id="front-div-underline" class="col-md-10"></div>
+
+
+  </div>
+  <div class="row text-row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <%= @feature_3.feature_data.html_safe if @feature_3 && @feature_3.feature_data.present? %></div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row front-row">
+    <div id="features-div-3">
+      <div class="image-banner-text col-md-7" style="height: 150px; top: 57%; position: relative;">
+        <p class="inside-image-banner">Flexible Reports
+        </p>
+
+        <div data-border-width="3" id="text-partial-underline" class="col-md-5" style="float: right;"></div>
+        <div id="under-image-banner-text" class="col-md-7">
+        </div>
+      </div>
+    </div>
+    <div data-border-width="3" id="front-div-underline" class="col-md-10"></div>
+
+
+  </div>
+  <div class="row text-row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <%= @feature_4.feature_data.html_safe if @feature_4 && @feature_4.feature_data.present? %></div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="front-row full-width footer" style="height:200px; margin-top: 80px">
+    <div class="footer_section">
+      <div class="icons" style="width:100%; margin: 0;">
+        <a href="https://www.linkedin.com/company/1188919/" target="_blank" style="padding: 10px; float:left; margin-left: 25px;"><%= image_tag("linkedin.png", style: 'background-color: white; border-radius: 7px;') %></a>
+        <a href="https://www.facebook.com/Resource-Stack-Inc-269978683036453/" target="_blank" style="padding: 10px;float:left"><%= image_tag("facebook.png", style: 'background-color: white; border-radius: 7px;') %></a>
+        <a href="https://play.google.com/store/apps/details?id=com.resourcestack.chronstack" target="_blank" style="/* padding: 10px; */float: right;margin-right: 40px;margin-left: 20px;margin-top: -1px;"><%= image_tag("google.png", style: "width:150px;margin-top: 12px;") %></a>
+        <a href="https://apps.apple.com/app/id1514665138" target="_blank" style="float: right;"><%= image_tag("apple_store.png", style: "width:150px;") %></a>
+      </div>
+    </div>
+    <div class="row top-of-footer">
+      <div class="col-md-5" style="margin-left: auto;margin-right: auto;">
+        <div class="col-md-6" style="color: white; font-weight: bold; height:125px; font-size: 14px; text-align: right; float:left; padding:10px 15px; margin-top: -80px;">
+          Resource Stack, INC.</br>626 Grant Street Suite D</br>Herndon, VA 20170
+        </div>
+        <div class="col-md-6 address" style="color: white; height:80px; font-weight: bold;float:right;margin-top: -70px;">
+          <p style="text-align:left;">info@resourcestack.com</p>
+          <p style="color:white;text-align: left;">571-223-6741</p>
+        </div>
+      </div>
+    </div>
+    <p style="color: white; text-align:center;font-weight: bold;">&copy; 2017 Resource Stack, Inc. All Rights Reserved.</p>
+  </div>
+</div>
+
+<%= render partial: 'static_pages/login_form'%>

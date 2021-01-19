@@ -1,0 +1,26 @@
+= simple_form_for(@archived_time_entry) do |f|
+  = f.error_notification
+
+   .form-inputs
+	= f.input :date_of_activity
+	= f.input :hours
+	= f.input :activity_log
+	= f.input :task_id
+	= f.input :week_id
+	= f.input :user_id
+	= f.input :created_at
+	= f.input :updated_at
+	= f.input :project_id
+	= f.input :sick
+	= f.input :personal_day
+	= f.input :updated_by
+	= f.input :status_id
+	= f.input :approved_by
+	= f.input :approved_date
+	= f.input :time_in
+	= f.input :time_out
+	= f.input :vacation_type_id
+
+
+  .form-actions
+    = f.button :submit

@@ -1,0 +1,132 @@
+<nav class="navbar navbar-expand-lg navbar-light fixed-top sticky-top">
+  <% if current_user.nil?%>
+    <div>
+      <a href="/", class ="navbar-brand" >
+        <%= image_tag "chronstack-thin-horizontal-opacity.png", class: 'logo' %>
+        <!-- <span class="logo-tagline">Simplified Employee Time Tracker</span> -->
+      </a>
+    </div>
+	<% else %>
+    <% if !current_user.customer_id.nil? %>
+		  <% customer = Customer.find(current_user.customer_id)%>
+		  <% if !customer.logo.blank?%>
+		    <a href="/", class="navbar-brand"><%= image_tag "#{customer.logo}", class: 'logo' %></a>
+		  <% else %>
+		    <a href="/", class="navbar-brand"><%= image_tag "chronstack-thin-horizontal-opacity.png", class: 'logo' %></a>
+		  <% end %>
+		<% else %>
+	  <a href="/", class="navbar-brand"><%= image_tag "chronstack-thin-horizontal-opacity.png", class: 'logo' %></a>
+	  <% end %>
+  <% end %>
+  <% if !current_user.nil? && !application_version.nil? %>
+
+    <% if application_version[:user_application_version].nil? %>
+      <span id="curApplicationVersion" class="current-application-version" style="display: none;">Current Version: 2.108</span>
+    <% else %>
+      <span id="curApplicationVersion" class="current-application-version" style="display: block;" data-id="<%= application_version[:user_application_version]["id"]%>" data-name="<%=  application_version[:user_application_version]["version_name"] %>" data-description="<%=  application_version[:user_application_version]["description"] %>">Current Version: <%=  application_version[:user_application_version]["version_name"] %></span>
+    <% end %>
+  <% end %>
+  <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button> -->
+
+  <% if current_user.nil? %>
+  	<div class="collapse navbar-collapse front-nav" id="navbarSupportedContent">
+    	<ul class="navbar-nav navbar-dark">
+	      <li class="nav-item active">
+	        <a class="nav-link" href="<%= root_path %>">Home <span class="sr-only">(current)</span></a>
+	      </li>
+	      <!-- <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	          Features
+	        </a>
+	        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	          <a class="dropdown-item" href="<%= feature_path(id:1) %>">Easy Automation</a>
+	          <div class="dropdown-divider"></div>
+	          <a class="dropdown-item" href="<%= feature_path(id:2) %>">Employee Time Entry</a>
+	          <div class="dropdown-divider"></div>
+	          <a class="dropdown-item" href="<%= feature_path(id:3) %>">Submission and Approval</a>
+	          <div class="dropdown-divider"></div>
+	          <a class="dropdown-item" href="<%= feature_path(id:4) %>">Flexible Reports</a>
+	          <div class="dropdown-divider"></div>
+	          <a class="dropdown-item" href="<%= feature_path(id:5) %>">Optional Payroll System Integration</a>
+	          
+	        </div>
+	      </li> -->
+	      <li class="nav-item dropdown">
+	          <a class="nav-link" href="/about">About</a>
+	      </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" href="/features">Features</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Case Studies
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="<%= feature_path(id:7) %>">Deosi</a>
+          </div>
+        </li>
+    	</ul>
+      <ul class="navbar-nav ml-md-auto">
+        <li class="nav-item" style="position: relative;">
+          <a id= "login_modal" class="nav-link" href="javascript:void(0)" data-toggle="modal" data-target="#loginModal">Sign In</a>
+        </li>
+      </ul>
+	  </div>
+  <% else %>	
+		<div class="collapse navbar-collapse inside-nav" id="navbarSupportedContent">
+	    <ul class="navbar-nav navbar-dark ml-md-auto justify-content-right navbar-nav-inside">
+	
+	      <!--<li class="nav-item active" style="line-height: 45px;">
+	        <a class="nav-link" href="/user_profile"><%= current_user.email %></a>
+	      </li>-->
+	      <li class="nav-item active user-profile-image">
+	      	<% if current_user.image.present? %>
+	        	<a class="nav-link" style="padding: 0px;" href="/user_profile"><%= image_tag current_user.image.url %></a>
+	        <% else %>
+	        	<% if current_user.first_name.present? && current_user.last_name.present? %>
+		        	<div class="text-container">
+		        		<a class="nav-link" style="padding: 0px;" href="/user_profile">
+                  <div class="centered">
+                    <%= current_user.first_name.to_s[0].upcase  + current_user.last_name.to_s[0].upcase %>
+                  </div>
+                  <%= image_tag "grey-image"%></a>
+		        	</div>
+		        <% end %>
+	        <% end %>
+	      </li>
+	    
+
+				<li class="nav-item active" style="text-align: center;">
+
+	        <a class="nav-link" style="padding:0px;" href="<%= user_notification_path %>" >
+            <% if new_messages > 0 %>
+              <span class="notification"><%= new_messages %></span>
+            <% end %>
+            <i class="fa fa-bell"></i></a>
+	      </li>
+	      <% if current_user.admin? %>
+	      <li class="nav-item active" style="line-height: 45px;">
+	        <a class="nav-link btn orange-button" style="width:70px;" href="/admin">Admin</a>
+	      </li>
+	      <% end %>
+	      <li class="nav-item active" style="line-height: 45px;">
+	      	<%= link_to 'Logout', destroy_user_session_path, :method => :delete, style: "float:right;", class: 'orange-button nav-link btn', style:"width:70px;" %>
+	      </li>
+	    </ul>
+	  </div>
+	<% end %>
+</nav>
+
+<style type="text/css">
+	#modalDialog img{
+		width: 100% !important;
+	}
+	@media print{
+			#navbarSupportedContent{
+				display:none;
+			}		
+
+	}
+</style>

@@ -1,0 +1,45 @@
+
+.center-row {
+	position: relative;
+	//margin: 30px !important;
+	width: 35%;
+}
+
+
+//for notification icon
+
+.bell {
+  display: block;
+  height: 20px;
+  width: 50px;
+}
+
+
+
+.notification {
+  //height: 30px;
+  position: absolute;
+  color: white;
+  background-color: red;
+  border-radius: 50%;
+  padding: 2px;
+  top: 20%;
+  margin-left: 23px;
+  font-weight: normal;
+  font-family: sans-serif;
+  width: 1.3rem;
+  height: 1.3rem;
+  font-size: 14px;
+}
+
+#show_weekly_reports{
+	border: 1px solid black !important;
+	width: 100%;
+	td{
+	width:60px;
+	}
+
+}
+.week_row{
+	background-color:#ffdd9e !important;
+}

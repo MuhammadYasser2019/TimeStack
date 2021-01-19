@@ -1,0 +1,266 @@
+<ul class="nav nav-tabs" id="admin-tab" style="padding-left: 370px;">
+  <li class="nav-item"><a class="nav-link active" aria-selected="true" href="#user_permissions" role="tab" data-toggle="tab">User Permissions</a></li>
+  <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#holidays">Holidays</a></li>
+  <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" role="tab" data-toggle="tab" href="#panel3">Report Logo</a></li>
+  <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#panel4">Manage Content</a></li>
+   <li class="nav-item"><a id="versionPanelMenu" class="nav-link" role="tab" data-toggle="tab" href="#versionPanel">Application Versions</a></li>
+   <li class="nav-item"><a id="announcementPanelMenu" class="nav-link" role="tab" data-toggle="tab" href="#announcementPanel">Announcement</a></li>
+ </ul>
+<div class="tab-content">
+	<div class="tab-pane fade show active" id="user_permissions">
+		<div class="white-background">
+		  <%= form_tag users_path, method: :update do %>
+			<table class="table" style="width:80%;">
+				<thead>
+					<th>Username</th>
+					<th>User?</th>
+					<th>PM?</th>
+					<th>CM?</th>
+					<th>Admin?</th>
+					<th>Proxy PM?</th>
+					<th>Proxy CM?</th>
+				</thead>
+				<tbody>
+				 
+					  <% @users.each do |u| %> 
+					   <%= fields_for "user[]", u do |uu|%>
+						<tr>
+							
+							<td> <%= u.first_name %> <%= u.last_name %> </td>
+							<td><%= uu.check_box :user %></td>
+							<td><%= uu.check_box :pm %></td>
+							<td><%= uu.check_box :cm %></td>
+							<td><%= uu.check_box :admin %></td>
+							<td><%= uu.check_box :proxy %></td>
+							<td><%= uu.check_box :proxy_cm %></td>
+							
+					    </tr>
+					   <% end %>
+					  <% end %>
+					
+				  
+				</tbody>
+			</table>
+			<div>
+			   <%= submit_tag "Submit"%>
+		      <% end %>
+		    </div>
+		</div>
+
+		<div class="white-background">
+			<table>
+			  <thead>
+			    <tr>
+			      <th>
+			        <h5>Invite Customer Manager</h5>
+			      </th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <tr>
+			      <th>
+			        <%= form_tag(action: :invite_customer) do %>
+			          <%= text_field_tag :email, nil, placeholder: "Email", class: "invitation_email form-control" %>
+			          <%= date_field_tag 'invite_start_date', params[:invite_start_date], {placeholder: "Select start date", required: "required", class: "form-control"} %>
+			          <%= select_tag :customer_id, options_from_collection_for_select(@customers, :id, :name), class: "form-control"%>
+			          <%= hidden_field_tag :invited_by_id, current_user.id %>
+
+			          <%= submit_tag 'Invite customers Manager', class: 'btn-primary invite_user_button' %>
+			        <% end %>
+			      </th>
+			    </tr>
+			  </tbody>
+			</table>
+		</div>
+		<div class="white-background">
+
+			<h1> Pending Users</h1>
+			<table class="table" style="width: 80%;">
+			  <thead>
+			    <tr>
+			      <th> User Email</th>
+			      <th> Invitation Sent At</th>
+			      <th></th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <% @invited_users.each do |user| %>
+			      <% if user.invitation_accepted_at.nil? %>
+			        <tr>
+			          <td>
+			            <%= user.email %></td>
+			          <td>
+			            <%= user.invitation_sent_at %></td>
+			          <td>
+			            <%= button_to "Resend Invitation","/invitation/resend_invite?email=#{user.email}&invited_by_id=#{user.invited_by_id}", class: "secondary tiny" %></td>
+			  		</tr>
+			  	  <% end %>
+			  	<% end %>
+			  </tbody>
+			</table>
+		</div>
+	</div>
+	<div class="tab-pane white-background" id="holidays" style="margin: 10px 50px 50px 50px; box-shadow: 0px 0px 0px rgba(0,0,0,0);">
+		<div class="small-6 small-offset-3">
+			<h1 class="text-center">Holidays Setup</h1>
+			<% if @holidays.any? %>
+			<div class="row">
+				<h4 class="col-md-4 cell text-center underline" style="text-decoration:underline; background-color: white;">Name</h4>
+				<h4 class="col-md-4 cell text-center underline" style="text-decoration:underline; background-color: white;">Date</h4>
+				<h4 class="col-md-4 cell text-center no-background"></h4>
+			</div>
+				<% @holidays.each do |h| %>
+					<div class="row holiday-row">
+						<div class="col-md-4 cell text-center"><%= h.name %></div>
+						<div class="col-md-4 cell text-center"><%= h.date.strftime("%m-%d-%y") %></div>
+						<div class="col-md-4 cell text-center">
+							<%= link_to "Delete Holiday", h, method: :delete, data: { confirm: 'Are you sure?' }, style: "color:#842929" %>
+						</div>
+					</div>
+				<% end %>
+			<% else %>
+				<h3 class="text-center large">No Holidays created</h3>
+			<% end %>
+			
+			<%= link_to "Create Global Holiday", new_holiday_path, class: "orange-button", style: "margin-top:30px;"%>
+				<%= react_component("AddHoliday")%>
+		</div>
+	</div>
+	<div class="report-log-tab white-background tab-pane"  id="panel3">
+		<h1>Create Report Logo</h1>
+		<%= form_tag report_logos_path, :multipart => true, method: :post do%>
+		<table style="width:60%;">
+			<thead>
+				<th>Name</th>
+				<th></th>
+				<th></th>
+				<th></th>
+
+			</thead>
+			<tbody>
+				<tr>
+					<td><%= text_field_tag :name, nil, placeholder: "Logo Name", class: "report_logo form-control",required: "required" %></td>
+					<td><%= label_tag(:report_logo, "Upload Logo", for: "report-logo-upload")%></td>
+					<td><%= file_field_tag(:report_logo, id: "report-logo-upload") %></td>
+					<td><%= button_tag "Save Logo", class: "tiny orange-button"%></td>
+				</tr>
+			</tbody>
+		</table>
+		<% end %>
+
+
+		<h1>Assign Report Logo To User</h1>
+		<%= form_tag "/assign_report_logo_to_user", :multipart => true, method: :get do  %>
+		<table style="width: 60%; margin-left: 22%;">
+			<thead>
+				<th>Report Logos</th>
+				<th>Users</th>
+				<th></th>
+			</thead>
+			<tbody>
+				<tr>
+					<td><%= select_tag :report_logo, options_from_collection_for_select(@all_report_logos, "id", "name", params[:report_logo]), :include_blank => true, class: "form-control" %></td>
+					<td><%= select_tag :user, options_from_collection_for_select(@users, "id", "email", params[:user]), :include_blank => true, class: "form-control" %></td>
+					<td><%= button_tag "Assign Logo", class: "tiny orange-button" %></td>
+					<td><%= %></td>
+				</tr>
+			</tbody>
+		</table>
+		<% end %>
+
+		<h1>Users With Logo</h1>
+		<table style="width:60%;">
+			<thead>
+				<th>User</th>
+				<th>Logo Name</th>
+				<th>Logo</th>
+			</thead>
+			<tbody>
+				<% @users_with_logo.each do |users_with_logo| %>
+				<% user_logo_id = users_with_logo.report_logo %>
+				<tr>
+					<td><%= users_with_logo.email%></td>
+					<td><%= ReportLogo.find(user_logo_id).name%></td>
+					<td><%= image_tag ReportLogo.find(user_logo_id).report_logo.url%></td>
+				</tr>
+				<% end %>
+			</tbody>
+		</table>
+	<%= link_to "Back", root_path, class: "button large"%>
+	</div>
+	<div class="tab-pane white-background" id="panel4">
+		<h1>Manage Login Page Content</h1>
+		<span class="success_message" style="color: green;"></span>
+		<%= form_tag update_front_page_content_path, id: "front_page_content", method: :post, remote: true do %>
+			<table>			
+				<tr>
+					<th>Feature Type</th>
+					<td><%= select_tag :feature_id, options_from_collection_for_select(@features, "id", "feature_type"), {required: "required", :include_blank => true}  %></td>
+				</tr>
+				<tr>
+					<th>Content</th>
+					<td><%= cktext_area :feature_content, :content, cols: 40 %></td>
+				</tr>
+			</table>
+		<div class="actions"><%= submit_tag 'Update Content' %></div>
+		<% end %>
+	</div>
+
+	<div class="tab-pane white-background" id="versionPanel">
+		<h1>Manage Application Versions</h1>
+		<button id="addNewVersion" class="btn btn-primary orange-button">Add New </button>
+		<table id="versionTable" class="table table-bordered table-responsive table-hover stripe">
+		 <thead>
+        <tr>
+            <th>Id</th>
+            <th>Version Name</th>
+            <th>Start Date </th>
+            <th>Platform</th>
+            <th>Actions</th>
+        </tr>
+    </thead></table>
+	</div>
+	<div class="tab-pane white-background" id="announcementPanel" align="center">
+		<h1>Announcements</h1>
+		<button type="button" class="btn btn-primary orange-button" data-toggle="modal" data-target="#announcemntModal">Add New Announcement</button>
+		<table id="display_data" class="table table-bordered table-hover stripe" style ="width:50%;">
+		 <thead>
+	        <tr>
+	            <th>Announcement Title</th>
+	            <th>Active</th>
+	            <th>Action</th>
+	        </tr>
+    	</thead>
+    	<tbody>
+    		<% @announcements.each do |announcement| %>
+        	<tr> 
+	    		<td><%= announcement.announcement_type %></td>
+	    		<td><%= announcement.active ? "YES":"NO" %></td>
+	    		<td><%= link_to "Edit", "javascript:void(0);", id: "#{announcement.id}", class: "announce_edit" %>|
+	    		<%= link_to "Destroy" ,announcement, method: :delete, data: { confirm: 'Are you sure?' } %>  			
+	    		</td>
+        	</tr>
+         <% end %>
+   		</tbody>
+		</table> 
+	</div>
+</div>
+<div id="announcements_reload">
+<%= render 'announcements/open_announcement_modal'%>
+</div>
+<script type="text/javascript">
+ $('#announcemntModal').on('hidden.bs.modal', function () { 
+    document.location.reload();
+});
+ $('#admin-tab a').click(function(e) {
+  e.preventDefault();
+  $(this).tab('show');
+});
+
+$("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+  var id = $(e.target).attr("href").substr(1);
+  window.location.hash = id;
+});
+var hash = window.location.hash;
+$('#admin-tab a[href="' + hash + '"]').tab('show');
+</script>

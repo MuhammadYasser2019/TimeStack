@@ -1,0 +1,28 @@
+<div id="applicationVersionModal" class= "modal"> 
+    <div class = "modal-content" style="width:auto;">
+        <div class="modal-header">
+            <p style="position: relative;text-align: left;float: left;left: 37%;"><strong>Application Version: <%= application_version[:latest_version].version_name %></strong> </p>  
+        </div>
+        <div class="modal-body">
+          <%= application_version[:latest_version].description.html_safe %>
+        </div>
+        <button id="acknowledgeVersionButton" data-versionId= "<%= application_version[:latest_version].id %>" data-name= "<%= application_version[:latest_version].version_name %>" data-description = "<%= application_version[:latest_version].description %>"  class="btn btn-secondary">OK</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $('#applicationVersionModal').modal({backdrop: 'static', keyboard: false}) 
+  $("#acknowledgeVersionButton").on("click",function(){
+    var id = $(this).data("versionid");
+    var name =$(this).data("name");
+    var description =$(this).data("description");
+    $().makeHttpRequest($().getRequestUrl("./application_versions/acknowledge_version?id="+id), "GET", null, (res) => {
+        $('#applicationVersionModal').modal('hide').data('modal',null);
+        $("#curApplicationVersion").data("id",id);
+        $("#curApplicationVersion").data("name",name);
+        $("#curApplicationVersion").data("description",description);
+        $("#curApplicationVersion").html("Current Version: "+ name);
+        $("#curApplicationVersion").show();
+    });
+  }) ;
+</script>

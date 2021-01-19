@@ -1,0 +1,16 @@
+h1 Listing Archived Time Entries
+
+table
+  thead
+    tr
+      th user_id
+      th Week_id
+      th Show
+
+  tbody
+    - @archived_time_entries.each do |archived_time_entry|
+      tr
+        td = archived_time_entry.user_id
+        td = archived_time_entry.week_id
+        td = link_to 'Show', archived_time_entry
+       

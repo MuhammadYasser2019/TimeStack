@@ -1,0 +1,13 @@
+= simple_form_for(@time_entry) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :date
+    = f.input :hours
+    = f.input :activity_log
+    = f.association :task
+    = f.association :week
+    = f.association :user
+
+  .form-actions
+    = f.button :submit

@@ -1,0 +1,49 @@
+<% mgr = User.find_by_email(@manager) %>
+<% usr = User.find_by_email(@sender) %>
+<%= "#{mgr.first_name}, #{mgr.last_name}" %>,<br/>
+<%= usr.first_name %> has submitted timesheet for Week of <%= @week.start_date.strftime('%Y-%m-%d') %> to <%= @week.end_date.strftime('%Y-%m-%d') %><br/>
+<table border='2'>
+<tr><th>Date of Activity</th><th>Project</th><th>Hours</th><th>Description</th></tr>
+<% @week.time_entries.each do |t| %>
+  <tr>
+    <td><%= t.date_of_activity.strftime("%Y-%m-%d") %>  </td>
+    <td><%= Project.find(t.project_id).name unless t.project_id.blank? %> </td>
+    <td><%= t.hours %>  </td>
+    <td><%= t.activity_log %>  </td>
+  </tr>
+<% end %>
+</table>
+<% if @expenses.present? %>
+    <% if !@expenses.nil? %>
+    	<%= usr.first_name %> has submitted EXPENSES for Week <br/>
+    	<table border='2'>
+    	<tr><th>Date</th><th>Expense Type</th><th>Description</th><th>Project</th><th>Amount</th></tr>
+    	<% @expenses.each do |e| %>
+    		<tr>
+    		    <td><%= e.date %>  </td>
+        		<td><%= e.expense_type %> </td>
+        		<td><%= e.description %>  </td>
+        		<td><%= Project.find(e.project_id).name if e.project_id.present? %>  </td>
+        		<td><%= e.amount %>  </td>
+    		</tr>
+    	<% end %>
+    	</table>
+    <% end %>
+<% end %>   
+<% if !@expenses.blank? %>
+	<%= usr.first_name %> has submitted EXPENSES for Week <br/>
+	<table border='2'>
+	<tr><th>Date</th><th>Expense Type</th><th>Description</th><th>Project</th><th>Amount</th></tr>
+	<% @expenses.each do |e| %>
+		<tr>
+		    <td><%= e.date %>  </td>
+    		<td><%= e.expense_type %> </td>
+    		<td><%= e.description %>  </td>
+    		<td><%= Project.find(e.project_id).name if e.project_id.present? %>  </td>
+    		<td><%= e.amount %>  </td>
+		</tr>
+	<% end %>
+	</table>
+<% end %> 
+<br>
+<%= link_to 'CLICK HERE -> To Approve/Reject Timesheet', root_url %>

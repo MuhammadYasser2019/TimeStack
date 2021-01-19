@@ -1,0 +1,27 @@
+h2.text-center Holidays Setup
+br
+br
+- if @holidays.any?
+	- if @holiday_exceptions.present?
+		h4.text-center Holiday Exceptions
+		- @holiday_exceptions.each do |h|
+	  		.grid-x
+ 				.small-6.columns.text-center =("#{User.find(h.user_id).first_name} #{User.find(h.user_id).last_name}")
+				.small-1.columns.text-center = h.holiday_ids.count
+				.small-1.columns.text-center = link_to "Edit", edit_holiday_exception_path(h)
+				.small-1.columns.text-center = link_to "Delete", holiday_exception_path(h), data: { confirm: 'Are you sure you want to delete holiday exception for this user?' }, method: :delete
+				.small-1.columns
+
+h4.text-center New Holiday Exception
+= form_for @holiday_exception, remote: true do |f|
+		= f.select :user_id, @project.users.collect { |m| [ m.first_name, m.id ] }, {include_blank: true}, {required: "required", class:"form-control"}
+		= f.collection_check_boxes(:holiday_ids, @holidays.all, :id, :name, include_hidden: false) do |h|
+		 .grid-x
+			.small-6.cell.text-center = h.check_box
+			.small-2.cell.text-center = h.object.name
+			.small-2.cell.text-center = h.object.date.strftime("%m-%d-%y")
+			.small-1.cell
+		= f.hidden_field :customer_id, value: @customer.id
+		= f.hidden_field :project_id, value: @project.id
+		.actions = f.submit
+

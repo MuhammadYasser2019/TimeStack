@@ -1,0 +1,24 @@
+p#notice = notice
+
+p
+  strong Date:
+  = @time_entry.date
+p
+  strong Hours:
+  = @time_entry.hours
+p
+  strong Comments:
+  = @time_entry.activity_log
+p
+  strong Task:
+  = @time_entry.task
+p
+  strong Week:
+  = @time_entry.week
+p
+  strong User:
+  = @time_entry.user
+
+= link_to 'Edit', edit_time_entry_path(@time_entry)
+'|
+= link_to 'Back', time_entries_path

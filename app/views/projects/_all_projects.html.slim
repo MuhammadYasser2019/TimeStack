@@ -1,0 +1,14 @@
+
+- projects.each_with_index do |project,i|
+	tr
+		td{id="project_name_#{project.id}"} = project.name
+		td = project.customer.name if !project.customer.nil?
+		td
+			- if project.inactive == true
+				span Yes
+			- elsif project.inactive == false || project.inactive == nil
+				span No
+		- if "#{i}" == "0"
+			td = radio_button_tag("project",project.id, checked: true, class:"select-project")
+		- else
+			td = radio_button_tag("project",project.id, false, class:"select-project")

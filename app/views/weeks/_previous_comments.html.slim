@@ -1,0 +1,32 @@
+div class="add_comments modal-dialog" role="document" style="position:fixed;left:115px;"
+  div.modal-content
+    div.modal-header
+      h5 class="modal-title" style="text-align:center;"DESCRIPTION
+      button.close type="button" aria-label="Close" data-dismiss="modal"  
+          span aria-hidden="true"  &times;
+    div.modal-body
+      = form_tag add_previous_comments_path,id: "previous_comments_form", method: :post, remote: true  
+        = hidden_field_tag "week_id", @week_id
+        table
+          tr
+            th PREVIOUS COMMENTS
+            th 
+
+          tbody
+          - @t.each do |t|
+            tr
+              td 
+                = t.activity_log.truncate(80)
+              td
+                = radio_button_tag("activity_log",t.id, true, class: "radio_input")
+
+        = submit_tag "ADD" , :id=> "add_button" , :class=> "add_button_class"
+
+javascript:
+  $(document).ready(function(){
+  $('#add_button').click(function(){  
+  $('#userPreviousComments').modal('hide');
+  });
+  });
+
+

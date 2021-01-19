@@ -1,0 +1,31 @@
+div class="modal fade" id="editcustomer" tabindex="-1" role="dialog" aria-hidden="true"
+  div class="modal-dialog" role="document"
+   div class="modal-content" style="left:-240px;"
+     div class="modal-header" style="padding:0px;"
+       h1 Edit Customer User 
+       button type="button" class="close" data-dismiss="modal" aria-label="Close"
+         span aria-hidden="true" &times;
+         
+    
+     div class="modal-body"
+		= form_tag("/update_user_employment", :method => 'get') do
+			table
+				thead
+					tr
+						td Email
+						td First Name
+						td Last Name
+						td Employment Type
+						td Active?
+						td 
+				tbody
+					tr					 
+						td
+							= @user.email
+							= hidden_field_tag "user_id", @user.id	
+						td= text_field_tag :first_name, @user.first_name, class:"form-control"
+						td= text_field_tag :last_name, @user.last_name, class: "form-control"
+						td = select_tag :employment_type, options_from_collection_for_select(@employment_types, :id, :name, @user.employment_type),class: "form-control"
+						td = check_box_tag :is_active, true, @user.is_active?
+						td = submit_tag "Submit"
+						td = link_to "View Profile", employee_profile_path(user_id: @user.id), class: "orange-button small-2 cell"

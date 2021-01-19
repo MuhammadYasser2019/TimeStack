@@ -1,0 +1,12 @@
+=form_for @vacation_type do |f|
+	table
+		tr
+			th = f.label :vacation_title
+			th = f.label :active
+		tr
+			td = f.text_field :vacation_title
+			td = f.check_box :active
+	= f.hidden_field :customer_id, value: @customer_id
+	= f.submit
+
+

@@ -1,0 +1,216 @@
+<div class="container-fluid">
+  <div class="row front-row">
+    <div class="front_div">
+
+    </div>
+    <div data-border-width="3" id="front-div-underline" class="col-md-10"></div>
+    <div class="image-banner-text col-md-7" id="front-page-banner-text" style="position: relative; top: 0%; margin-top: -170px;">
+      <p class="inside-image-banner">A Time Tracking Solution<br>
+        For Your Business
+      </p>
+
+      <div data-border-width="3" id="text-partial-underline" class="col-md-5"></div>
+      <div id="under-image-banner-text" class="col-md-7">Independent of an employee's location,
+        stay organized and capture every billing hour with our cloud based application.
+        Deploy in minutes and accelerate your efficiency by light years.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row sub-heading">
+
+  </div>
+
+  <div class="row" id="gray-bar">
+    <h2 class="col-md-12 aboutus"><span class="about">ABOUT</span><span class="us">US</span></h2>
+    <br>
+    <div class="col-md-1"></div>
+    <div class="col-md-10" id="gray-paragraph">Early-stage consulting firms and other small business with fewer than 50 employees often
+      resort to manual time entry to track their employees’ work. ChronStack enables employers to
+      automate and streamline the time-entry and reporting process. The cloud-based platform
+      developed by ResouceStack, Inc. is simple to deploy for business owners and easy for their
+      employees to use. While ChronStack is feature rich, it is designed for small companies with
+      limited budgets who don’t need enterprise-scale software.</div>
+    <div class="col-md-1"></div>
+  </div>
+
+  <%= render partial: 'static_pages/login_form'%>
+  <!-- <div id ="player"></div> -->
+
+  <!-- TOP SQUARE ROW -->
+  <div class="row" id="top-square-row">
+
+      <a class="col-md-3 info-square" href="/features#features-div" style="background-image: linear-gradient(rgba(255, 223, 196, 0.35), rgba(123, 231, 216, 0.35)); margin-left:auto; margin-right: auto;">
+        <img class="icon" src="assets/stopwatch.png">
+        <div class="square-header">Simplified Time-Tracking</div>
+        <div class="square-list">
+          <ul>
+            <li>Fully automated platform</li>
+            <li>Easier and efficient entries</li>
+            <li>Supports custom time-sheet inputs</li>
+          </ul>
+        </div>
+      </a>
+
+  </div>
+  <!-- MIDDLE SQUARE ROW -->
+  <div class="row" id="middle-square-row">
+    <div class="col-md-10 row" style="margin-left:auto; margin-right: auto;">
+      <div class="col-md-4">
+        <a class="info-square" href="/features#features-div-3" style="background-image: linear-gradient(rgba(123, 231, 216, 0.35), rgba(0, 244, 210, 0.35));">
+          <img class="icon" src="assets/wrench-gear.png">
+          <div class="square-header">Configurable Management<br> Reports</div>
+          <div class="square-list" style="margin-top:2%;">
+            <ul>
+              <li>Clear, well-formatted reports</li>
+              <li>Manager’s can view time reporting according to their choice</li>
+            </ul>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <div class="info-square middle-square">
+          <div class="middle-square-header">
+            <div class="ourservices"><div class="about">OUR</div> <div class="us">SERVICES</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+          <a class="info-square" href="/features#features-div-2" style="background-image: linear-gradient(rgba(123, 231, 216, 0.35), rgba(0, 244, 210, 0.35));">
+            <img class="icon" src="assets/double-arrow.png" style="top: 25%;">
+            <div class="square-header">Flexible Time Entry System</div>
+            <div class="square-list">
+              <ul>
+                <li>Cloud solutions for projects/employees</li>
+                <li>Multiple entries under each day</li>
+                <li>Add additional entries on later date</li>
+              </ul>
+            </div>
+          </a>
+      </div>
+    </div>
+  </div>
+  <!-- BOTTOM SQUARE ROW -->
+  <div class="row" id="bottom-square-row">
+
+    <div class="col-md-3 info-square" style="background-image: linear-gradient(rgba(0, 244, 210, 0.35), rgb(0, 215, 179)); margin-left:auto; margin-right: auto;">
+      <img class="icon" src="assets/green-email.png" style="right: 7%;top: 20%;">
+      <div class="square-header">Email Notifications & Reminders</div>
+      <div class="square-list">
+        <ul>
+          <li>Notifies the user about pending/missed time sheets</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!--<div class="row" id="light-gray-bar">
+    <h2 class="col-md-12 aboutus"><span class="about">TOP</span><span class="us">CLIENTS</span></h2>
+    <br>
+    <div class="col-md-1"></div>
+
+    <div class="col-md-1"></div>
+  </div>-->
+
+  <br>
+
+  <div data-border-width="3" id="above-contact-underline" class="col-md-10"></div>
+  <div class="row" style="margin:0;">
+    <p class="inside-image-banner contact-header">Contact Us
+    </p>
+    <div class="col-md-2"></div>
+    <div class="col-md-8" id="contact-form">
+      <%= form_tag '/contact_form_mail', method: :post, remote: true do %>
+        <div class="row" style="width:100%;">
+          <%= label_tag "name", "Name", class: 'col-md-6 contact-label' %>
+          <%= label_tag "email", "Email", class: 'col-md-6 contact-label', style: 'padding-left: 7%;' %>
+        </div>
+        <div class="row contact-input-row">
+          <div class="col-md-6">
+            <%= text_field_tag :name, '', class: 'contact-input', style: 'float:left; margin-bottom: 10px;' %>
+          </div>
+          <div class="col-md-6">
+            <%= text_field_tag :email, '', class: 'contact-input', style: 'float: right; margin-bottom: 10px;' %>
+          </div>
+        </div>
+        <%= label_tag "message", "Message", class: 'contact-label' %>
+        <div class="row contact-input-row">
+          <div class="col-md-12">
+            <%= text_area_tag :message, '', class: 'contact-input-area' %>
+          </div>
+        </div>
+        <div class="row submit-button-row">
+          <%= submit_tag 'Submit', id: 'contact-button' %>
+          <%= flash[:notice] if flash[:notice] && !flash[:notice].include?("Signed") %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+  <div class="front-row full-width footer" style="height:200px; margin-top: 80px">
+    <div class="footer_section">
+      <div class="icons" style="width:100%; margin: 0;">
+        <a href="https://www.linkedin.com/company/1188919/" target="_blank" style="padding: 10px; float:left; margin-left: 25px;"><%= image_tag("linkedin.png", style: 'background-color: white; border-radius: 7px;') %></a>
+        <a href="https://www.facebook.com/Resource-Stack-Inc-269978683036453/" target="_blank" style="padding: 10px;float:left"><%= image_tag("facebook.png", style: 'background-color: white; border-radius: 7px;') %></a>
+        <a href="https://play.google.com/store/apps/details?id=com.resourcestack.chronstack" target="_blank" style="/* padding: 10px; */float: right;margin-right: 40px;margin-left: 20px;margin-top: -1px;"><%= image_tag("google.png", style: "width:150px;margin-top: 12px;") %></a>
+        <a href="https://apps.apple.com/app/id1514665138" target="_blank" style="float: right;"><%= image_tag("apple_store.png", style: "width:150px;") %></a>
+      </div>
+    </div>
+    <div class="row top-of-footer">
+      <div class="col-md-5" style="margin-left: auto;margin-right: auto;">
+        <div class="col-md-6" style="color: white; font-weight: bold; height:125px; font-size: 14px; text-align: right; float:left; padding:10px 15px; margin-top: -80px;">
+          Resource Stack, INC.</br>626 Grant Street Suite D</br>Herndon, VA 20170
+        </div>
+        <div class="col-md-6 address" style="color: white; height:80px; font-weight: bold;float:right;margin-top: -70px;">
+          <p style="text-align:left;">info@resourcestack.com</p>
+          <p style="color:white;text-align: left;">571-223-6741</p>
+        </div>
+      </div>
+    </div>
+    <p style="color: white; text-align:center;font-weight: bold;">&copy; 2017 Resource Stack, Inc. All Rights Reserved.</p>
+  </div>
+</div>
+<script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '500',
+          width: '100%',
+          videoId: 'P0FDBYw8R3Y',
+          playerVars: {rel:0, showinfo:0},
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>

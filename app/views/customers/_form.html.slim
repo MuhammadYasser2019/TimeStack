@@ -1,0 +1,276 @@
+ul(class="nav nav-tabs" id="customer-tabs" role="tablist" )
+ - unless current_page?(action: 'new')
+  li class="nav-item"
+  	a class="nav-link active" id="information-tab" aria-selected="true" role="tab" data-toggle="tab" href="#information" Customer Information
+  li class="nav-item"
+  	a class="nav-link" id="holidays-tab" aria-selected="true" role="tab" data-toggle="tab" href="#holidays" Holidays
+  li class="nav-item"
+  	a class="nav-link" id="employment_types-tab" aria-selected="true" role="tab" data-toggle="tab" href="#employment_types" Employment Types
+  li class="nav-item"
+    a class="nav-link" id="shifts-tab" aria-selected="true" role="tab" data-toggle="tab" href="#shifts" Shifts
+  li class="nav-item"
+  	a class="nav-link" id="customer_employees-tab" aria-selected="true" role="tab" data-toggle="tab" href="#customer_employees" Customer Employees
+  li class="nav-item"
+  	a class="nav-link" id="vacation_request-tab" aria-selected="true" role="tab" data-toggle="tab" href="#vacation_request" Vacation Request	
+  li class="nav-item"
+  	 a class="nav-link" id="user_invitation-tab" aria-selected="true" role="tab" data-toggle="tab" href="#user_invitation" Invite Users
+  li class="nav-item"
+  	 a class="nav-link" id="adhoc_pm-tab" aria-selected="true" role="tab" data-toggle="tab" href="#adhoc_pm" Assign Adhoc PM
+  li class="nav-item"
+  	 a class="nav-link" id="assign_pm-tab" aria-selected="true" role="tab" data-toggle="tab" href="#assign_pm" Projects
+  li class="nav-item"
+  	 a class="nav-link" id="vacation_types-tab" aria-selected="true" role="tab" data-toggle="tab" href="#vacation_types" Vacation Types
+  li class="nav-item"
+  	 a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" Configuration
+
+div.tab-content.white-background
+  div class="tab-pane fade show active" role="tabpanel" aria-labelledby="information-tab" id="information"
+  	div class= "display-text"
+    h1 Editing customer
+	= form_for @customer, remote: true do |f|
+	  - if @customer.errors.any?
+	    #error_explanation
+	      h2 = "#{pluralize(@customer.errors.count, "error")} prohibited this customer from being saved:"
+	      ul
+	        - @customer.errors.full_messages.each do |message|
+	          li = message
+	
+	  .field
+	    = f.label :name
+	    = f.text_field :name, class: 'form-control'
+	  .field
+	    = f.label :address
+	    = f.text_field :address, class: 'form-control'
+	  .field
+	    = f.label :city
+	    = f.text_field :city, class: 'form-control'
+	  .field
+	    = f.label :state
+	    = f.text_field :state, class: 'form-control'
+	  .field
+	    = f.label :zipcode
+	    = f.text_field :zipcode, class: 'form-control'
+	  .field
+	    = f.label :customer_manager
+	    = f.select(:user_id, options_from_collection_for_select(@users_eligible_to_be_manager, "id", "email", @customer.user_id), class: 'form-control form-control-lg')
+	  
+	  .actions = f.submit
+	  
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="holidays-tab" id="holidays"
+   - unless current_page?(action: 'new')
+	  h3.text-center Holidays Setup
+	  - if @holidays.any?
+	  	table
+	   		tr
+	   	  		th Name
+	        	th Date
+	        
+			= form_for @customer do |f|
+			    = f.collection_check_boxes(:holiday_ids, @holidays.all, :id, :name) do |h|
+				    tr
+				      	td = h.check_box
+			  			td = h.object.name
+			  			td = h.object.date.strftime("%m-%d-%y")
+			  			- if h.object.global != true
+			  		  		td = link_to "Delete Holiday", h.object, method: :delete, data: {confirm: 'Are you sure?'}, style: "color:#842929"
+		        		- else
+		        	  		.large-4.cell.text-center
+	        	tr
+	        		.actions = f.submit "Submit"
+	  - else 
+	    h3.text-center No Holidays created
+	  
+	
+		      
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="employment_types-tab" id="employment_types"
+			div(id="dynamic_employment")
+				== render partial: "employment_form"
+
+  div class="tab-pane fade" role="tabpane1" aria-labelledby="shifts-tab" id="shifts"
+   h3.text-center Shifts
+   div class="shift_list"
+    table class="shift_table"
+     thead
+      tr
+       th Name
+       th Start Time
+       th End Time
+       th Regular Hours
+       th Active
+       tbody
+         - Shift.where(customer_id: current_user.customer_id.to_i).each do |shift|
+          == render partial: "shift_form", locals: { customer_id: current_user.customer_id.to_i, shift: shift }
+    = link_to "Create Shift", new_shift_path(type: 'customer'), class: "orange-button", type: "button"
+	
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="customer_employees-tab" id="customer_employees"
+		div class = "disp-message"
+			div class="vacation-left-row" 
+				h3.text-center Customer Employees
+				input style="margin:2px; width:35%" class="form-control"  type="text" id="myNewInput1" onkeyup="myFunction()" placeholder="Search for names or emails.." 
+				table class="table" class="table" id="myNewTable" style="display:block;"
+					thead
+						tr 
+                          th User
+                          th Email
+                          th Action
+                          th Shared
+                          th Previous Week
+                          th PM
+                          th Proxy PM
+                          th Proxy CM
+                         
+					tbody  style="display:block;overflow-y:scroll;overflow-x:hidden;height:400px;"
+						-@users.each_with_index do |uop, i|
+							-if uop.customer_id == params[:customer_id].to_i
+								tr(id = "users_#{i}") 
+									td style="width: 163px;" = uop.first_name
+									td = link_to uop.email,  'javascript:void(0)',class: "open_edit_customer", style: "display:block;width: 137px;overflow-wrap: break-word;", id: "user_#{uop.id}"
+
+									td = button_tag "Remove", id: "#{i}_#{uop.id}", class: "button alert remove-user-from-customer orange-button", style: "width:138px;"
+									
+									td = link_to "Change Share Status", "javascript:void()", id: "c_id_#{params[:customer_id]}_u_id_#{uop.id}", class: "shared_user orange-button", style: "width: 140px;", type: "link", data: {toggle: "modal", target: "#sharedUser"}
+									td = link_to "Add Previous Week", 'javascript:void(0)',class: "open_previous_week orange-button", style: "width:142px;", id: "user_#{uop.id}"
+									td = check_box_tag "add_pm_role", uop.id, uop.pm?, class: "add_pm_role", style:"width: 25px;"
+									
+									td  = check_box_tag "add_pm_role", uop.id, uop.proxy?, class: "assign_proxy_role", style:"width: 35px;"
+									td  = check_box_tag "add_proxy_cm", uop.id, uop.proxy_cm?, class: "assign_cm_proxy_role", style:"width: 25px;"
+
+									
+									
+
+					div class = "modal" id="sharedUser" tabindex="-1" role="dialog" aria-hidden="true"
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="vacation_request-tab" id="vacation_request"
+		div class="vacation-right-row"
+			h3.text-center Vacation Request
+			table class="table"
+				thead
+					tr
+                      th Employee
+                      th Vacation Start Date
+                      th Vacation End Date
+                      th Approve
+                      th Reject
+                      th Approve Cancellation
+				tbody
+					- @vacation_requests.each_with_index do |vu, i|
+						tr id = "vacation_#{i}"
+							td = User.find(VacationRequest.find(vu.id).user_id).email.truncate(20)
+							td = vu.vacation_start_date.strftime('%Y-%m-%d')
+							td = vu.vacation_end_date.strftime('%Y-%m-%d')
+							- if vu.status == "CancelRequest"
+								td = link_to "Approve","/customers/approve_vacation/#{vu.id}/#{i}", class: "orange-button approve-vacation", type: "button", remote: true, :style=>"display:none;"
+							- else
+								td = link_to "Approve","/customers/approve_vacation/#{vu.id}/#{i}", class: "orange-button approve-vacation", type: "button", remote: true, :style=>"width:100%;"
+							td = link_to "Reject","/customers/reject_vacation/#{vu.id}/#{i}", class: "orange-button reject-vacation", type: "button", remote: true, :style=>"width:100%;"
+							- if vu.status == "CancelRequest"
+								td = link_to "Approve Cancel","/customers/approve_cancel_request/#{vu.id}/#{i}", class: "orange-button", type: "button", remote: true, :style=>"width:100%;"
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="user_invitation-tab" id="user_invitation"
+		  h1.left_row Invite Users	
+		  table class="left-row table"
+			thead
+			tbody
+				tr
+                  th
+                    = form_tag(action: :invite_to_project, html: {class: 'form-inline'}) do
+                      = label_tag "Email",nil, :style=>"text-align: left;"
+                      = text_field_tag :email, nil, placeholder: 'Email', label: false, class: "invitation_email form-control", required: true
+                      = label_tag "Select Start Date",nil, :style=>"text-align: left;"
+                      = text_field_tag 'invite_start_date', params[:invite_start_date], {required: "required", :placeholder =>  "yyyy/mm/dd", class:" datepicker form-control"}
+                      = label_tag "Employment Type",nil, :style=>"text-align: left;"
+                      = select_tag :employment_type, options_from_collection_for_select(@employment_type,:id, :name ), include_blank: "Select Employment Type", required: "required", class:"form-control"
+                      = label_tag "Project",nil, :style=>"text-align: left;"
+                      = select_tag :project_id, options_from_collection_for_select(@projects, :id, :name), required: true, style: "margin-top:5px;", class:"form-control"
+                      = hidden_field_tag :invited_by_id, current_user.id
+                      = hidden_field_tag :customer_id, @customer.id
+                      .grid-x(style="margin-top: 10px;margin-left: 10px;")
+                          .small-8.columns(style="padding-left: 0;") = label_tag "Project Manager?"
+                          .small-2.columns = check_box_tag :project_manager
+                      /.grid-x(style="margin-top: 10px;margin-left: 10px;")
+                          .small-8.columns(style="padding-left: 0;") = label_tag "Shared?"
+                          .small-2.columns = check_box_tag :shared_user /!
+                      .actions
+                        = submit_tag 'Invite Users', class: 'btn-primary invite_user_button'
+	  
+		  h1.pending-right-row Pending Users
+		  table class="right-row table"
+			thead
+			  tr
+			    th User Email
+			    th Invitation Sent At
+			    th
+	
+	
+			tbody
+			  - @invited_users.each do |user|
+			    - if user.invitation_accepted_at.nil?
+			      tr
+			        td
+			          = link_to user.email, "javascript:void()", id: "pending_email_#{user.id}", class: "tiny secondary customers-pending-email", type: "link", data: {toggle: "modal", target: "#customersPendingEmail"}
+			        td
+			          = user.invitation_sent_at
+			        td
+			          = button_to "Resend Invitation","/invitation/resend_invite?email=#{user.email}&invited_by_id=#{user.invited_by_id}", class: "secondary tiny"
+		  div id="customersPendingEmail" class="modal" aria-hidden="true" role="dialog" tabindex="-1" 
+	
+  div style="clear:both;"
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="adhoc_pm-tab" id="adhoc_pm"
+			 div(id="dynamic_adhoc_update")
+				== render partial: 'adhoc_pm_form'
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="assign_pm-tab" id="assign_pm"
+			 div(id="dynamic_assign_pm")
+				== render partial: 'assign_pm_form'
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="vacation_types-tab" id="vacation_types"
+			 div(id="dynamic_add_vacation_types")
+			 	== render partial: 'add_vacation_types'
+
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="configuration-tab" id="configuration"
+			 div(id="dynamic_add_configuration")
+			 	== render partial: 'add_configuration'
+ 			 	
+  - if !current_user.default_project? && current_user.parent_user_id.blank?
+  	== render partial: 'users/default_projects'
+
+  - if @announcement.present? && !current_user.user_announcements.where(announcement_id: @announcement.id).present?
+	==render partial: 'announcements/new_announcement'
+div id = "add_previous_week"
+
+div id= "edit_customer_form"
+
+coffee:
+	$('.datepicker').datepicker({
+    	autoclose: true,
+    	format: "yyyy-mm-dd"
+    })
+
+javascript:
+  function myFunction() {
+  // Declare variables
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myNewInput1");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myNewTable");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    td1 = tr[i].getElementsByTagName("td")[1];
+    if (td || td1) {
+      txtValue = td.textContent || td.innerHTML;
+      txtValue1 =td1.textContent || td1.innerHTML;
+      if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue1.toUpperCase().indexOf(filter)> -1){
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+  }
+
+  
+				

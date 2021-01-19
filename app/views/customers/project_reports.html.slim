@@ -1,0 +1,90 @@
+script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"
+link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"
+
+- if (current_user.cm? && @customer.user_id == current_user.id) || (current_user.proxy_cm? && @customer.id == current_user.customer_id)
+    h1#customer_id Project Reports for Customer 
+    = form_tag "/customers/#{params[:id]}/project_reports", method: :get
+      table.table
+        thead
+          tr
+            th Project
+            th Shift
+            th Period Start Date
+            th Period End Date
+            th Report Period
+            th Exclude Inactive projects
+            th
+            th
+
+          tbody
+            tr
+              td = select_tag('project_id', options_for_select(@projects.collect{ |p| [p.name, p.id]}, params[:project_id]) , multiple: true, id: 'project-select', class: 'form-control selectpicker show-menu-arrow', 'data-live-search': 'true')
+              td = select_tag('shift', options_for_select(@shifts.collect{ |p| [p.name, p.id]}, params[:shift]), include_blank: true, class: "form-control")
+              td = text_field_tag 'proj_report_start_date', params[:proj_report_start_date].present? ? params[:proj_report_start_date] : Date.today.beginning_of_week, {required: "required", style: 'margin: 0;', class: "datepicker form-control"}
+              
+              = hidden_field_tag 'id', @customer.id
+              td = text_field_tag 'proj_report_end_date', params[:proj_report_end_date].present? ? params[:proj_report_end_date] : Date.today.end_of_week, {required: "required", style: 'margin: 0;', class: "datepicker form-control"}
+
+              td = select_tag "current_month", options_for_select([[ "Current Month", "current_month"],["Previous Month", "last_month"], ["Current Week", "current_week"]], params["current_month"]), prompt: "Select month"
+              
+              td = check_box_tag "exclude_inactive_projects", true, params["exclude_inactive_projects"]
+              td = button_tag "Show Report", class:"orange-button", style: "width: 84px"
+          
+    table id="show_project_reports" class="display" width="100%" cellspacing="0"
+      thead
+        tr
+          th Project Details
+          th Shifts
+          th Task Name
+          th Hours Approved
+          th Hours Submitted
+      tbody
+      	- @project_report.each do |project, task_hash|
+      		- project = Project.find_by_id project
+            - users = project.users.active_users.count
+      		- pm = User.find_by_id project.user_id
+      		- proj_arr = []
+    		- task_hash.each do |t, shift_hash|
+    			- task = Task.find t
+    			- shift_hash.each do |shift, time|
+			        - shift_name = ProjectShift.find shift
+                    = hidden_field_tag "project_id", project.id
+                    = hidden_field_tag "shift_id", shift_name.id
+                    = hidden_field_tag "task_id", task.id
+    				tr
+    					td
+    				        - if !proj_arr.include?(project)
+    				            = project.name
+                                = ", "
+                                = link_to "#{users}", 'javascript:void(0)', class: "users-on-project", id: "project_#{project.id}"
+                                = ", "
+                                = link_to "#{pm.name}", 'javascript:void(0)', class: "project_for_pm", id: "pm_#{pm.id}"
+    				    td = shift_name.shift.name
+    				    td = task.description
+                        - if time[0].present?
+                            td = link_to time[0], 'javascript:void(0)',class: "hours-approved",id: "approved_project_#{project.id}_shift_#{shift_name.id}_task_#{task.id}"
+                        - else
+                            td= link_to "0.0", 'javascript:void(0)',class: "hours-approved",id: "approved_project_#{project.id}_shift_#{shift_name.id}_task_#{task.id}"
+
+                        - if time[1].present?
+                            td = link_to "#{time[1]}", 'javascript:void(0)',class: "hours-approved",id: "submitted_project_#{project.id}_shift_#{shift_name.id}_task_#{task.id}"
+                        - else
+                            td = link_to "0.0", 'javascript:void(0)',class: "hours-approved",id: "submitted_project_#{project.id}_shift_#{shift_name.id}_task_#{task.id}"               
+                    - proj_arr << project
+        br
+
+    div id = "hours_approved"
+
+    div id = "hours_submitted"
+
+    div id = "users_on_project"
+    
+    div id = "show_pm_projects"
+-else
+    h1 You are not allowed to access this page.
+
+coffee:
+  $('.datepicker').datepicker({
+      autoclose: true,
+      format: "yyyy-mm-dd"
+    })

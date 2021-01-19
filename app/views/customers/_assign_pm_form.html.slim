@@ -1,0 +1,23 @@
+h1 Change Project Manager
+= hidden_field_tag 'customer_id', @customer.id
+table class="table"
+	thead
+		tr
+			th Project
+			th Current Project Manager
+			th New Project Manager
+			th 
+	- @projects.each do |p|
+		- user = User.where(id: p.user_id).first
+
+		tbody
+			tr id= "#{p.id}"
+				td = p.name 
+						
+				td = user ? user.email : ''
+				td
+					= select_tag "pm_user_id_#{p.id}", options_from_collection_for_select(@user_with_pm_role, "id", "email"), include_blank: true, class: "pm_user_id form-control"
+					= hidden_field_tag "pm_user_id_#{p.id}", ''
+				
+				td
+					= link_to "Change", '', class: "orange-button assign_pm"

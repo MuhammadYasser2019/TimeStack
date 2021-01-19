@@ -1,0 +1,22 @@
+<%= form_for @holiday do |f| %>
+	<div class="form-group">
+		<%= f.label :name %>
+		<%= f.text_field :name, class: "form-control"  %>
+	</div>
+	<div class="form-group">
+		<%= f.label "Date Of Holiday This Year"%>
+		<%= f.date_field :date, required: "required", class: "form-control"  %>
+	</div>
+	<% if current_user.admin && @customer == true %>
+		<div class="form-check form-check-inline">
+	  		<%= f.label "Global Holiday?" %>
+		<%= f.check_box :global, class: "form-control"  %></div>
+		
+	  </div>
+	<% elsif current_user.admin && @customer == false %>
+		<%= f.hidden_field :global, value: true %>
+	<% else %>
+		<%= f.hidden_field :global, value: false %>
+	<% end %>
+	<%= f.submit "Submit Holiday", class: "button small" %>
+<% end %>

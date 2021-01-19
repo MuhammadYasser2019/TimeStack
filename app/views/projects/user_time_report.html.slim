@@ -1,0 +1,19 @@
+
+h1 class="row" #{@user.first_name}; #{@user.last_name}'s Time sheets
+
+table class="border"
+  thead
+    tr
+      th Start date
+      th End date
+      th Status
+      th Report
+
+
+  tbody
+    - @weeks.each do |week|
+      tr
+        td = week.start_date.strftime('%Y-%m-%d')
+        td = week.end_date.strftime('%Y-%m-%d')
+        td = find_status(week)
+        td = link_to "Report", "/weeks/#{week.id}/report" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")

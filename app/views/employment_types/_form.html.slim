@@ -1,0 +1,7 @@
+=form_for @employment_type do |f|
+	div.form-group
+		= f.label :name
+		= f.text_field :name, class:"form-control", required: true
+		= f.hidden_field :customer_id, value: @customer_id
+	= f.submit "Create Employment Type"
+= link_to 'Back', customers_path, class: "btn"

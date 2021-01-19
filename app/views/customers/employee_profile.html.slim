@@ -1,0 +1,61 @@
+div.report
+	h4 User Details
+	table 
+	tr
+		td= image_tag  @user.image.url , style: "height: 100px; width:100px; padding:0px 0px 20px 0px;" if @user.image.present?
+    h5 style="font-size:16px" Personal Information
+	table  class ="table" style="width:70%; padding:0px 0px 0px 30px;"
+			tr
+				
+				th First Name
+                td= @user.first_name
+            tr      
+				th Last Name
+				td= @user.last_name
+			tr
+				th Emergency Contact
+				td= @user.emergency_contact
+			tr
+				th Parent User
+				td
+					-if current_user.parent.present?
+						= @user.parent.name
+			tr
+				th Employment Type
+				td = EmploymentType.find(@user.employment_type).name
+			tr
+				th User Employer
+				td
+					-if !@user.customer_id.nil?
+						= Customer.find(@user.customer_id).name
+			tr
+				th Login as Parent
+				td
+					-if current_user.parent.present?
+						= link_to "Login as parent", "/login_user/#{current_user.parent.id}"
+
+	h5 style="font-size:16px" Project Details
+	table class ="table" style="width:70%; padding:0px 0px 0px 30px;"
+		- @user.projects.uniq.each_with_index do |project,index|
+				
+			tr
+        			- if index%2==0
+        				th Project Name
+             			td = project.name
+        			- else 
+        				th Project Name
+             			td = project.name
+
+    h5 style="font-size:16px" Leave Balance
+    table class ="table" style="width:70%; padding:0px 0px 0px 30px;"
+    	-if !@user_hash[@user.email].nil?
+            - @user_hash[@user.email].each do |id, hrs|
+	            tr
+	            	- vt = VacationType.find id
+	           		td = "#{vt.vacation_title}"
+	           		td = "#{hrs}"
+
+
+           
+
+	    	

@@ -1,0 +1,25 @@
+- if (current_user.cm? && @customer.user_id == current_user.id) || (current_user.proxy_cm? && @customer.id == current_user.customer_id)
+  = hidden_field_tag :customer_id, "#{Customer.find(@customer_id).name}"
+  h1#customer_id{class = "#{Customer.find(@customer_id).name}"} Reports for Customer 
+  = form_tag "/analytics/#{@customer_id}", method: :post
+  table 
+    thead
+      tr
+        th Period Start Date
+        th Period End Date
+        th Date Range
+        th Exclude Pending Users
+        th
+
+    tbody
+      tr
+        td = date_field_tag 'analytics_report_start_date', params[:analytics_report_start_date].present? ? params[:analytics_report_start_date] : Date.today.beginning_of_week, {required: "required", style: 'margin: 0;'}
+        
+        //= hidden_field_tag 'customer_id', @customer_id
+        td = date_field_tag 'analytics_report_end_date', params[:analytics_report_end_date].present? ? params[:analytics_report_end_date] : Date.today.end_of_week, {required: "required", style: 'margin: 0;'}
+        td = select_tag('Date Range', options_for_select(["Current Week", "Current Month","Previous Month", "Year to Date", "Previous Year"]),include_blank: true, id: 'date_range')
+        td = check_box_tag "exclude_pending_users", true, params["exclude_pending_users"]
+
+        td = button_tag "Show Analytical Reports", class:"orange-button"
+-else
+  h1 You are not allowed to access this page.

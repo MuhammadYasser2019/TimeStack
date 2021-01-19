@@ -1,0 +1,20 @@
+p#notice = notice
+
+p
+  strong User:
+  = User.find(@holiday_exception.user_id).email
+p
+  strong Project:
+  = Project.find(@holiday_exception.project_id).name
+p
+  strong Customer:
+  = Customer.find(@holiday_exception.customer_id).name
+p
+  strong Holiday:
+  - Holiday.find(@holiday_exception.holiday_ids).each do |ho|
+  		= ho.name.split(" , ")
+  end
+
+= link_to 'Edit', edit_holiday_exception_path(@holiday_exception)
+'|
+= link_to 'Back', edit_holiday_exception_path(@holiday_exception)

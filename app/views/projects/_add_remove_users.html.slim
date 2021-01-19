@@ -1,0 +1,52 @@
+div class="add_remove_user"
+	= form_tag add_multiple_users_to_project_path, remote: true do 
+		= hidden_field_tag "project_id", @project.id
+		div class="add_remove_left_row"				
+			h1 Available Users
+			table#myTable
+				tr
+					input#myInput placeholder="Search.." class="form-control" type="text"
+				- (@available_users- @project.users.active_users).each_with_index do |uop,i|
+				      tr
+				      	td
+				          = check_box_tag "add_user_id_#{i}", uop.id, false
+				         
+				        td
+				          = uop.email
+
+	    div class="add_user_center right-arrow"
+	    	    
+	  	  	= submit_tag("Add user", "data-toggle": "modal", "data-target": "#shift-modal")
+
+	= form_tag remove_multiple_users_from_project_path, remote: true do
+		= hidden_field_tag "project_id", @project.id
+
+		div class="add_remove_right_row"
+			h1 Users on the Project
+			table
+			  - @project.users.active_users.each_with_index do |uop,i|
+			   
+			      tr
+			      	td
+			          = check_box_tag "remove_user_id_#{i}", uop.id, false , class: "recommend"
+			         
+			        td  id="show_#{uop.id}"
+			          = uop.email
+		
+
+	    div class="remove_user_center left-arrow"
+	  	  	= submit_tag "Remove user"
+
+div class="modal" id="shift-modal" tabindex="-1" role="dialog" aria-labelledby="shift-modalLabel" aria-hidden="true"
+
+div style="clear:both;"
+
+
+div class="pm_actions" style="display:none;padding-top: 10px;width: 28%;position: relative;left: 65%;"
+	button.orange-button.recommend-button[type="button" data-toggle="modal" data-target="#myRecommendationModel" style="width:100px;"] 
+		| Recommend
+	button.orange-button.disciplinary-button[type="button" data-toggle="modal" data-target="#disciplinaryModel" style="width:100px;"] 
+		| Disciplinary  
+
+= render partial: 'recommendation'
+= render partial: 'disciplinary'

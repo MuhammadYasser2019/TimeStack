@@ -1,0 +1,46 @@
+div class="modal-dialog" role="document" style="position:fixed;left:115px;"
+  div.modal-content
+    div.modal-header
+      h5 class="modal-title" style="text-align:center;" Add New Expense
+      button.close type="button" aria-label="Close" data-dismiss="modal"  
+          span aria-hidden="true"  &times;
+    div.modal-body
+		= form_tag expense_records_path, :multipart => true, method: :post, remote: true, authenticity_token: true do 
+			= hidden_field_tag :week_id, @week.id
+			= hidden_field_tag :expense_id, (@expense.present? && @expense.id.present?) ? @expense.id : ""
+			table class="table"
+				thead
+					tr
+						th Expense Type
+						th Date
+						th Project
+						th Description
+						th Amount
+						th Attachment
+						th
+				tbody
+					tr
+
+						td = select_tag :expense_type,options_for_select(::Week::EXPENSE_TYPE,@expense.present? ? @expense.expense_type : '' ), class:'form-control'
+						td = select_tag :date, options_for_select(@week_dates, @expense.present? ? @expense.date : ''), class: 'form-control'
+						td = select_tag :project_id, options_for_select(@projects.pluck(:name), @expense.present? ? @expense.project_id : ''), class: 'form-control'
+						td = text_field_tag :description ,((@expense.present? && @expense.description.present?) ? @expense.description : ""), class: 'form-control'
+						td = number_field_tag :amount,((@expense.present? && @expense.amount.present?) ? @expense.amount : "0"), class: "form-control"
+						td 
+							= label_tag(:attachment, "Attach Bills", for: "attachment-upload")
+							= file_field_tag(:attachment,:multiple => true, name: 'attachment[]',id: "attachment-upload")
+						
+						td = submit_tag "Save Expense"
+
+	-if !@expenseattachment.nil?
+		table
+		  thead
+		    tr
+		      td Attached File     
+		      td     
+		    tbody
+		      - @expenseattachment.each do |at|            
+	            tr
+	              td = link_to "#{at.attachment_identifier} on #{at.created_at.to_date}", at.attachment.url, :target => "_blank" if at.attachment_identifier.present?
+	              td =button_tag "Delete", id: "delete_#{at.expense_record_id}_#{at.id}", class: "button orange-button btn alert delete_attachment" 
+

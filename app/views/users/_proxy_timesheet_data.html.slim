@@ -1,0 +1,15 @@
+- if @consultant.present?
+  - user = @consultant
+  - count = @count 
+td = consultant_name(user.first_name, user.last_name, user.email)
+td = select_tag "task_id_#{user.id}_#{count}", options_for_select(@p.tasks.collect{ |u| [u.description, u.id]}, params["task_id_#{user.id}"]), include_blank: true, style:"width:100px;"
+- @dates_array.each_with_index do |d, i|
+	- if check_for_vacation(d.to_date, user.id) || d.to_date.wday == 6 || d.to_date.wday == 0
+		td{style="background:#D3D3D3;"}
+			= text_field_tag "hours_#{user.id}_#{count}_#{d}", '', readonly: check_for_vacation(d.to_date, user.id)
+	- else
+		td = text_field_tag "hours_#{user.id}_#{count}_#{d}", '', readonly: check_for_vacation(d.to_date, user.id)
+	
+
+end
+td =link_to "Add row", add_proxy_row_path(count: count, user_id: user.id, proj_report_start_date: params[:proj_report_start_date], proj_report_end_date: params[:proj_report_end_date]), remote: true

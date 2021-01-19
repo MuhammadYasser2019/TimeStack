@@ -1,0 +1,52 @@
+- if (current_user.cm? && @customer.user_id == current_user.id) || (current_user.proxy_cm? && @customer.id == current_user.customer_id)
+  = hidden_field_tag :customer_id, "#{Customer.find(@customer_id).name}"
+  h1#customer_id{class = "#{Customer.find(@customer_id).name}"} Reports for Customer 
+  = form_tag "/customers/#{params[:id]}/inventory_reports", method: :get
+  table 
+    thead
+      tr
+        th Project
+        th Consultant Name
+        th Period Start Date
+        th Period End Date
+        th Current Month
+        th Type
+        th
+
+    tbody
+      tr
+        td = select_tag('project', options_for_select(@projects.collect{ |p| [p.name, p.id]}, params[:project]), include_blank: true, multiple: true, id: 'project-select', class: 'selectpicker show-menu-arrow', 'data-live-search': 'true')
+        td = select_tag('user', options_for_select(@users.collect{ |u| [consultant_name(u.first_name, u.last_name, u.email), u.id]}, params[:user]), include_blank: true, multiple: true, class: 'selectpicker show-menu-arrow', 'data-live-search': 'true')
+        td = text_field_tag 'proj_report_start_date', params[:proj_report_start_date].present? ? params[:proj_report_start_date] : Date.today.beginning_of_week, {required: "required", style: 'margin: 0;', class: "datepicker"}
+        
+        = hidden_field_tag 'id', @customer_id
+        td = text_field_tag 'proj_report_end_date', params[:proj_report_end_date].present? ? params[:proj_report_end_date] : Date.today.end_of_week, {required: "required", style: 'margin: 0;', class: "datepicker"}
+
+        td = select_tag "current_month", options_for_select([[ "Current Month", "current_month"],["Previous Month", "last_month"]], params["current_month"]), prompt: "Select month"
+        td = select_tag "submitted_type", options_for_select([[ "Submitted", "submitted"],["Not-Submitted", "not_submitted"]], params["submitted"]), prompt: "Select Type"
+        td = button_tag "Show Report", class:"orange-button"
+  table id='inventory_reports' class="display" width="100%" cellspacing="0"
+    thead
+      tr
+        th Employee Name
+        th Equipment Name
+        th Equipment Number
+        th Issued Date
+        th Submitted Date
+    tbody
+      - @all_inventories_hash.each do |i|
+        tr
+          td= i["Consultant Name"] 
+          td= i["Equipment Name"]
+          td= i["Equipment Number"]
+          td= i["Issue Date"].strftime("%m-%e-%Y") if i["Issue Date"].present?
+          td= i["Submitted Date"].strftime("%m-%e-%Y") if i["Submitted Date"].present? 
+-else
+  h1 You are not allowed to access this page.
+
+
+coffee:
+  $('.datepicker').datepicker({
+      autoclose: true,
+      format: "yyyy-mm-dd"
+    })

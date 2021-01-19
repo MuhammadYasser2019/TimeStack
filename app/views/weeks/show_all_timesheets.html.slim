@@ -1,0 +1,52 @@
+.white-background
+	.grid-x
+	= form_tag approve_all_path, id: "approve_all_form", method: :post, remote: true
+		div id= "show_hide" style="display: block;"
+			h1 Time Sheets Submitted for Approval
+			table class="approve-table"style="width:90%;"
+				thead
+				  tr
+				  	th Project
+				    th Employee
+				    th Start date
+				    th End date
+				    th Hours
+				    th
+				    th
+				    th
+				    th
+
+				tbody
+					-i = 0
+				  	- @projects.each do |p|
+				  		
+						- @applicable_week = Week.joins(:time_entries).where("(weeks.status_id = ? or weeks.status_id = ?) and time_entries.project_id= ? and time_entries.status_id=?", "2", "4",p.id,"2").select(:id, :user_id, :start_date, :end_date , :comments).distinct
+				  		- @applicable_week.each do |at|
+						    tr id = "#{i}"
+						    	td
+						        	= p.name
+						      	
+						      	td
+						        	= hidden_field_tag "week_id_#{i}", at.id
+						        	= hidden_field_tag "user_id_#{i}", at.user_id
+						        	= User.find(at.user_id).name
+						      	td
+						        	= at.start_date.strftime('%Y-%m-%d')
+						      	td
+						        	= at.end_date.strftime('%Y-%m-%d')
+						      	td
+						      		= hidden_field_tag "project_id_#{i}", p.id
+						        	= button_tag TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours), id: "show_hours_#{i}", class: "tiny secondary show-hours", type: "button", data: {toggle: "showHours", target: "#showHours"}
+
+						      	td = link_to "Approve","/projects/#{p.id}/approve/#{at.id}/#{i}", class: "approve-class orange-button", type: "button", remote: true
+						      	
+						      	/td = link_to "Reject", "/projects/reject/#{at.id}", class: "reject_class", id:"time_reject_#{i}" , remote: true
+						      	td
+						        	= button_tag "Reject", class: "button alert reject_class", id:"time_reject_#{i}" , type: "button", remote: true
+						      	td
+						        	= button_tag "Add Comment to Reject", class: "add_comment secondary tiny", id: "add_comment_#{i}", type: "button"
+						      	td
+						        	= text_area_tag "comments", at.comments, size: "35x3.5", class: "comment", id: "comment_text_#{i}"
+						    - i +=1	
+				    div class = "approval-class"
+					 div(id="showHours" class="reveal" aria-hidden="true" role="dialog" data-reveal)

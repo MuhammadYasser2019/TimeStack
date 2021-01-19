@@ -1,0 +1,16 @@
+tr
+  td = shift.name
+  td = shift.start_time
+  td = shift.end_time
+  td = shift.regular_hours
+  td = project_shift.location
+  td = project_shift.capacity
+  - if project_shift.shift_supervisor_id
+    - shift_supervisor = User.find(project_shift.shift_supervisor_id)
+    - if shift_supervisor.first_name && shift_supervisor.last_name
+      td = shift_supervisor.first_name + ' ' + shift_supervisor.last_name
+    - else
+      td = shift_supervisor.email
+  - else
+   td = "No Supervisor Assigned"
+  td = link_to "Edit Shift", edit_project_shift_path(project_shift.id, type: 'project', project_id: project.id), class: "orange-button", type: "button"

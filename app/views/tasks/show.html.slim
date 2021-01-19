@@ -1,0 +1,15 @@
+p#notice = notice
+
+p
+  strong Code:
+  = @task.code
+p
+  strong Description:
+  = @task.description
+p
+  strong Project:
+  = @task.project
+
+= link_to 'Edit', edit_task_path(@task)
+'|
+= link_to 'Back', tasks_path

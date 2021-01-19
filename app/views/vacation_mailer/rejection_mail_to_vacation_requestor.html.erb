@@ -1,0 +1,6 @@
+<% user = User.find_by_email(@user_email) %>
+<% mngr = User.find_by_email(@customer_manager_email)%>
+
+<%= user.first_name%>
+
+<%= mngr.first_name%> <%= mngr.last_name%> has rejected your vacation request from <%= @vacation_start_date.strftime('%Y-%m-%d')%> to <%= @vacation_end_date.strftime('%Y-%m-%d')%>

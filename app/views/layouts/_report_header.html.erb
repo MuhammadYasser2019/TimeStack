@@ -1,0 +1,28 @@
+<table>
+	<tr>
+		<td>		
+			<% if current_user.nil?%>
+	      <a href="/", class="header_logo"><%= image_tag "RSILogo.png" %></a>
+	    <% else %> 
+	    	<% if !current_user.customer_id.nil? %>
+
+		    	<% customer = Customer.find(current_user.customer_id)%>
+		      <% if !customer.logo.blank?%>
+		        <a href="/", class="header_logo"><%= image_tag "#{customer.logo}" %></a>
+		      <% else %>
+		      	<a href="/", class="header_logo"><%= image_tag "RSILogo.png" %></a>
+		      <% end %>
+		    <% else %>
+		    	  <a href="/", class="header_logo"><%= image_tag "RSILogo.png" %></a>
+	    	<% end %>
+	    <% end %>
+		</td>
+		<td>
+		<% if !current_user.nil? %>
+			<%= link_to current_user.email, "/user_profile" %>
+		<% else %>
+			<%= link_to "Sign In", "/users/sign_in" %>
+		<% end %>
+		</td>
+	</tr>
+</table>

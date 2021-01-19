@@ -1,0 +1,33 @@
+
+== render 'form'
+div(style="width: 90%; margin-left: 7%;")
+		span class="badge"
+			= link_to 'Set Theme', "/customers/#{@customer.id}/theme", class: "orange-button small-2 cell", style: "margin: 5px;"	   
+		span class="badge"
+			= link_to 'Report', "/analytics/#{@customer.id}", id: 'show_report', class: 'orange-button small-2 cell', style: "margin: 5px;"
+        span class="badge"
+            = link_to 'Shift Report', "/cm_shift_report?id=#{@customer.id}&type=customer", :method => :get, class: "center orange-button large-3 cell", style: "margin: 5px;"
+		span class="badge"
+			= link_to "Manage Projects", "projects",  class: "orange-button small-2 cell", style: "margin: 5px;"
+		- if current_user.proxy
+			span class="badge"
+		  		= link_to "Manage Proxy Projects", "/users/#{current_user.id}/proxies", class: "orange-button small-2 cell", style: "margin: 5px;"
+		span class="badge"
+			= link_to "Vacation Requests", "/vacation_request", class: "orange-button small-2 cell", style: "margin: 5px;"
+		span class="badge"
+    		= link_to "Shift Change Request", "/shift_change_request", class: "orange-button small-2 cell", style: "margin: 5px;"
+		- if user_have_adhoc_permission(current_user)
+			span class="badge"
+				= link_to "Adhoc PM", projects_path(adhoc: true), class: "orange-button small-2 cell", style: "margin: 5px;"
+		span class="badge"
+			= link_to "User Report", "/show_user_reports/#{current_user.id}", class: "orange-button small-2 cell", style: "margin: 5px;"
+		span class="badge"
+			= link_to "Reset Timesheet", "reset_timesheet/#{@customer.id}", class: "orange-button small-2 cell", style: "margin: 5px;"         
+	    br
+    
+			
+			
+
+
+
+

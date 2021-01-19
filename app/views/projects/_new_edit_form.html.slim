@@ -1,0 +1,47 @@
+
+== render 'form'
+div[style="width: 90%; margin-left: 7%;"]
+  - if @project.user_id == current_user.id || !user_have_adhoc_permission(current_user)
+    span class="badge"
+      = link_to 'Report', "/show_project_reports?id=#{@project.id}", :method => :get,class: "center orange-button large-3 cell", style: "margin: 5px;"
+    span class="badge"
+      = link_to 'Shift Report', "/show_shift_reports?id=#{@project.id}&type=project", :method => :get, class: "center orange-button large-3 cell", style: "margin: 5px;"
+  - if user_have_adhoc_permission(current_user)
+    span class="badge"
+      = link_to "Adhoc PM", projects_path(adhoc: true), class: "orange-button large-3 cell", style: "margin: 5px;"
+  - if @project.inactive == false || @project.inactive == nil
+    span class="badge"
+      = link_to 'Deactivate', "/projects/#{@project.id}/deactivate_project", :method => :post, class: "center orange-button large-3 cell", style: "margin: 5px;"
+  - elsif @project.inactive == true
+    span class="badge"  
+      = link_to 'Reactivate', "/projects/#{@project.id}/reactivate_project", :method => :post, class: "center orange-button large-3 cell", style: "margin: 5px;"
+  /- if current_user.admin?
+  /  = link_to "Admin", "/admin", class: "orange-button large-3 cell", style: "margin: 5px;"
+  - if user_represents_customers(current_user) || (can? :manage, Customer)
+    span class="badge"
+      = link_to "Manage Customers", "customers", class: "orange-button large-3 cell", style: "margin: 5px;" 
+  span class="badge"
+    = link_to "Vacation Request", "/vacation_request", class: "orange-button large-3 cell", 
+    style: "margin: 5px;"
+  span class="badge"
+    = link_to "Shift Change Request", "/shift_change_request", class: "orange-button large-3 cell", 
+    style: "margin: 5px;"
+  span class="badge"
+    = link_to 'Inventory Report', "/inventory_and_equipment_reports?id=#{@project.id}", :method => :get,class: "center orange-button large-3 cell", style: "margin: 5px;" 
+  span class="badge"
+    = link_to 'Send Email', send_project_users_email_path(project_id: @project.id), :method => :get, class: "center orange-button large-3 cell",style: "margin: 5px;" 
+  
+  - if current_user.proxy
+    span class="badge"
+      = link_to "Manage Proxy Projects", "/users/#{current_user.id}/proxies", class: "orange-button large-3 cell", style: "margin: 5px;" 
+  span class="badge"
+    = link_to "User Report", "/show_user_reports/#{current_user.id}", class: "orange-button large-3 cell", style: "margin: 5px;"
+
+      
+      
+
+
+
+
+
+

@@ -1,0 +1,8 @@
+$('#all_projects').html("<%= j render(:partial => 'projects/all_projects', locals: {projects: @projectsss}) %>")
+var p_id = '<%= @projectsss.first.id %>'
+$.ajax({
+	type: 'get',
+	url: '/dynamic_project_update',
+    data: {project_id: p_id,adhoc: $('#adhoc').val()}
+});
+    

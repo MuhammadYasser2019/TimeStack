@@ -1,0 +1,84 @@
+
+== render 'form'
+- if !user_have_adhoc_permission(current_user)
+  .white-background
+     h1 Pending Users
+	table
+	  thead
+	    tr
+	      th
+		h4.center Invite Users
+	  tbody
+	    tr
+	      th
+					= simple_form_for(User.new, url: user_invitation_path, html: {class: 'form-inline'}) do |f|
+						= f.input :email, placeholder: 'Email', label: "Email", class: "invitation_email"
+						= f.hidden_field :project_id, value: @project_id
+						= f.hidden_field :invited_by_id, value:  @current_user_id
+						= f.label :body, label: 'Employment Type' 
+						= f.select :employment_type, options_from_collection_for_select(EmploymentType.all, :id, :name)
+						.actions = f.button :submit, 'Invite Users', class: 'btn-primary invite_user_button'
+	.white-background
+		h1 Pending Users
+		table
+		  thead
+		    tr
+					th User Email
+					th Invitation Sent At
+					th
+	
+	
+		  tbody
+		    - @invited_users.each do |user|
+		      - if user.invitation_accepted_at.nil?
+						tr
+							td
+								= user.email
+							td
+								= user.invitation_sent_at
+							td
+								.actions = button_to "Resend Invitation","/invitation/resend_invite?email=#{user.email}&invited_by_id=#{user.invited_by_id}", class: "secondary tiny"
+
+	.white-background
+		h1 Adhoc Project Manager
+		= form_tag add_adhoc_pm_path,id: "adhoc_pm_form", method: :post
+			table
+				thead
+					tr
+						th User Email
+						th Start Date
+						th End Date
+						th
+
+
+				tbody
+					tr
+						td
+							= select_tag :adhoc_pm_id, options_from_collection_for_select(@project.users, "id", "email"), :include_blank => true
+						td
+							= date_field_tag 'adhoc_start_date', params[:adhoc_start_date], {required: "required"}
+						td
+							= date_field_tag 'adhoc_end_date', params[:adhoc_end_date], {required: "required"}
+						td
+							= submit_tag 'Assign PM'
+
+	.white-background
+		h1 Assigned Adhoc PM
+		table
+		  thead
+		    tr
+					th User Email
+					th Start Date
+					th End Date
+
+			- if @adhoc_pm.present?
+			  tbody
+			    tr
+			      td
+							= @adhoc_pm.email
+			      td 
+							= @project.adhoc_start_date.to_date
+			      td
+							= @project.adhoc_end_date.to_date
+
+	= link_to 'Back', projects_path

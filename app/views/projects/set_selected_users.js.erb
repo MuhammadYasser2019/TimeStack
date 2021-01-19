@@ -1,0 +1,3 @@
+
+$('#selected_inv').html("<%= j render(:partial => 'projects/user_inventory_and_equipment', locals: {inv_users:  @sel_inv_users , inv_sel_users: @inv_sel_users, sel_inv_ids: @sel_inv_ids, project_id: @project_id}) %>")
+$('#inventoryModel').modal('show')

@@ -1,0 +1,2 @@
+class SharedEmployee < ApplicationRecord
+end

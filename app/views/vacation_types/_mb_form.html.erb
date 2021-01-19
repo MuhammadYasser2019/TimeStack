@@ -1,0 +1,46 @@
+<%= form_for @vacation_type, html:{style: "margin:15px;"} do |f| %>
+	<div class="form-group">
+		<%= f.label :vacation_title %>
+		<%= f.text_field :vacation_title, class: "form-control", style: "width:40%;" %>
+	</div> 
+	<div class="form-group">
+		<div id ="active">
+			<%= f.label :Active %> 
+			<%= f.check_box :active,  :id => "active_boolean"%>
+		</div>
+	</div>
+	<div class="form-group">
+		<div id="paid_c">
+			<%= f.label :Paid %>
+			<%= f.check_box :paid, :id => "paid_boolean" %>
+		</div>
+	</div>
+<br>
+<br>
+<br>
+	<div id="active_display" class="active_display">
+		<div class="form-group">
+			<%= f.label :Number_of_Days %>
+			<%= f.number_field(:vacation_bank, in: 1..31) %>
+		</div> 
+		<div class="form-group">
+			<div id ="accural">
+				<%= f.label :Accural %> 
+				<%= f.check_box :accrual%>
+			</div>
+		</div>
+		<div class="form-group">
+			<div id="rollover">
+				<%= f.label :Rollover %>
+				<%= f.check_box :rollover, :id => "rollover_boolean" %> 
+			</div>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<%= f.hidden_field :customer_id, value: @customer_id %>
+		<%= f.submit "Update Vacation Type" %>
+		<% end %>
+	</div>
+	
+	

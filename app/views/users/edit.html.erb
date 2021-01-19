@@ -1,0 +1,9 @@
+
+<%= form_for @user do |f| %>
+	<%= f.text_field :first_name %> <%= f.text_field :last_name %> 
+						<%= f.check_box :user %>
+						<%= f.check_box :pm %>
+						<%= f.check_box :cm %>
+						<%= f.check_box :admin %>
+						<%=f.submit %>
+<% end %>

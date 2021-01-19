@@ -1,0 +1,45 @@
+== render "profile_lists"
+.white-background 
+	.grid-x
+		div.left-row
+			h1 Invite Users	
+			table class ="left-row"
+				thead
+				tbody
+					tr
+				      th
+				        = form_tag(action: :invite_sub_users, html: {class: 'form-inline'}) do
+				          = label_tag "Email",nil, :style=>"text-align: left;"
+				          = text_field_tag :email, nil, placeholder: 'Email', label: false, class: "invitation_email",style: "width:300px;"
+				          = label_tag "Select Start Date",nil, :style=>"text-align: left;"
+				          = date_field_tag 'invite_start_date', params[:invite_start_date], {required: "required", :style=> "width:300px;"} 
+				          = label_tag "Employment Type",nil, :style=>"text-align: left;"
+				          = select_tag :employment_type, options_from_collection_for_select(@employment_type,:id, :name ), include_blank: "Select Employment Type", required: "required", :style=> "width:300px;"
+				          = label_tag "Project",nil, :style=>"text-align: left;"
+				          = select_tag :project_id, options_from_collection_for_select(@projects, :id, :name), style: "margin-top:5px;width:300px;"
+				          = hidden_field_tag :invited_by_id, current_user.id
+				          = hidden_field_tag :customer_id, @customer.id
+				          .actions
+				            = submit_tag 'Invite Users', class: 'btn-primary invite_user_button'
+		- if flash[:alert]
+  			.alert= flash[:alert]
+		div.right-row
+			h1 Pending Users
+			table class="right-row"
+				thead
+				  tr
+				    th User Email
+				    th Invitation Sent At
+				    th
+
+
+				tbody
+				  - @invited_users.each do |user|
+				    - if user.invitation_accepted_at.nil?
+				      tr
+				        td
+				          = user.email
+				        td
+				          = user.invitation_sent_at
+				        td
+				          = button_to "Resend Invitation","/invitation/resend_invite?email=#{user.email}&invited_by_id=#{user.invited_by_id}", class: "secondary tiny"

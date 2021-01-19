@@ -1,0 +1,26 @@
+h1 Manage Profiles
+table
+	thead
+	  tr
+	    th User Email
+	    th Invitation Sent At
+	    th Project
+	    th Status
+	    th
+
+
+	tbody
+	  - @invited_users.each do |user|  
+      	tr
+        	td
+          		= link_to user.email, "/login_user/#{user.id}", title: "click on this to login"
+        	td
+          		= user.invitation_sent_at
+			td
+				= select_tag "project_id_#{user.id}", options_for_select(@projects.collect{ |p| [p.name, p.id]}, user.projects.first.id), include_blank: true
+			td
+				= user.is_active ? "Active" : "Inactive"
+
+			td = link_to "Assign Project", "javascript:void(0)", class: "assign_project", id: "user_#{user.id}"
+
+	         

@@ -1,0 +1,27 @@
+div(id="defaultProject" class="modal" aria-hidden="true" role="dialog" data-reveal data-close-on-click="false" data-close-on-esc="false")
+	div class="modal-dialog" role="document"
+	  div.modal-content style="width: 500px !important;"
+	    div.modal-header
+	      h5 class="modal-title" Set Default Project
+	      button.close type="button" aria-label="Close" data-dismiss="modal"  
+	          span aria-hidden="true"  &times;
+	    div.modal-body
+			p Please assign default project before proceeding.
+			= form_tag "/set_default_project", method: :get do
+				table
+					thead
+						tr 
+							th Project
+							th Task
+							th Set Default
+					tbody	
+						tr
+							td = select_tag :default_project_id, options_from_collection_for_select(current_user.projects,"id", "name",@default_project),class: "default_project_id"
+							td = select_tag :default_task_id, options_from_collection_for_select(@project_tasks,"id", "description",@default_task ), class: "default_task_id", :include_blank => true
+							td = button_tag "Set Defaults", class: "tiny orange-button"
+
+
+coffee:
+	$(document).ready ->
+		$('#defaultProject').modal('show');
+	

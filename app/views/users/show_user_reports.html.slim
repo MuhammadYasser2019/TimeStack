@@ -1,0 +1,197 @@
+style
+  |  @media print{ #faqModal {display:none } } 
+- if (current_user.cm? && current_user.customer_id == @user.customer_id) || (current_user.proxy_cm? && current_user.customer_id == @user.customer_id) || (current_user.pm? && current_user.projects_users.collect(&:user_id).include?(@user.id)) || (current_user.pm? && @project.present? && @project.user_id == current_user.id) || current_user.id == @user.id
+  div.report
+
+    h1 Reports for User #{consultant_name(@user.first_name, @user.last_name, @user.email)}
+    = form_tag "/show_user_reports/#{params[:id]}",id: "user_report_form", method: :get
+    table
+      -if @print_report == "true"
+        p Start Date:
+          #{params[:proj_report_start_date]}
+        p End Date:
+          #{params[:proj_report_end_date]}
+        p Project:
+          #{Project.find(params[:project]).name if !params[:project].blank? }
+      -else
+        thead
+          tr
+            th Project
+            th Period Start Date
+            th Period End Date
+            th
+            th
+
+        tbody
+          tr
+            - if @project.present?
+              = hidden_field_tag 'selected_project_id', @project.id
+            td = select_tag :project, options_from_collection_for_select(@user_projects, "id", "name", params[:project]), :include_blank => true
+            = hidden_field_tag 'hidden_print_report', false
+            td = text_field_tag 'proj_report_start_date', params[:proj_report_start_date], {required: "required",class: "datepicker"}
+            /= hidden_field_tag 'id', @user.id
+            td = text_field_tag 'proj_report_end_date', params[:proj_report_end_date], {required: "required",class: "datepicker"}
+            td = button_tag "Show User Report", class: "orange-button"
+            -if  @project.present?
+              td = link_to "Show weekly report", "/show_user_weekly_reports/#{params[:id]}?selected_project_id=#{@project.id}&proj_report_start_date=#{params[:proj_report_start_date]}&proj_report_end_date=#{params[:proj_report_end_date]}", class: "orange-button"
+            -else
+              td = link_to "Show weekly report", "/show_user_weekly_reports/#{params[:id]}?proj_report_start_date=#{params[:proj_report_start_date]}&proj_report_end_date=#{params[:proj_report_end_date]}", class: "orange-button"
+
+    .grid-y
+      a(href="#{@url}") Convert to Excel Document 
+    table border="1"
+      thead
+        tr
+          td Date 
+          td Day
+          td Project 
+          td Task
+          td Hours
+          td Vacation Hours
+          td Description
+          td Partial Day
+          td Vacation Type
+          td Approved By
+      tbody
+      - @time_entries.each do |t|
+        tr
+          td.date = t.date_of_activity.strftime('%Y-%m-%d')
+          td.date = t.date_of_activity.strftime("%A") 
+          td.project = t.project.name if !t.project.nil?
+          td.task = t.task.description if !t.task.nil?
+          td.hour 
+            = t.hours
+          td.vacation_hours
+            - if @customer.present? && t.vacation_type.present? && t.partial_day == "true" && t.hours.present?
+              - v_hours = @shift.regular_hours - t.hours
+            - elsif @customer.present? && t.vacation_type.present?
+              -v_hours = "#{@shift.regular_hours}"
+            = v_hours.present? ? v_hours : 0.0
+          td.active_log
+            = t.activity_log
+          td.partial
+            = t.partial_day == "true" ? "Yes" : "No"
+          td.vacation_type
+           - if t.vacation_type.present?
+             = t.vacation_type.vacation_title
+           - else
+             = ""
+          td.approved_by
+           - if t.approved_by?
+            span = "#{User.find(t.approved_by).first_name} #{User.find(t.approved_by).last_name}"
+      tr
+        td
+        td
+        td
+        td Total Hours:
+        td = @hours_sum
+        td
+        td
+        td
+    
+    = form_tag "/show_user_reports#{params[:id]}", id: "download_zip_form", method: :get
+    table
+      thead
+        tr
+          td Attached File
+          td Action
+        tbody
+          - @week.each do |w|
+            - w.upload_timesheets.each do |t|
+              - if t.time_sheet.present?
+                tr
+                  td= link_to "#{t.time_sheet_identifier} on #{t.created_at.to_date}", t.time_sheet.url, :target => "_blank"
+                  td=check_box_tag 'zip_ids[]', t.id, class: "zip_version_check"
+                  br
+          -if @print_report == "false"
+            tr
+              td= button_tag "Print", class: "print-user-report secondary tiny", type: "button"
+              |&nbsp;&nbsp;&nbsp;
+            -if @available_csv  > 0
+              td= submit_tag 'Download Zip' , class: 'download-zip-version'
+              br
+          -else
+            -if @available_csv > 0
+              br
+              td= submit_tag 'Download Zip' , class: 'download-zip-version'
+
+- else
+   h1 You are not allowed to access this page.
+
+
+- if (current_user.cm? && current_user.customer_id == @user.customer_id) || (current_user.proxy_cm? && current_user.customer_id == @user.customer_id) || (current_user.pm? && current_user.projects_users.collect(&:user_id).include?(@user.id)) || (current_user.pm? && @project.present? && @project.user_id == current_user.id) || current_user.id == @user.id
+  div.report
+
+    h1 Reports for Expense #{consultant_name(@user.first_name, @user.last_name, @user.email)}
+    = form_tag "/show_user_reports/#{params[:id]}",id: "user_report_form", method: :get
+    table
+        
+    table border="1"
+      thead
+        tr
+          td Project 
+          td Date
+          td Expense Type
+          td Description
+          td Amount          
+          td Approved By          
+      tbody
+      - @expenses.each do |t|
+        tr
+          td.project = t.project.name if !t.project.nil?
+          td.date = t.date.strftime('%Y-%m-%d')
+          td.expensetype = t.expense_type
+          td.description = t.description
+          td.amount = t.amount
+          td          
+
+      tr
+        td
+        td 
+        td 
+        td Total amount:
+        td = @amount_sum
+        td 
+        td
+        td                    
+    br
+    table
+      thead
+        tr
+          td Attached File          
+        tbody
+          - @expenseattachment.each do |at|            
+                tr
+                  td = link_to "#{at.attachment_identifier} on #{at.created_at.to_date}", at.attachment.url, :target => "_blank" if at.attachment_identifier.present?
+                  
+
+- else
+   h1 You are not allowed to access this page.
+
+
+coffee:
+  $(document).ready ->
+    checkboxes = $('input')
+    i = 0
+    while i < checkboxes.length
+      if checkboxes[i].type == 'checkbox'
+        checkboxes[i].checked = false
+      i++
+
+  $(document).ready ->
+    $ ->
+    $('input[type=\'checkBox\']').change ->
+      len = $('input[type=\'checkBox\']:checked').length
+      if len == 0
+        $('input[type=\'submit\']').prop 'disabled', true
+      else
+        $('input[type=\'submit\']').removeAttr 'disabled'
+      return
+    $('input[type=\'checkBox\']').trigger 'change'
+    return
+
+  $('.datepicker').datepicker({
+    autoclose: true,
+    format: "yyyy-mm-dd"
+    })
+

@@ -1,0 +1,130 @@
+- if (current_user.cm? && current_user.customer_id == @user.customer_id) || (current_user.proxy_cm? && current_user.customer_id == @user.customer_id) || (current_user.pm? && current_user.projects_users.collect(&:user_id).include?(@user.id)) || (current_user.pm? && @project.present? && @project.user_id == current_user.id) || current_user.id == @user.id
+    h1 Reports for #{consultant_name(@user.first_name, @user.last_name, @user.email)}
+    = form_tag "/show_user_weekly_reports/#{params[:id]} ",id: "user_report_form", method: :get
+    	table
+          	thead
+          		tr
+            		th Project
+            		th Month
+            		th
+                th
+          	tbody
+          		tr
+                    - if @project.present?
+            		  = hidden_field_tag 'selected_project_id', @project.id
+                    td = select_tag :project_id, options_from_collection_for_select(@user_projects, "id", "name", params[:project_id]), :include_blank => true
+            		td = select_tag "month", options_for_select([[ "January", 1],["February", 2],["March",3],["April", 4],["May", 5],["June", 6],["July", 7],["August", 8],["September", 9],["October", 10],["November", 11],["December", 12]], params["month"].present? ? params["month"] : Time.now.month), prompt: "Select month"
+            		td = button_tag "Show Report", class: "orange-button"
+                    - if @project.present?
+                        td = link_to "Show User Report", "/show_user_reports/#{params[:id]}?selected_project_id=#{@project.id}", class: "orange-button"
+                    -else
+                        td = link_to "Show User Report", "/show_user_reports/#{params[:id]}", class: "orange-button"
+
+    table id="show_weekly_reports" class="display"
+        thead
+            tr border="1px solid black;"
+                td width="239px" Project 
+                td width="239px" Task
+                td SUN
+                td MON
+                td TUE
+                td WED
+                td THU
+                td FRI
+                td SAT
+                td width="60px" Total
+
+        -i = 1
+        tbody
+            - @time_hash.each do |week_id, project_hash|
+                -week = Week.where(id: week_id).first
+                -mon = week.start_date.beginning_of_week
+                -tue = mon.next_day
+                -wed = tue.next_day
+                -thu = wed.next_day
+                -fri = thu.next_day
+                -sat = fri.next_day
+                -sun = (week.start_date.beginning_of_week-1.day).strftime("%d")
+                  
+                tr class="week_row"
+                    td week-#{i}
+                    td
+                    td =sun
+                    td =mon.strftime("%d")
+                    td =tue.strftime("%d")
+                    td =wed.strftime("%d")
+                    td =thu.strftime("%d")
+                    td =fri.strftime("%d")
+                    td =sat.strftime("%d")
+                    td
+
+                - project_hash.each do |project_id, task_hash|
+                    - project_name = Project.where(id: project_id).first
+                    -task_hash.each do |task_id, time|
+                      - task_name = Task.where(id: task_id).first
+                        tr
+                            td.project width="50px;"
+                                = project_name.name if project_name.present?
+                            td.task width="50px;"
+                                = task_name.description if task_name.present?
+                            - time.each do |t|
+                            td.hour = t
+                            td = time.sum
+
+              
+                tr
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+                    td
+
+
+        -i += 1
+    = form_tag "/show_user_weekly_reports/#{params[:id]}",id: "download_zip", method: :get
+        table
+            thead
+                tr
+                    td Attached File
+                    td Action
+            tbody  
+            - @week.each do |w|
+                - w.upload_timesheets.each do |t|
+                    - if t.time_sheet.present?
+                        tr
+                            td= link_to "#{t.time_sheet_identifier} on #{t.created_at.to_date}", t.time_sheet.url, :target => "_blank"
+                            |&nbsp;&nbsp;&nbsp;
+                            td=check_box_tag 'zip_ids[]', t.id, class: "week_zip_version_check"
+                        br
+                    -if @available_csv > 0
+                        tr
+                            td= submit_tag 'Download Zip' , class: 'week_download_zip_version',:style=>"margin-left: 264px;"  
+- else
+   h1 You are not allowed to access this page.
+
+coffee:
+    $(document).ready ->
+        checkboxes = $('input')
+        i = 0
+        while i < checkboxes.length
+            if checkboxes[i].type == 'checkbox'
+                checkboxes[i].checked = false
+            i++
+
+    $(document).ready ->
+        $ ->
+        $('input[type=\'checkBox\']').change ->
+            len = $('input[type=\'checkBox\']:checked').length
+            if len == 0
+                $('input[type=\'submit\']').prop 'disabled', true
+            else
+                $('input[type=\'submit\']').removeAttr 'disabled'
+            return
+            $('input[type=\'checkBox\']').trigger 'change'
+        return
+    

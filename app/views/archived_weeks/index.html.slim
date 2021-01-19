@@ -1,0 +1,18 @@
+h1 Listing for Archived Weeks
+
+table
+  thead
+    tr
+      th Week Id
+      th Start Date
+      th Show
+
+
+  tbody
+    - @archived_weeks.each do |archived_week|
+      tr
+        td = archived_week.id
+        td = archived_week.start_date
+        td = link_to 'Show', archived_week
+       
+

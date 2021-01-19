@@ -1,0 +1,16 @@
+div.grid-y style="align-items: center;"
+  h1 Vacation Type
+  table
+	  tr
+	  	thead
+	  	  th Vacation Type
+		  th Acitve?
+		  th
+
+	  - @vacation_types.each do |v|
+	    tr
+		  tbody
+		    td = v.vacation_title
+			td = v.active? ? 'Yes' : 'No'
+			td = link_to "Edit", edit_vacation_type_path(id: v.id, customer_id: @customer_id)
+  = link_to "Add New Vacation", new_vacation_type_path(customer_id: @customer_id), class: "orange-button", style: "margin-top:30px;"

@@ -1,0 +1,7 @@
+<%= @user %>,
+
+<% if Status.find(@time.status_id).status == "REJECTED" %>
+ <%= @approver %> has <%= Status.find(@time.status_id).status %> your timesheet for the week of <%= @time.start_date %> to <%= @time.end_date %>, REASON FOR REJECTING: <%= @time.comments %>
+<% else %>
+ <%= @approver %> has <%= Status.find(@time.status_id).status %> your timesheet for the week of <%= @time.start_date %> to <%= @time.end_date %>
+<% end %>

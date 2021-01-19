@@ -1,0 +1,63 @@
+-if ((current_user.cm? && current_user.customer_id == @project.customer_id) || ( current_user.proxy_cm? &&  current_user.customer_id == @project.customer_id )) || (current_user.pm? && current_user.projects.collect(&:id).include?(@project.id))
+	div class="communication_email"
+		= form_tag add_multiple_users_to_send_email_path, remote: true do 
+			= hidden_field_tag "project_id", @project.id
+			div class="user_lists"
+			
+				
+				div class="add_remove_left_row"				
+					h1 Select user(s)
+					table
+						- (@available_users).each_with_index do |uop,i|
+						      tr
+						      	td
+						          = check_box_tag "user_email[]", uop.id, false, class: "add-row"
+						         
+						        td
+						          = uop.email
+
+			div class="selected_users_list"
+
+					h1 Communication Email List
+					div id="show_element" style="padding-left: 50px;"
+
+			    	div style="padding-left: 50px;"
+		    			<label style="width: 389px;"><strong> Email Subject</strong></label>
+		    			= text_field_tag  "email_subject" , nil, :required => true, style: "width: 389px;height: 39px;"
+		    		
+		    		
+		    			<label style="width: 389px;"><strong>Email Message</strong></label>
+		    			= text_area_tag "email_body", nil, :required => true,  style: "width: 396px; height: 120px; "
+		    			br
+		    			br
+
+				  		= submit_tag("Send email", id: "send_button")
+- else
+   h1 You are not allowed to access this page.
+	
+
+
+
+
+coffee:
+	$(document).ready ->
+  		$('.add-row').change ->
+    		`var email`
+    		if @checked == true
+      			va = @value
+      			email = $(this).closest('td').next().html()
+      			markup = '<tr><td>' + email + '<td></tr>'
+      			$('#show_element').append markup
+    		else
+      			email = $(this).closest('td').next().html()
+      			$('#show_element').find('td').each ->
+        			if email == $(this).text()
+          				$(this).parents('tr').remove()
+        			return
+    		return
+  	return
+
+coffee:
+	$('#send_button').click ->
+  		window.location.reload()
+  		return

@@ -1,0 +1,45 @@
+div class="modal fade" id="previousweek" tabindex="-1" role="dialog" aria-hidden="true"
+  div class="modal-dialog" role="document"
+   div class="modal-content" style="left:-240px;"
+     div class="modal-header" style="padding:0px;"
+       h1 Add previous week 
+       button type="button" class="close" data-dismiss="modal" aria-label="Close"
+         span aria-hidden="true" &times;
+         
+    
+     div class="modal-body"
+     	= form_tag add_previous_week_path,id: "previous_week", method: :post, remote: true  
+        = hidden_field_tag "user_id", @user.id
+        table
+          tr
+            th Start date
+            th
+          tr
+            td = date_field_tag 'start_date', '', {required: "required"}
+            td = submit_tag 'Create Week'
+
+        table
+          tr
+            th User
+            th Start Date
+            th End Date
+            
+          - @past_weeks.each do |week|
+            tr
+              td= week.user.name
+              td= week.start_date.to_date.strftime('%Y-%m-%d')
+              td= week.end_date.to_date.strftime('%Y-%m-%d')
+    	          
+  
+coffee:
+  $('#startdate').datepicker({
+      autoclose: true,
+      format: "yyyy-mm-dd",
+      endDate: "today",
+      maxDate: new Date,  
+
+      firstDay: 1
+    })
+  $('#previousweek').on('hidden.bs.modal', ->
+    location.reload();  
+  );   

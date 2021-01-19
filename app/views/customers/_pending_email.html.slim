@@ -1,0 +1,25 @@
+div class="modal-dialog" role="document" style="max-width:700px;"
+  div.modal-content style="max-width:700px;"
+    div.modal-header
+      h5 class="modal-title" USER
+      button.close type="button" aria-label="Close" data-dismiss="modal"  
+          span aria-hidden="true"  &times;
+    div.modal-body
+
+      table class="table"
+        tr
+          th Email
+          th Start Date
+          th Employment Type
+          th Project
+
+        tbody
+        tr
+          td
+            = @cuser.email
+          td
+            = @cuser.invitation_start_date
+          td
+            = EmploymentType.find(@cuser.employment_type).name if @cuser.employment_type
+          td
+            = @project.name

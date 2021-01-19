@@ -1,0 +1,33 @@
+table class="table"
+	thead
+		tr
+			th Expense Type
+			th Date
+			th Project
+			th Description
+			th Amount 	
+			th		
+			th 
+
+	- @expenses.each do |e|
+		tr id="row_#{@week.id}_#{e.id}"
+
+			td = e.expense_type
+			td = e.date
+			td = Project.find(e.project_id).name if e.project_id.present?  
+			td = e.description 
+			td = e.amount	
+			td = button_tag "Edit", id: "edit_#{@week.id}_#{e.id}" ,class: "button orange-button btn edit_expense" , data: {toggle: "modal", target: "#expenseRecordManagement"} if @week.status_id != 2 		
+			td = button_tag "Delete", id: "delete_#{@week.id}_#{e.id}", class: "button orange-button btn delete_expense" if @week.status_id != 2 
+	
+
+	table
+      thead
+        tr
+          td Attached File          
+        tbody
+          - @expenseattachment.each do |at|            
+                tr
+                  td = link_to "#{at.attachment_identifier} on #{at.created_at.to_date}", at.attachment.url, :target => "_blank" if at.attachment_identifier.present?
+
+    

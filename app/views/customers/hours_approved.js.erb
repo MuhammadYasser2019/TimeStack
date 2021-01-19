@@ -1,0 +1,7 @@
+<% if @type == "approved" %>
+$('#hours_approved').html("<%= j render partial: 'hours_approved_modal'%>");
+$('#hoursapproved').modal('show');
+<% else %>
+$('#hours_submitted').html("<%= j render partial: 'hours_submitted_modal'%>");
+$('#hourssubmitted').modal('show');
+<% end %>

@@ -1,0 +1,25 @@
+- if @customer.user_id == current_user.id
+  p#notice = notice
+
+  p
+    strong Name:
+    = @customer.name
+  p
+    strong Address:
+    = @customer.address
+  p
+    strong City:
+    = @customer.city
+  p
+    strong State:
+    = @customer.state
+  p
+    strong Zipcode:
+    = @customer.zipcode
+
+  = link_to 'Edit', edit_customer_path(@customer)
+  '|
+  = link_to 'Back', customers_path
+
+- else
+  h1 You are not allowed to access this page.

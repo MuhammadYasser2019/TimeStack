@@ -1,0 +1,10 @@
+- if params[:id].to_i == current_user.id.to_i
+  .grid
+   .small-6.white-background
+    h3 Proxiable Projects
+    - unless @proxies.nil?
+      - @proxies.each do |p|
+       .small-12
+        = link_to p.name, "/users/#{@user.id}/proxies/#{p.id}"
+- else
+ h1 You are not allowed to access this page.

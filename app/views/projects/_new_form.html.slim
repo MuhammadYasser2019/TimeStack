@@ -1,0 +1,34 @@
+= form_for @project do |f|
+  - if @project.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@project.errors.count, "error")} prohibited this project from being saved:"
+      ul
+        - @project.errors.full_messages.each do |message|
+          li = message
+
+  .field
+
+    = f.label :name
+    = f.text_field :name, required: true, class: 'form-control'
+  
+    = f.hidden_field :customer_id, value: current_user.customer_id.present? ? current_user.customer_id : Customer.find_by_name("Resource Stack, Inc.").id
+    = f.hidden_field :user_id, value: current_user.id
+  table.table border="1" id="tasklist"
+    thead
+      tr 
+        td Code
+        td Description
+        td Comment
+        td Estimated Time To Complete
+        td Active
+        td Billable
+        td Overtime
+
+    tbody
+      = f.fields_for :tasks do |tf|
+        == render 'task_fields', f: tf
+    tr
+      td colspan="5"
+        = link_to_add_association "Add Task", f, :tasks, class: " btn btn-primary btn-xs", 'data-association-insertion-method' => "append"
+          
+  .actions#new-project-actions = f.submit

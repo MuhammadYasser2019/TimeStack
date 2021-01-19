@@ -1,0 +1,21 @@
+div(id="newAnnouncement" class="modal" aria-hidden="true" role="dialog" data-reveal data-close-on-esc="false")
+	div class="modal-dialog" role="document"
+	  div.modal-content style="width: 800px !important;left:-135px;"
+	    div.modal-header
+	      h5 class="modal-title" Latest Announcement	      
+	      button.close type="button" aria8-label="Close" data-dismiss="modal"  id= "#{@announcement.id}" class="announce_popup"
+	          span aria-hidden="true"  &times;
+	    div.modal-body
+				
+			h5 class="modal-title" = @announcement.announcement_type
+						
+			div (style= "width:720px;height: 300px;overflow-y:scroll;padding:15px;") = @announcement.announcement_text.html_safe 
+						
+			= link_to "Ok", "javascript:void(0);", id: "#{@announcement.id}" ,class: "announce_popup orange-button"
+					
+
+							
+coffee:
+	$(document).ready ->
+		$('#newAnnouncement').modal('show');
+	

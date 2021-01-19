@@ -1,0 +1,21 @@
+tr.task-row
+  = f.hidden_field :imported_from, class: 'form-control'
+  td.code
+    = f.hidden_field :id, class: 'form-control'
+    = f.text_field :code, class: 'form-control task-code'
+  td.desc
+    = f.text_field :description, :class =>'form-control task-description'
+  td.default
+    = f.text_field :default_comment, :class =>'form-control default-comment'
+  td.etc
+    = f.number_field :estimated_time, :class =>'form-control estimated-time-to-complete' 
+  td.flag {style="width:100px;"}
+    = f.check_box 'active', :class =>'form-control active-flag'
+  td.billable {style="width:100px;"}
+    = f.check_box :billable, class: "form-control"
+  td.overtime {style="width:100px;"}
+    = f.check_box :overtime, class: "form-control"  
+  
+
+
+

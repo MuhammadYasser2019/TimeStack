@@ -1,0 +1,33 @@
+- if @proxy.proxy == @user.id
+ .proxy-message(style="position:fixed;top: 5px; right: 5px;") = @proxy_user.first_name
+ .white-background
+	 h1 Enter and Manage Time
+	
+	 table class="border"
+	  thead
+	    tr
+	      th Start date
+	      th End date
+	      th Status
+	      th Report
+	      th Copy from the <br> previous week/ Clear
+	
+	      
+	  tbody
+	    - @weeks.each do |week|
+	      tr
+	        td = week.start_date.strftime('%Y-%m-%d')
+	        td = week.end_date.strftime('%Y-%m-%d')
+	        td = link_to find_status(week), find_status(week) == "NEW" || "REJECTED" ? edit_week_path(week): week_path(week)
+			td = link_to "Report", "/weeks/#{week.id}/report" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
+			td = link_to "COPY", "/copy_timesheet/#{week.id}" if ((find_status(week) == "NEW") || (find_status(week) == "EDIT")) && @weeks.last.id != week.id
+	
+	    tr
+	      td = link_to "Enter Time for Current Week", new_week_path(user_id: @proxy_user.id), id: "new_week" if current_week_available(@proxy_user).blank?
+	      td
+	      td
+	      td
+	    tr
+	      td = link_to "Show Old Timesheets", show_old_timesheets_path, target: :_blank	      
+- else
+ h1 You are not allowed to access this page.

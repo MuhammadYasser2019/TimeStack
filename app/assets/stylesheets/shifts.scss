@@ -1,0 +1,108 @@
+.new_shift{
+  width: 70%;
+  text-align: center;
+  margin-left: 15%;
+}
+
+.tiny_shift {
+  width: 15%;
+  float: left;
+  height: 100%;
+}
+
+.normal_shift {
+  width: 30%;
+  float: left;
+  height: 100%;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 5px;
+  height: 100%;
+}
+
+.time_label{
+  width: 100%;
+  margin-top:10px;
+}
+
+.shift-label{
+  width: 100%;
+  margin-top: 10px;
+  text-align:left;
+}
+
+.colon{
+  float:left;
+  font-size: 2rem;
+  margin-top: .5rem;
+}
+
+.large_time_container{
+  float:left;
+  width: 50%;
+}
+
+.shift-supervisor-label{
+  float: left;
+  width: 100%;
+  text-align: left;
+}
+
+.time_container{
+  margin-left: 30%;
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  input {
+    /*height: calc(1.5em + .75rem + 2px);*/
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    border-color: #ffedda !important;
+  }
+}
+
+.shift-modal-dialog{
+  max-width: none !important;
+}
+
+.project_shift_container{
+  margin: 10px auto;
+  float: left;
+  width: 100%;
+}
+
+.project_shift_label {
+  float: left;
+  margin-left: 10%;
+}
+
+.project_shift_select {
+  float: right;
+  margin-right: 30%;
+}
+
+.submit_tag_container{
+  width: 100%;
+  float:left;
+}
+
+#date{
+  padding: 5px;
+  margin: 0 0 15px 0;
+}
+
+.calendar-heading{
+  height:40px;
+  padding:10px;
+}

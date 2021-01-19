@@ -1,0 +1,29 @@
+div class="modal-dialog" role="document" class="shift-modal-dialog"
+  div class="modal-content"
+    div class="modal-header"
+      h5 class="modal-title center" id="shift-modalLabel"
+        | Shift Assignment
+      button type="button" class="close" data-dismiss="modal" aria-label="Close"
+        span aria-hidden="true"&times
+    div class="modal-body"
+      - user_ids = []
+      = user_id_list
+      - project = Project.find(params[:project_id])
+      - params.each do |key, value|
+        - if key.include?('add_user_id')
+          - user_ids << value
+      = form_tag shift_modal_path, remote: true do
+       = hidden_field_tag "user_count", user_ids.count
+       = hidden_field_tag "project_id", project.id
+       - i = 0
+       - user_ids.each do |user_id|
+        - user = User.find(user_id)
+        - project_user = ProjectsUser.where(user_id: user.id, project_id: project.id)
+        - project_shifts = ProjectShift.where(project_id: project.id)
+        div.project_shift_container
+          div.project_shift_label = "#{user.email}"
+          = select_tag "project_shift_id_#{i}", options_for_select(project_shifts.collect {|u| [u.shift.name + ' ' + u.shift.start_time + ' - ' + u.shift.end_time, u.id] }), class: 'project_shift_select', prompt: 'Select Shift'
+          = hidden_field_tag "user_id_#{i}", user_id
+          - i += 1
+       div.submit_tag_container
+        = submit_tag("Submit")

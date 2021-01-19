@@ -1,0 +1,4 @@
+$('.display-text').html("<%= j flash.now[:notice] = "User has been shared" %>");
+
+$('#sharedUser').html("<%= j render(:partial => 'shared_user_email') %>");
+

@@ -1,0 +1,12 @@
+= form_for @holiday_exception do |f|
+  - if current_page?(action: 'new')
+		= f.select :user_id, @users_on_project.collect { |m| [ m.first_name, m.id ] }, include_blank: true
+  - else
+  	h3(style="text-align:center;") = "#{User.find(f.object.user_id).first_name} #{User.find(f.object.user_id).last_name}"
+  	= f.collection_check_boxes(:holiday_ids, @holidays.all, :id, :name, checked: @holiday_exception.holiday_ids, include_hidden: false) do |h|
+		.grid-x
+			.small-3.columns.text-center = h.check_box
+			.small-3.columns.text-center = h.object.name
+			.small-3.columns.text-center = h.object.date.strftime("%m-%d-%y")
+			.small-3.columns
+	.actions= f.submit

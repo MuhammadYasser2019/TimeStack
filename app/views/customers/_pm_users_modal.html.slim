@@ -1,0 +1,18 @@
+div class="modal fade" id="pmProject" tabindex="-1" role="dialog" aria-hidden="true"
+	div class="modal-dialog" role="document"
+		div class="modal-content" style="left:-240px;"
+			div class="modal-header" style="padding:0px;"
+				h1 Projects Managed by #{@user.name}
+				button type="button" class="close" data-dismiss="modal" aria-label="Close"
+				span aria-hidden="true" &times;
+         
+     		div class="modal-body"
+				table width="100%" cellspacing="0"
+					thead
+				    	tr
+				      		th Projects
+				    tbody
+					    - @projects.each do |p|
+					    	tr
+					    		td= p.name
+					    		   			

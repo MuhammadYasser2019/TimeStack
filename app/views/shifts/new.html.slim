@@ -1,0 +1,7 @@
+div class="new_shift"
+  h1 = "Create New #{@customer.name} Shift"
+  == render "form"
+
+
+coffee:
+  $('.selected_days').prop 'checked', true

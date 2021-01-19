@@ -1,0 +1,64 @@
+.white-background
+	= form_tag approve_all_path, id: "approve_all_form", method: :post, remote: true
+		div id= "show_hide" style="display: block;"
+			h2 Time Sheets Submitted for Approval
+			table class="approve-table table"style="width:90%;"
+				thead
+				  tr
+				  	th Project
+				    th Employee
+				    th Start date
+				    th End date
+				    th Hours
+				    th
+				    th
+				    th
+				    th
+
+				tbody
+					-i = 0
+				  	- projects.each do |p|
+				  		
+						- @applicable_week = Week.joins(:time_entries).where("(weeks.status_id = ? or weeks.status_id = ?) and time_entries.project_id= ? and time_entries.status_id=? and weeks.dismiss=?", "2", "4",p.id,"2", "false").select(:id, :user_id, :start_date, :end_date , :comments, :dismiss).distinct
+				  		- @applicable_week.each do |at|
+						    tr id = "#{i}"
+						    	td
+						        	= p.name
+						      	
+						      	td
+						        	= hidden_field_tag "week_id_#{i}", at.id
+						        	= hidden_field_tag "user_id_#{i}", at.user_id
+						        	= User.find(at.user_id).name
+						      	td
+						        	= at.start_date.strftime('%Y-%m-%d')
+						      	td
+						        	= at.end_date.strftime('%Y-%m-%d')
+						      	td 
+						      		-if TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours) > 40
+							      		= hidden_field_tag "project_id_#{i}", p.id
+							        	= button_tag TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours), id: "show_hours_#{i}", class: "tiny secondary show-hours btn btn-danger", type: "button", data: {toggle: "modal", target: "#showHours"}
+							        -else
+							        	= hidden_field_tag "project_id_#{i}", p.id
+							        	= button_tag TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours), id: "show_hours_#{i}", class: "tiny secondary show-hours btn btn-info", type: "button", data: {toggle: "modal", target: "#showHours"}
+							        - if ExpenseRecord.where("week_id= ? and project_id= ?", at.id,p.id).present?
+							        	= image_tag("amount.png", style: "width:28px;float:right;position:relative;top:-32px;left:18px;")
+
+						      	td = link_to "Approve","/projects/#{p.id}/approve/#{at.id}/#{i}", class: "btn btn-primary approve-class orange-button", type: "button", remote: true
+						      	
+						      	/td = link_to "Reject", "/projects/reject/#{at.id}", class: "reject_class", id:"time_reject_#{i}" , remote: true
+						      	td class="reject_div" style="display:none;"
+						        	= button_tag "Reject", class: "btn btn-danger reject_class", id:"time_reject_#{i}" , type: "button", remote: true
+						      	td
+						        	= button_tag "Add Comment to Reject", class: "add_comment btn-secondary tiny", id: "add_comment_#{i}", type: "button"
+						      	td
+						        	= text_area_tag "comments", at.comments, size: "35x3.5", class: "comment", id: "comment_text_#{i}"
+
+						        td = link_to "X","/weeks/dismiss/#{at.id}/#{i}", class: "dismiss-class red-button", type: "button", remote: true
+						    - i +=1	
+				    div id="showHours" class="modal" aria-hidden="true" role="dialog"
+
+			= submit_tag "Approve ALL" , :id=> "approve_all_button" , :class=> "approve_all_class"
+
+	div class = "hidden timesheets"
+		= link_to "Show All Timesheets","show_all_timesheets", target: :_blank
+

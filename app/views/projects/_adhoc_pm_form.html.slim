@@ -1,0 +1,48 @@
+.left-row-adhoc
+	h1 Adhoc Project Manager
+	= form_tag add_adhoc_pm_path(params[:project_id]), id: "adhoc_pm_form", method: :post, remote: true
+		table
+			thead
+				tr
+					th User Email
+					th Start Date
+					th End Date
+			
+			tbody
+				tr
+					td
+						= select_tag :adhoc_pm_id, options_from_collection_for_select(@project.users, "id", "email"), :include_blank => true, class:"form-control"
+					td
+						= text_field_tag 'adhoc_start_date', '',{required: "required",:placeholder =>  "yyyy/mm/dd", :style=>"font-size: 12.5px;", class:" datepicker form-control"}
+					td
+						= text_field_tag 'adhoc_end_date', '',  {required: "required", :placeholder =>  "yyyy/mm/dd", :style=>"font-size: 12.5px;" , class: " datepicker form-control"}
+				
+		.actions = submit_tag 'Assign PM'
+						
+.right-row-adhoc
+	h1 Assigned Adhoc PM
+	table class="table"
+		thead
+			tr
+				th User Email
+				th Start Date
+				th End Date
+
+		- if @adhoc_pm.present?
+			tbody
+				tr
+					td
+						= @adhoc_pm.email
+					td 
+						= @project.adhoc_start_date.to_date
+					td
+						= @project.adhoc_end_date.to_date
+
+div style="clear:both;"
+
+coffee:
+	$('.datepicker').datepicker({
+    	autoclose: true,
+    	format: "yyyy-mm-dd"
+
+    })

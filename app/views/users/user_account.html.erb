@@ -1,0 +1,9 @@
+<div class="container-fluid">
+	<div class="row">
+		<% if @user.first_name %>
+			<h2>Welcome, <%= @user.first_name %>!</h2>
+		<% else %>
+			<h2>Welcome!</h2>
+		<% end %>
+    </div>
+</div>

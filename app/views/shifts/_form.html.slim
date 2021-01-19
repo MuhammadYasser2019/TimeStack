@@ -1,0 +1,74 @@
+=form_for @shift do |f|
+  - if params[:type] == 'customer'
+   div.form-group
+    = f.label :name, class: 'shift-label'
+    = f.text_field :name, class:"form-control", required: true
+    - if flash[:error]
+     .alert= flash[:error]
+    div.large_time_container
+     = f.label :start_time, class: "time_label"
+     div.time_container
+      = text_field_tag :start_time_hour, @start_time_hour, class: "tiny_shift", required: true, placeholder: 'H'
+      span.colon = ":"
+      = text_field_tag :start_time_minute, @start_time_minute, class: "tiny_shift", required: true, placeholder: 'M'
+      = select_tag(:start_time_period, options_for_select(['AM', 'PM'], @start_time_period), class: "tiny_shift", required: true)
+
+    div.large_time_container
+     = f.label :end_time, class: "time_label"
+     div.time_container
+      = text_field_tag :end_time_hour, @end_time_hour, class: "tiny_shift", required: true, placeholder: 'H'
+      span.colon = ":"
+      = text_field_tag :end_time_minute, @end_time_minute, class: "tiny_shift", required: true, placeholder: 'M'
+      = select_tag(:end_time_period, options_for_select(['AM', 'PM'], @end_time_period), class: "tiny_shift", required: true)
+    = f.label :regular_hours, class: 'shift-label'
+    = f.number_field :regular_hours, class: "form-control", required: true
+    br
+    .div.shift-label Days
+    |&nbsp;&nbsp;
+    = f.label :mon
+    |&nbsp;&nbsp;
+    = f.check_box :mon, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :tue
+    |&nbsp;&nbsp;
+    = f.check_box :tue, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :wed
+    |&nbsp;&nbsp;
+    = f.check_box :wed, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :thu
+    |&nbsp;&nbsp;
+    = f.check_box :thu, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :fri
+    |&nbsp;&nbsp;
+    = f.check_box :fri, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :sat
+    |&nbsp;&nbsp;
+    = f.check_box :sat, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :sun
+    |&nbsp;&nbsp;
+    = f.check_box :sun, class: "selected_days"
+    |&nbsp;&nbsp;&nbsp;
+    = f.label :active, class: 'shift-label'
+    = f.check_box :active, class: "form-control"
+    = f.label :default, class: 'shift-label'
+    = f.check_box :default, class: "form-control"
+    = f.hidden_field :customer_id, value: @customer_id
+    = hidden_field_tag :type, params[:type]
+  - elsif params[:type] == 'project'
+   div.form-group
+    = f.label "Shift Supervisor", class: "shift-supervisor-label"
+    = select_tag(:shift_supervisor_id, options_for_select(@potential_supervisors, @shift.shift_supervisor_id), class: "tiny_shift", required: true)
+    = f.label :location, class: 'shift-label'
+    = f.text_field :location, class: "form-control"
+    = f.label :capacity, class: 'shift-label'
+    = f.number_field :capacity, class: "form-control"
+    = f.hidden_field :customer_id, value: @customer_id
+    = hidden_field_tag :type, params[:type]
+  = f.submit "Submit Shift"
+= link_to 'Back', customers_path, class: "btn"
+

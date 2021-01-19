@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="turbolinks-cache-control" content="no-cache">
+    <title><%= content_for?(:title) ? yield(:title) : "RSI - ChronStack" %></title>
+
+    <%= stylesheet_link_tag "application" %>
+    <% if current_user.nil?%>
+      <%= stylesheet_link_tag "orange"%>
+    <% else %>  
+      <% if !current_user.customer_id.nil?%>
+        <% customer = Customer.find(current_user.customer_id)%>
+        <% if customer.theme == "Orange"%>
+          <%= stylesheet_link_tag "orange"%>
+        <% elsif customer.theme == "Blue" %>
+          <%= stylesheet_link_tag "blue"%>
+        <% elsif customer.theme == "Neutral" %>
+          <%= stylesheet_link_tag "neutral"%>
+        <% elsif customer.theme == "NULL" %>
+          <%= stylesheet_link_tag "neutral"%>
+
+        <% end %>
+      <% else%>  
+        <%= stylesheet_link_tag "orange"%>
+      <% end%> 
+    <% end %>
+    <%= javascript_include_tag "application" %>
+    <%#= javascript_include_tag "vendor/modernizr" %>
+    <%#= javascript_include_tag Ckeditor.cdn_url %>
+    <%= javascript_include_tag "application" 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag "https://code.highcharts.com/modules/funnel.js" %>
+    <%= javascript_include_tag "cocoon" %>
+    <%= csrf_meta_tags %>
+    <style>
+      .current-application-version {
+        position: absolute;
+        top: 47px;
+        left: 120px;
+        padding: 5px;
+        font-size: .6rem;
+        color: #8080807a;
+        cursor: pointer;
+        z-index: 999;
+      }
+      .current-application-version:hover{
+        text-decoration:underline;
+      }
+       #faqBtn{
+        right: 0px;
+        bottom: 60px;
+      }
+      #cls-btn{
+        top: 0px;
+        right: 10px;
+      }
+      #modal-css {
+        left: -266px;
+      }
+    </style>
+  </head>
+  
+  <body>
+  	<%#= javascript_pack_tag 'application'  %>
+    <% if @print_report == "true" %>
+      <%= render "layouts/report_header" %>
+    <% else %>
+      <%= render "layouts/header" %>
+    <%end%>
+
+    <% if !current_user.nil? && !application_version.nil? %>
+   
+ 
+      <% if !application_version[:latest_version].nil? %>
+       <%= render "users_application_version/acknowledge" %>
+      <% end %>
+    <% end %>
+    <% if @faq.present? && @faq.feature_data.present? %>
+      <button class ="tech-btn show_faq" id="faqBtn" data-toggle="modal" data-target="#faqModal" ><i class="fa fa-cogs fa-3x"></i></button>
+      <%= render "layouts/faq" %>
+    <% end %>
+    <% if user_signed_in? %>
+    <%= render "layouts/questionaire" %> 
+    <% end %>
+    <%= yield %> 
+    <input type="hidden" id="access_url" value = "<%=@base_url%>"/>
+    <%= init_session_timeout_prompter(session_timeout_in_seconds: 1800, seconds_to_warn_before_timeout: 300, scope: :user) %>
+  </body>
+  <script>
+    var access_url = document.getElementById("access_url");
+    
+    if(access_url!=null ){
+     localStorage.BaseURL = access_url.value;
+    }
+    $("#curApplicationVersion").on("click",function(){
+      $().showHtmlDialog($(this).data("name"), $(this).data("description"));
+    })
+  </script>
+</html>

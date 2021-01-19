@@ -1,0 +1,24 @@
+<h2 style="text-align:center;margin-top: 20px;">LOG IN</h2>
+
+<%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  <div class="form-inputs">
+    <% if flash[:alert].present?  %>
+      <div class="devise_error" style="font-size: 14px;">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <%= f.input :email, required: true, autofocus: true, input_html: {class: "form-control"} %>
+  
+    <%= f.input :password, required: true,input_html: {class: "form-control"} %>
+  
+    <%= f.input :remember_me, as: :boolean if devise_mapping.rememberable? %>
+
+</div>
+  <div class="form-actions">
+    <%= f.button :submit, "Log in" %>
+  </div>
+<% end %>
+  <div class="new_user shared">
+	<%= render "devise/shared/links" %>
+  </div>

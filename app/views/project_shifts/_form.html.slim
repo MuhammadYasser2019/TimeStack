@@ -1,0 +1,17 @@
+=form_for @project_shift do |f|
+  - if flash[:notice].present?
+    .devise_error[style="font-size: 14px;"]
+      = flash[:notice]
+  div.form-group
+    = f.label "Shift Supervisor", class: "shift-supervisor-label"
+    = f.select(:shift_supervisor_id, options_for_select(@potential_supervisors, @project_shift.shift_supervisor_id), {}, { class: "normal_shift", required: true })
+    = f.label "Shift", class: "shift-supervisor-label"
+    = f.select(:shift_id, options_for_select(@shift_array, @project_shift.shift_id), {}, { class: "normal_shift", required: true })
+    = f.label :location, class: 'shift-label'
+    = f.text_field :location, class: "form-control"
+    = f.label :capacity, class: 'shift-label'
+    = f.number_field :capacity, class: "form-control"
+    = f.hidden_field :project_id, value: @project.id
+    = hidden_field_tag :type, params[:type]
+    = f.submit "Submit Shift"
+  = link_to 'Back', customers_path, class: "btn"

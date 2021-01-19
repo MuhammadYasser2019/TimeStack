@@ -1,0 +1,65 @@
+h1,h2,h3,h4,h5{
+  background-color: #57aecf;
+  
+}
+
+.tabs dd.active a, .tabs .tab-title.active a {
+  background-color: #9ef5ff;
+}
+
+input, select, textarea{
+  border-color: #2897c1 !important;
+}
+
+input[type="submit"]{
+  background-color: #2897c1 !important;
+}
+
+.orange-button{
+  background-color: #2897c1 !important;
+}
+
+#holidays {
+  
+     .grid-x{
+        .small-8{
+          border-color: #9efff6 !important;
+          box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+           h3{
+             background-color:#57aecf;
+           }
+        }
+     }
+}
+
+thead{
+  background: #57aecf !important;
+  border: 3px solid blue;
+
+}
+
+table tr:nth-of-type(even) {
+      background: #98cde1 ;
+}
+
+.right-arrow:after {
+  border-left: 10px solid #2897c1 !important;
+}
+
+.left-arrow:after {
+  border-right: 10px solid #2897c1 !important;
+}
+
+.week_row{
+  background-color:#57aecf !important;
+}
+.session-timeout-prompter-modal {
+  .modal-content{
+    border: 2px solid #2897c1;
+    margin-left: -350px;
+  }
+}
+.dark_row{
+  background-color:#57aecf 
+}
+

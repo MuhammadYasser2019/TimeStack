@@ -1,0 +1,3 @@
+$("<tr id='timesheet_<%= @consultant.id %>_<%= @count %>'></tr>").insertAfter($('#timesheet_<%= @consultant.id %>_<%= @count-1 %>'));
+$('#timesheet_<%= @consultant.id %>_<%= @count-1 %>').find('td:last').hide();
+$('#timesheet_<%= @consultant.id %>_<%= @count %>').append("<%= j render(:partial => 'proxy_timesheet_data') %>");

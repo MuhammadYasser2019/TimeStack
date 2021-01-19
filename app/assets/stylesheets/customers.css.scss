@@ -1,0 +1,40 @@
+// Place all the styles related to the customers controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+.add_users_to_customers{
+  text-align: center;
+  display:block;
+  height: 400px;      
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.approve-table{
+	border: 1px solid black !important;
+  	text-align: center;
+  	display:block;
+  	height: 400px;
+	overflow-y: auto;
+  	overflow-x: auto;
+}
+
+#display_comment{
+  width: 50%;
+  margin: 0 auto;
+  text-align: center;
+  background: #10a7ff;
+  opacity: .5;
+  border-radius: 25px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.bs-searchbox{
+  width: 88%;
+}
+
+.data_toggle{
+  max-width: 100%;
+}

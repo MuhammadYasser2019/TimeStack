@@ -1,0 +1,85 @@
+.container
+	.white-background
+		- if params["adhoc"] == "true" && user_have_adhoc_permission(current_user)
+			.left-row
+				h3 Listing projects				
+				table{id= "project_left_table", class="project_table table"}
+					thead
+						tr
+						  th Name
+						  th Customer
+						  th Inactive?
+						  th
+						  
+						  
+					tbody
+					- if @adhoc_pm_projects.present? 
+						- @adhoc_pm_projects.each_with_index do |project, i|
+								tr
+									td = project.name
+									td = project.customer.name if !project.customer.nil?
+									td
+										- if project.inactive == true
+											span Yes
+										- elsif project.inactive == false || project.inactive == nil
+											span No
+									- if "#{i}" == "0"
+										td = radio_button_tag("project",project.id, true, class:"select-project")
+									- else
+										td = radio_button_tag("project",project.id, false,class:"select-project")
+
+									
+		- else
+			.left-row
+				h3 Listing projects 
+				- if @project.present?
+					.field
+						= check_box_tag("show_all_projects", @project.id, false, class:"show_all_projects")
+						= label_tag "all_Projects"
+
+				.(id="show_all_projects")
+					== render partial: 'show_all_projects_form'
+
+				br
+					= link_to(image_tag("plus.jpg", :width => 50, :height => 50), new_project_path, title: "Create New Project")					
+			.right-row	
+				h3 Enter And Manage Time
+				table class="table"
+					thead
+						tr
+							th Start date
+							th End date
+							th Status
+							th Report	
+							th Copy from the <br> previous week/ Clear
+							th New Week
+					tbody
+					- @weeks.each do |week|
+						tr
+							td = week.start_date.strftime('%Y-%m-%d')
+							td = week.end_date.strftime('%Y-%m-%d')
+							td = link_to find_status(week), find_status(week) == "NEW" || "REJECTED" ? edit_week_path(week): week_path(week)
+							td= link_to "Report", "/weeks/#{week.id}/report" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
+							td
+								-if (find_status(week) == "NEW") && @weeks.last.id != week.id
+									= link_to "COPY", "/copy_timesheet/#{week.id}" 
+								-elsif (find_status(week) == @hours_sum) && @weeks.last.id != week.id
+									= link_to "CLEAR", "/clear_timesheet/#{week.id}"
+							
+							td
+								- if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
+									= link_to "Add New Week",new_week_path(start_date: week.start_date ,end_date: week.end_date), title: "This will add an additional week for the same time period" 
+
+				= link_to "Enter Time for Current Week", "/weeks/new", id:"new_week" if current_week_available(current_user).blank?
+				br
+				br
+				= link_to "Show Old Timesheets","show_old_timesheets", target: :_blank
+		div style="clear:both;"
+								
+	- if @projects.present? || (@adhoc && @adhoc_pm_projects.present?)
+		== render partial: 'timesheets_for_approval', locals: {projects: @projects} if !(@adhoc && @adhoc_pm_projects.present?)
+		.(id="dynamic_projects")
+			== render partial: 'new_edit_form'
+	- if !@terms_modal_show.present?
+		== render partial: 'users/terms_and_condition'
+

@@ -1,0 +1,26 @@
+h1= t('.password_expired')
+
+
+
+.row
+  .col-md-12.col-md-offset-12
+    = form_for(resource, :as => resource_name, :url => [resource_name, :password_expired], :html => { :method => :put }) do |f|
+      h5 style="text-align:center;"= "Reset your password"
+
+      = devise_error_messages!
+      .col-md-8
+        .form-group
+          = f.label :current_password, t('.current_password')
+          = f.password_field :current_password, autofocus: true, class: 'form-control'
+
+        .form-group
+          = f.label :password, t('.new_password')
+          = f.password_field :password, class: 'form-control'
+
+        .form-group
+          = f.label :password_confirmation, t('.confirm_new_password')
+          = f.password_field :password_confirmation, class: 'form-control'
+          br
+
+          = f.submit "Update Password", class: 'btn btn-default btn-lg'
+
