@@ -16,10 +16,10 @@ FROM ruby:2.4.1
 RUN mkdir -p /app
 # WORKDIR /app
 # RUN git clone https://github.com/MuhammadYasser2019/time_stack.git
-COPY node_modules /app/node_modules
+# COPY node_modules /app/node_modules
 # COPY bundle /usr/local/bundle
 # COPY .browserslistrc .project .rspec Capfile Rakefile app/ babel.config.js bin/ bower.json config/ config.ru db/ dump.sql#003AZone.Identifier features/ input.html input_2.html lib/ output.html postcss.config.js public/ shift_migration.rb spec/ vendor/ test/ Gemfile yarn.lock package.json /app/
-COPY app/ /app/
+COPY . /app/
 RUN ls -l /app
 RUN chmod -R 0775 /app
 CMD bin/rails db:migrate RAILS_ENV=$RAILS_ENV && bin/rails db:seed && bundle exec "rackup -P /tmp/rack.pid --host 0.0.0.0 --port 8080"
