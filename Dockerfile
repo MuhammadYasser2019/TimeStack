@@ -1,4 +1,4 @@
-FROM ruby:2.4.1
+FROM image-registry.openshift-image-registry.svc:5000/openshift/ruby:2.4.1
 
 RUN mkdir /app
 
