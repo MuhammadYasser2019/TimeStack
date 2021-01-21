@@ -20,4 +20,4 @@ COPY node_modules /app/node_modules
 COPY bundle /usr/local/bundle
 COPY .browserslistrc .project .rspec Capfile Rakefile app/ babel.config.js bin/ bower.json config/ config.ru db/ dump.sql#003AZone.Identifier features/ input.html input_2.html lib/ output.html postcss.config.js public/ shift_migration.rb spec/ vendor/ test/ Gemfile yarn.lock package.json /app/
 RUN chmod -R 0775 /app
-CMD bin/rails db:migrate RAILS_ENV=development && bin/rails db:seed && bundle exec "rackup -P /tmp/rack.pid --host 0.0.0.0 --port 8080"
+CMD bin/rails db:migrate RAILS_ENV=$RAILS_ENV && bin/rails db:seed && bundle exec "rackup -P /tmp/rack.pid --host 0.0.0.0 --port 8080"
