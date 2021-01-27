@@ -17,3 +17,7 @@ development:
 
 cucumber:
   <<: *test
+
+production:
+  <<: *defaults
+  database: <%= ENV['DATABASE'] %> 
