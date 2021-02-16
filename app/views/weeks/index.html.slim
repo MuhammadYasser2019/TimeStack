@@ -1,12 +1,13 @@
 .white-background
-	h1 Enter and Manage Time
-	
+	h1 Enter and Manage Time	
 	table
 	  thead
 	    tr
 	      th Start date
 	      th End date
 	      th Status
+	      -if current_user.customer.allow_weekly_hours?
+	      	th Weekly Entry
 	      th Report
 	      th Copy from the <br> previous week/ Clear
 	      th New Week
@@ -17,10 +18,16 @@
 	      tr
 	        td = week.start_date.strftime('%Y-%m-%d')
 	        td = week.end_date.strftime('%Y-%m-%d')
-	        td= link_to find_status(week), find_status(week) == "NEW" || "REJECTED" ? edit_week_path(week): week_path(week)
+	        td = link_to find_status(week), find_status(week) == "NEW" || "REJECTED" ?  edit_week_path(week): week_path(week) 
+	        -if current_user.customer.allow_weekly_hours?
+			    td 
+			    	- if week.status_id == 1 ||  week.status_id == 4 || week.status_id == 5
+			    		= link_to "#{total_hours(week)}", 'javascript:void(0);', class: "week_time_entry", id: "#{week.id}"
+		        	
+
 			td = link_to "Report", "/weeks/#{week.id}/report" if (find_status(week) == "SUBMITTED") || (find_status(week) == "APPROVED")
 			td
-				-if (find_status(week) == "NEW") && @weeks.last.id != week.id
+				-if (find_status(week) == "NEW" ) && @weeks.last.id != week.id
 					= link_to "COPY", "/copy_timesheet/#{week.id}" 
 				-elsif (find_status(week) == @hours_sum) && @weeks.last.id != week.id
 					= link_to "CLEAR", "/clear_timesheet/#{week.id}" 
@@ -114,3 +121,31 @@
 		== render partial: 'users/terms_and_condition'
 	- if @announcement.present? && !current_user.user_announcements.where(announcement_id: @announcement.id).present?
 		==render partial: 'announcements/new_announcement'
+
+div(id="newWeekTime" class="modal" aria-hidden="true" role="dialog" data-reveal data-close-on-esc="false")
+	div class="modal-dialog" role="document"
+	  div.modal-content style="width: 800px !important;left:-135px;"
+	    div.modal-header
+	      h1 class="modal-title" Enter Whole Week Time Entry Hours
+	      button.close type="button" aria-label="Close" data-dismiss="modal"  
+          span aria-hidden="true"  &times;
+	   	= form_tag "time_entry_week_hours", id: "newWeekTime_page_content", method: :post, remote: true    
+	   	= hidden_field_tag 'week_id'
+		table
+		  thead
+		      
+		  tbody
+		     tr
+		        td 
+		        	 input#hours name="hours" required="" type="number"
+		        td = button_tag "Submit", class:"orange-button", style: "width: 84px"
+
+
+coffee:
+	$("tbody").on("click", ".week_time_entry", ->    	
+		week_id = $(this).attr('id');		
+		$("#week_id").val(week_id);
+   	 	$('#newWeekTime').modal('show');
+
+
+  	)

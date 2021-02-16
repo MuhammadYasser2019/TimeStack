@@ -20,14 +20,14 @@ jQuery ($) ->
 
   $("tbody").on("change", ".project_id", ->
     console.log "Inside project change" + $(this).attr('id') +  " the value selected is " + $(this).val()
-    tokens = $(this).attr('id').split('_')
+    tokens = $(this).attr('id') .split('_')
     console.log "token  sequence is  " + tokens[4]
     task_select_id = "week_time_entries_attributes_" + tokens[4] + "_task_id"
     tr = $(this).parent().parent("tr")
     console.log("tr: " + tr)
     build_tasks(task_select_id, $(this).val())
     date = $(this).parent().siblings(".date1").children("label").text()
-    check_holidays($(this).val(), date, tr)
+    check_holidays($(this).val(), date, tr)    
   )
     
   build_tasks = (field_id, project_id) ->
@@ -39,12 +39,18 @@ jQuery ($) ->
     type: 'GET'
     dataType: 'json'
     success: (data, textStatus, jqXHR) ->
-      $my_data = data
-      console.log "data is  " + data.length + " my_data is  " + $my_data.length
-      for item in $my_data
-        console.log "data is "+item.code + "  "  + item.description
-        $('#'+field_id).append($("<option></option>").attr("value",item.id).text(item.description))
-      #task_id = $('#'+field_id+' :selected').val()
+      if (textStatus) 
+        $my_data = data
+        console.log "data is  " + data.length + " my_data is  " + $my_data.length
+        for item in $my_data
+          console.log "data is "+item.code + "  "  + item.description
+          $('#'+field_id).append($("<option></option>").attr("value",item.id).text(item.description))
+        #task_id = $('#'+field_id+' :selected').val()
+        $('#'+field_id).selectpicker('refresh')    
+        $('.selectpicker').selectpicker('refresh');  
+      else
+        $('#'+field_id).selectpicker('refresh')
+        $('.selectpicker').selectpicker('refresh');
   
   check_holidays = (project_id, date, tr) ->
     url = "/check_holidays/" + project_id
@@ -177,7 +183,17 @@ jQuery ($) ->
 
   $("tbody").on("change", ".vacation-change, .partial_day", ->
     orig = $(this)
-    
+    vc = this.options[this.selectedIndex].text;
+    console.log("VC",vc)
+    if(!vc)
+      console.log('vacation type',vc)
+      tr = orig.parent().parent("tr")
+      console.log(tr)
+      hr=tr.find(".hour").children('div').children(".hours-input").val(null)
+    else
+      tr = orig.parent().parent("tr")
+      console.log(tr)
+      hr=tr.find(".hour").children('div').children(".hours-input").val(0)
     tr = orig.parent().parent("tr")
     label = tr.find(".date1").children("label")
     console.log(label.text())

@@ -32,6 +32,7 @@ class User < ApplicationRecord
   has_many :user_devices
   has_many :shift_change_requests
   has_many :user_announcements
+  has_many :external_configurations
   belongs_to :customer
 
   after_update :send_password_change_email, if: :needs_password_change_email?

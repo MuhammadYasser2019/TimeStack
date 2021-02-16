@@ -1,0 +1,101 @@
+h6 Configure External Systems
+h1 Projects
+p By setting up and allowing Chronstack your specific external systems credential. 
+p This will allow projects to automatically populate and be modified within both.
+h6 New Configuration Setup
+-if @jira_projects_list.present?
+	#jiramodal.modal style="display:block;"
+		= form_tag check_project_to_create_update_path, id: "system_form", method: :post
+			== hidden_field_tag :customer_id, current_user.customer_id.present? ? current_user.customer_id : Customer.find_by_name("Resource Stack, Inc.").id
+			-if @jira_projects_list.present?
+				.model-body  style="width:30%;margin-left:32%;background:white;padding-top:30px;padding-bottom:30px;align-items:left;"
+						h4 style="margin-bottom:20px;" Select the Jira Projects to Import 
+						button.close type="button" id="spanclose" style="margin-top:-80px;padding-right:5px;color:red;"
+						  span aria-hidden="true"  &times;
+
+			 			- @jira_projects_list.each do |j|
+			 				=check_box_tag  "jira_projects_list_ids[#{j.id}]", j.id,false,style: "float:left;margin-left:75px;margin-right:2px;" 
+			 	   			lable style="float:left;text-align:left;" =j.name 
+			 	   			br
+						= submit_tag 'Import' , id: "submit_jira_project" 
+=form_tag add_configuration_path, id: "add_configuration_form", method: :post, remote: true
+
+	table.configuration_table
+		tr.dark_row
+			th External System
+			th Email
+		tr 
+
+			td JIRA
+			= hidden_field_tag :system_type, "Jira"
+			td = text_field_tag :jira_email, '' , required: true
+		tr.dark_row
+			th API Token
+			th External Url
+		tr 
+			td = text_field_tag :api_token, '', required: true	
+			td = text_field_tag :url, '', required: true
+			td = submit_tag 'Submit', id: 'check_password' , disabled: @current_systems.present? ? true : false
+
+		tr.dark_row
+			td  colspan= 3
+				 a class="nav-link" id="apitoken_types-tab"  href='https://id.atlassian.com/manage-profile/security/api-tokens' target='_blank'  Please click here to generate the API token 
+
+
+h6 Active External Systems
+
+-if @current_systems.present?
+	table
+		tr.dark_row 
+			th (style= "width: 25%;") External System
+			th (style= "width: 25%;") External Url
+			th (style= "width: 25%;") Username
+			th (style= "width: 25%;") Action
+		- @current_systems.each do |sys|
+			tr
+				td = sys.system_type
+				td = sys.url
+				td = sys.jira_email
+				td = link_to 'Remove', remove_configuration_path(sys_id: sys.id), remote: true
+- else
+	p There are curreltly no active external systems that have been setup
+
+h5 Accounting
+h5 Other
+
+javascript:
+	var modal = document.getElementById("jiramodal");
+	var jira_submit = document.getElementById("submit_jira_project")
+	var span = document.getElementById("spanclose");
+	//console.log("This IS :"span)
+	span.onclick = function(){
+	modal.style.display = "none";
+	}
+
+	jira_submit.onclick = function(){
+	modal.style.display = "none"
+	}
+
+	window.onclick = function(event) {
+ 	 if (event.target == modal) {
+    	modal.style.display = "none";
+  		}
+	}
+javascript:
+	var modal = document.getElementById("jiramodal");
+	var jira_submit = document.getElementById("submit_jira_project")
+	var span = document.getElementById("spanclose");
+	//console.log("This IS :"span)
+	span.onclick = function(){
+	modal.style.display = "none";
+	}
+
+	jira_submit.onclick = function(){
+	modal.style.display = "none"
+	}
+
+	window.onclick = function(event) {
+ 	 if (event.target == modal) {
+    	modal.style.display = "none";
+  		}
+	}

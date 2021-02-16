@@ -34,7 +34,8 @@
 						      	td
 						        	= at.end_date.strftime('%Y-%m-%d')
 						      	td 
-						      		-if TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours) > 40
+						      		- isTask_time_exceed = estimated_task_time_exceed(p.id,at.id)
+						      		-if TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours) > 40 || isTask_time_exceed
 							      		= hidden_field_tag "project_id_#{i}", p.id
 							        	= button_tag TimeEntry.where(week_id: at.id, project_id: p.id).sum(:hours), id: "show_hours_#{i}", class: "tiny secondary show-hours btn btn-danger", type: "button", data: {toggle: "modal", target: "#showHours"}
 							        -else

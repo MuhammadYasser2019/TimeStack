@@ -32,6 +32,11 @@ every 15.minute do
   runner "UserDevice.send_shift_notification"
 end
 
+every :friday, :at => "11:59 pm" do
+  Rails.logger.debug "FRIDAY FRIDAY FRIDAY"
+  runner "Week.weekly_time_entry_submit"
+end
+
 # every 45.minute do
 #   runner "User.reset_token"
 # end

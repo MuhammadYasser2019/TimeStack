@@ -116,6 +116,18 @@ class Week < ApplicationRecord
     #User.send_timesheet_notification
   end
 
+  def self.weekly_time_entry_submit
+    weeks = Week.where("Date(start_date)=? && status_id = ?",Time.now.beginning_of_week.to_date, 5)
+    if weeks.present?
+    weeks.each do |week|
+      week.time_entries.where(status_id: [nil,1,4,5]).each do |time_entry|
+          time_entry.update(status_id: 2)
+        end
+        week.update(status_id: 2)
+      end
+    end
+  end
+
   def copy_last_week_timesheet(user)
 
     current_week_start_date = self.start_date

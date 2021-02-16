@@ -61,6 +61,128 @@ module Api
 					status: false
 				})
 			end
+		end
+
+		api :GET, '/get_time_entry_status', "Get status for the time entry"		
+		def get_time_entry_status
+			begin				
+				@entry_detail = TimeEntry.where('user_id = ? and DATE(date_of_activity) = ? ', @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d")).select("id as entryID,activity_log as description, hours as totalHours, project_id as projectID, task_id as taskID").as_json
+
+				render json: format_response_json({
+					message: 'Entry detail retrieved!',
+					status: true,
+					result: @entry_detail
+				})        
+			rescue
+			    render json: format_response_json({
+					message: 'Failed to retrieve time entry status!',
+					status: false
+				})
+			end
+		end
+
+		api :POST, '/checkin_time_entry', "Checkin user time entry"
+		formats ['json']		
+			param :task_id, String, :desc => "Task ID", :required => true
+			param :project_id, String, :desc => "Project ID", :required => true		
+			param :activity_log, String, :desc => "Activity Log", :required => true			
+			param :estimated_time_out, Time, :desc => "Estimated Out time", :required => true			
+			
+		def checkin_time_entry
+			begin
+				@project_id =  params[:project_id]
+				@task_id =  params[:task_id]
+				@activity_log = params[:activity_log] 
+				@estimated_time_out = params[:estimated_time_out]								
+				@week = Week.where("user_id = ? and start_date <= ? AND end_date >= ?",  @user.id, Time.now.in_time_zone,Time.now.in_time_zone).first								
+				#if @week.present?
+					@time_entry = TimeEntry.where("week_id = ? and user_id = ? and DATE(date_of_activity) = ? and project_id = ? and task_id = ?", @week.id, @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d"), @project_id , @task_id).first					
+					@success = false					
+					if @time_entry.present?
+						@timeEntry = TimeEntry.find_by_id @time_entry.id				          				          
+				        @timeEntry.time_in = Time.now.in_time_zone
+				          @timeEntry.task_id = @task_id
+				          @timeEntry.project_id = @project_id
+				          @timeEntry.updated_by = @user.id
+				          @timeEntry.activity_log = @activity_log
+				          @timeEntry.mobile_data = true
+				          @timeEntry.estimated_time_out = @estimated_time_out
+				          @timeEntry.save				          				          					 						
+				          # UPDATE
+						  @success = 'true' 
+					else
+						# INSERT						
+						TimeEntry.create(
+							project_id: @project_id,
+							task_id: @task_id,
+							date_of_activity: Time.now.in_time_zone,
+							time_in: Time.now.in_time_zone,
+							week_id: @week.id,
+							user_id: @user.id, 
+							updated_by: @user.id,
+							mobile_data: true, 
+							estimated_time_out: @estimated_time_out, 
+							activity_log: @activity_log)
+						@success = 'true'
+					end
+
+					render json: format_response_json({
+						message:@success? "Checkin successfully!" : "Failed to checkin!",
+						status: @success
+					})
+				#else
+				#	render json: format_response_json({
+				#		message: 'Week does not exist!',
+				#		status: false
+				#end
+
+			rescue
+			    render json: format_response_json({
+					message: 'Failed to checkin!',
+					status: false
+				})
+			end
+		end
+
+		api :POST, '/checkout_time_entry', "Checkout user time entry"
+		formats ['json']		
+			param :task_id, String, :desc => "Task ID", :required => true
+			param :project_id, String, :desc => "Project ID", :required => true	
+			param :activity_log, String, :desc => "Task description", :required => true		
+			
+		def checkout_time_entry
+			begin								
+				@project_id =  params[:project_id]
+				@task_id =  params[:task_id]
+				@activity_log = params[:activity_log] 
+				
+				@week = Week.where("user_id = ? and start_date <= ? AND end_date >= ?",  @user.id,Time.now.in_time_zone,Time.now.in_time_zone).first
+				@time_entry = TimeEntry.where("week_id = ? and user_id = ? and DATE(date_of_activity) = ? and project_id = ? and task_id = ?", @week.id, @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d"), @project_id , @task_id).first					
+				@success = false
+				if @time_entry.present?
+					 @timeEntry = TimeEntry.find_by_id @time_entry.id				          				          
+			          @timeEntry.time_out = Time.now.in_time_zone
+			          @timeEntry.task_id = @task_id
+			          @timeEntry.activity_log = @activity_log
+			          @timeEntry.project_id = @project_id
+			          @timeEntry.updated_by = @user.id
+			          @timeEntry.mobile_data = true
+			          @timeEntry.save				          					 						# UPDATE
+					@success = 'true' 
+				
+				end
+
+				render json: format_response_json({
+					message:@success? "Checkout successfully!" : "Failed to checkout!",
+					status: @success
+				})
+			
+			rescue
+			    render json: format_response_json({
+					message: 'Failed to checkout!',
+					status: false
+				})
+			end
 		end	
 
 		api :POST, '/save_time_entry', "Save user time entry"

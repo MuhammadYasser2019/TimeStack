@@ -1,2 +1,4 @@
 $('#dynamic_projects').html("<%= j render(:partial => 'projects/new_edit_form') %>")
-   
+<% if @true_but_done.present? %> 
+$('#task-alert').show();
+<% end %>

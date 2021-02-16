@@ -36,7 +36,13 @@
 
         -i = 1
         tbody
-            - @time_hash.each do |week_id, project_hash|
+            
+           
+            - @time_hash.each do |week_id,project_hash|
+                - @project_hash = []
+                - project_hash.keys.each do |tm|
+                        - @project_hash.append(tm)
+                
                 -week = Week.where(id: week_id).first
                 -mon = week.start_date.beginning_of_week
                 -tue = mon.next_day
@@ -45,33 +51,48 @@
                 -fri = thu.next_day
                 -sat = fri.next_day
                 -sun = (week.start_date.beginning_of_week-1.day).strftime("%d")
-                  
-                tr class="week_row"
-                    td week-#{i}
-                    td
-                    td =sun
-                    td =mon.strftime("%d")
-                    td =tue.strftime("%d")
-                    td =wed.strftime("%d")
-                    td =thu.strftime("%d")
-                    td =fri.strftime("%d")
-                    td =sat.strftime("%d")
-                    td
 
                 - project_hash.each do |project_id, task_hash|
                     - project_name = Project.where(id: project_id).first
                     -task_hash.each do |task_id, time|
-                      - task_name = Task.where(id: task_id).first
-                        tr
-                            td.project width="50px;"
-                                = project_name.name if project_name.present?
-                            td.task width="50px;"
-                                = task_name.description if task_name.present?
-                            - time.each do |t|
-                            td.hour = t
-                            td = time.sum
+                        - @time1 =[]
+                        - time.each do |tm|
+                            - @time1.append(tm)
+                        
+                        - task_name = Task.where(id: task_id).first
+                            tr
+                                td.project width="50px;"
+                                    = project_name.name if project_name.present?
+                                td.task width="50px;"
+                                    = task_name.description if task_name.present?
+                                - time.each do |t|
+                                    td.hour =t
+                                td = time.sum   
 
-              
+                tr class="week_row"
+                    td week-#{i}
+                    td
+                    -if @time1 && @project_hash.length()>0
+                        - @total_hours=0
+                        - (0..(@time1.length()-1)).each do |tm|
+                            - @total_hours += @time1[tm].to_i
+                            td =@time1[tm]
+                        td =@total_hours.to_f
+                    
+                    - else 
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                        td =0.0
+                - i+=1
+
+
+
+                  
                 tr
                     td
                     td
@@ -85,7 +106,7 @@
                     td
 
 
-        -i += 1
+            
     = form_tag "/show_user_weekly_reports/#{params[:id]}",id: "download_zip", method: :get
         table
             thead

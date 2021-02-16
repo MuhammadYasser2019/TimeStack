@@ -521,17 +521,6 @@ jQuery ($) ->
         console.log "data is "+ item.name
         $('#'+content_id+item.id).prop('checked', true)
 
-  $(document).on('click', '#check_password', ->
-
-    pass = $('#password').val()
-    confirm_pass = $('#confirm_password').val()
-    if pass == confirm_pass
-      return true
-    else
-      alert("Password did not match")
-     return false
-  )
-
   $(document).on('click', '#hideshow', ->
     $('#show_hide').css("display", "block")
     $('#hideshow').css("display", "none")

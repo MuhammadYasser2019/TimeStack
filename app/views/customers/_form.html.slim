@@ -21,7 +21,7 @@ ul(class="nav nav-tabs" id="customer-tabs" role="tablist" )
   li class="nav-item"
   	 a class="nav-link" id="vacation_types-tab" aria-selected="true" role="tab" data-toggle="tab" href="#vacation_types" Vacation Types
   li class="nav-item"
-  	 a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" Configuration
+  	 a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" configuration  
 
 div.tab-content.white-background
   div class="tab-pane fade show active" role="tabpanel" aria-labelledby="information-tab" id="information"
@@ -227,11 +227,11 @@ div.tab-content.white-background
   div class="tab-pane fade" role="tabpanel" aria-labelledby="vacation_types-tab" id="vacation_types"
 			 div(id="dynamic_add_vacation_types")
 			 	== render partial: 'add_vacation_types'
-
   div class="tab-pane fade" role="tabpanel" aria-labelledby="configuration-tab" id="configuration"
-			 div(id="dynamic_add_configuration")
+			 div(id="dynamic_add_configuration_types")
 			 	== render partial: 'add_configuration'
- 			 	
+
+  		 	
   - if !current_user.default_project? && current_user.parent_user_id.blank?
   	== render partial: 'users/default_projects'
 

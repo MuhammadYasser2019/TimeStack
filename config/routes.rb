@@ -59,7 +59,10 @@ Rails.application.routes.draw do
     get 'get_time_entry_detail', to: "time_entries#get_time_entry_detail"
     post 'save_time_entry', to: "time_entries#save_time_entry"
     get 'get_user_projects', to: "time_entries#get_user_projects"
+    get 'get_time_entry_status', to: "time_entries#get_time_entry_status"
     get 'get_project_tasks', to: "time_entries#get_project_tasks"
+    post 'checkin_time_entry', to: "time_entries#checkin_time_entry"
+    post 'checkout_time_entry', to: "time_entries#checkout_time_entry"
     post 'save_device_info', to: "notifications#save_device_info"
     get 'remove_device_info', to: "notifications#remove_device_info"
     get 'get_customer_detail', to: "users#get_customer_detail"
@@ -98,8 +101,11 @@ Rails.application.routes.draw do
   
   get '/dynamic_project_update' => 'projects#dynamic_project_update'
   get '/dynamic_customer_update' => 'customers#dynamic_customer_update'
-  post '/add_configuration' => 'customers#add_configuration', as: :add_configuration
-  get '/remove_configuration' => 'customers#remove_configuration', as: :remove_configuration
+  post '/add_configuration' => 'projects#add_configuration', as: :add_configuration
+  post '/add_configuration_customers' => 'customers#add_configuration_customers', as: :add_configuration_customers
+  get '/remove_configuration' => 'projects#remove_configuration', as: :remove_configuration
+  get '/refresh_task' => 'projects#refresh_task'
+  
 
   post '/create_project_from_system' => 'projects#create_project_from_system'
   get 'show_projects/:system' => 'projects#show_projects'
@@ -109,6 +115,7 @@ Rails.application.routes.draw do
   get 'projects/:id/reject/:week_id' => 'projects#reject'
   get 'show_project_reports' => 'projects#show_project_reports'
   post 'add_multiple_users_to_project' => "projects#add_multiple_users_to_project"
+  post '/check_project_to_create_update' => 'projects#check_project_to_create_update'
   post 'remove_multiple_users_from_project' => "projects#remove_multiple_users_from_project"
   post 'shift_modal' => "projects#shift_modal"
   get 'show_shift_reports' => "shifts#show_shift_reports"
@@ -233,6 +240,8 @@ Rails.application.routes.draw do
   post "project/:project_id/add_adhoc_pm" => "projects#add_adhoc_pm", as: :add_adhoc_pm
   post "customer/:customer_id/add_adhoc_pm_by_cm" => "customers#add_adhoc_pm_by_cm", as: :add_adhoc_pm_by_cm
   get "/copy_timesheet/:id" => "weeks#copy_timesheet"
+  post "/time_entry_week_hours" => "weeks#time_entry_week_hours"
+  
   get "/show_all_projects" => "projects#show_all_projects"
   post "assign_employment_types/" => "customers#assign_employment_types", as: :assign_employment_types
   post "assign_pm/:id" => "customers#assign_pm", as: :assign_pm

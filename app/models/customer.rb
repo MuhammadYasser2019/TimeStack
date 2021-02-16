@@ -5,8 +5,7 @@ class Customer < ApplicationRecord
   has_many :vacation_requests
   has_many :employment_types
   mount_uploader :logo, LogoUploader
-  has_many :vacation_types
-  has_many :external_configurations
+  has_many :vacation_types  
   has_one :default_report
   has_many :shifts
   has_many :user

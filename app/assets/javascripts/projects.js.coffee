@@ -91,8 +91,14 @@ jQuery ($) ->
       adhoc: $('#adhoc').val()
     return
   )
-
-
+  $(document).on("change", ".refresh_task", ->
+    p_id = $(this).val()
+    console.log("refresh_task- Your project id is:" + p_id)
+    $.get '/refresh_task',
+      project_id: p_id      
+    return
+  )
+  
   $('#project_left_table').dataTable({
     dom: 'lfrtip',
     "info": false,
@@ -165,7 +171,13 @@ jQuery ($) ->
       data:  project_id: proj_id
     
   )
-
+  $(document).on("click", ".refresh_task", ->
+    p_id = $(this).attr('id')
+    console.log("refresh_task- Your project id is:" + p_id)
+    $.get '/refresh_task',
+      project_id: p_id      
+    return
+  )
  
   $(document).on("click", ".date-inv", -> 
    

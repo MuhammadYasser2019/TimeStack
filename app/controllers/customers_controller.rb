@@ -104,6 +104,20 @@ class CustomersController < ApplicationController
     end
   end
 
+  def add_configuration_customers
+    
+      @configuration = Customer.where(id: current_user.customer_id).first
+      if @configuration.present? 
+        @configuration.allow_weekly_hours = params[:allow_weekly_hours].present? ? params[:allow_weekly_hours] : false
+        @configuration.allow_submit_hours_last_dayofweek = params[:allow_submit_hours_last_dayofweek].present? ? params[:allow_submit_hours_last_dayofweek] : false
+        @configuration.save
+        @addConfMass = 'Successfully add configuration !'
+      end           
+    respond_to do |format|
+      format.js {render :file => "customers/add_configuration.js.erb" }
+    end  
+  end
+
   # PATCH/PUT /customers/1
   # PATCH/PUT /customers/1.json
   def update
@@ -455,37 +469,7 @@ class CustomersController < ApplicationController
     end
   end 
 
-  def add_configuration
-    @customer = Customer.where(id: current_user.customer_id).first
-    if @customer.present?
-      @configuration = ExternalConfiguration.where(system_type: params[:system_type], customer_id: @customer.id).first
-      unless @configuration.present?
-        @configuration = ExternalConfiguration.new
-        @configuration.system_type = params[:system_type]
-        @configuration.url = params[:url]
-        @configuration.jira_email = params[:jira_email]
-        @configuration.password = params[:password]
-        @configuration.confirm_password = params[:confirm_password]
-        @configuration.customer_id = @customer.id
-        @configuration.created_by = current_user.id
-        @configuration.save
-      end
-    end
-    @current_systems = ExternalConfiguration.where(customer_id: current_user.customer_id)
-
-    respond_to do |format|
-      format.js
-    end
-  end
-
-  def remove_configuration
-    if params[:id].present?
-      @configuration = ExternalConfiguration.find(params[:sys_id])
-      @configuration.destroy
-    end
-    @current_systems = ExternalConfiguration.where(customer_id: params[:ids])
-
-  end
+  
 
   def pre_vacation_request 
       start_date = params[:start_date]

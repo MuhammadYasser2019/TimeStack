@@ -24,6 +24,8 @@
 
                 li class="nav-item"
 			  	  a class="nav-link" role="tab" id="inventory_submit-tab" data-toggle="tab" href="#inventory_submit" Inventory
+			  	li class="nav-item" 
+			  	  a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" Configuration
 			  	  
 - if @adhoc && user_have_adhoc_permission(current_user)
 	.white-background
@@ -67,7 +69,7 @@
 
 - elsif @projects.present?
 	div.tab-content.white-background
-		div class="tab-pane fade show active" role="tabpanel" aria-labelledby="information-tab" id="information"
+		div class="tab-pane fade show active" role="tabpanel" aria-labelledby="information-tab" id="information" 
 			div class= "display-text"
 			= form_for @project, remote: true do |f|
 				- if @project.errors.any?
@@ -89,23 +91,54 @@
 
 
 				h1 class="task-center-row" Tasks
+
+				div class=' alert' id="task-alert" style="padding: 20px;background-color: #f44336;color: white;display:none;"
+					p Task are done in Jira but active in Chronstack
+					span class="closebtn" onclick="this.parentElement.style.display='none';" style="margin-left: 15px;color: white;font-weight: bold;float: right;font-size: 20px;line-height: 0px;cursor: pointer;transition: 20s;" &times
+					
+					table class="alert-table"
+						thead
+						  tr
+						    th Code
+						    th Description
+						tbody 
+							  - if @true_but_done.present?
+							  	- @true_but_done.each do |x|
+							  	  tr
+							  	    td
+							  	      =x.code
+							  	    td
+							  	      =x.description
+
+				<input  type="text" placeholder="search task id or description..." style="width:30em;height:3em;margin-bottom:10px;" id="mytaskInput" onkeyup="mytaskfunc()" />
+				- if @project.external_type_id.present?
+					div = link_to "Refresh Task", 'javascript:void(0)',class: "btn btn-primary refresh_task" ,id: "#{@project.id}"
 				table class="center-row table " id="tasklist"
 					thead
 					  tr 
-					    td Code
-					    td Description
-					    td Default Comment
-					    td Estimated Time
-					    td Active Flag
-					    td Billable
-					    td Overtime
+					    th Code
+					    th style="display:none;"
+					    th Description
+					    th Default Comment
+					    th Estimated Time
+					    th Available Hours
+					    th Active Flag
+					    th Billable
+					    th Overtime
+					    th style="display:none;"
+					    th style="display:none;"
+					    th style="display:none;"
+					    th style="display:none;"
+					    th style="display:none;"
+					    th style="display:none;"
 					tbody
 					  = f.fields_for :tasks do |tf|
 					    == render 'task_fields', f: tf
 
 					tr
       					td colspan="5"
-        					= link_to_add_association "Add Task", f, :tasks, class: " btn btn-primary btn-xs", 'data-association-insertion-method' => "append"
+      						- if !@project.external_type_id.present?
+        						= link_to_add_association "Add Task", f, :tasks, class: "btn btn-primary btn-xs", 'data-association-insertion-method' => "append"
 				
 				table class="center-row table"
 					thead
@@ -222,7 +255,9 @@
 					td = link_to "Reject","/projects/reject_shift_change/#{sr.id}/#{i}/#{@project.id}", class: "orange-button reject-vacation", type: "button", remote: true, :style=>"width:100%;"
 					- if sr.status == "CancelRequest"
 					  td = link_to "Approve Cancel","/projects/approve_cancel_request/#{sr.id}/#{i}", class: "orange-button", type: "button", remote: true, :style=>"width:100%;"
-
+		div class="tab-pane fade" role="tabpanel" aria-labelledby="configuration-tab" id="configuration"
+			 div(id="dynamic_add_configuration")
+			 	== render partial: 'add_configuration'
 	- if !current_user.default_project? && current_user.parent_user_id.blank?
 			== render partial: 'users/default_projects'
 	- if @announcement.present? && !current_user.user_announcements.where(announcement_id: @announcement.id).present?
@@ -234,3 +269,32 @@ coffee:
     	format: "yyyy-mm-dd"
 
     })
+javascript:    
+	function mytaskfunc() {
+	  var input, filter, table, tr, td, j, txtValue;
+	  input = document.getElementById("mytaskInput");
+	  console.log(input)
+	  filter = input.value.toUpperCase();
+	  console.log(filter)
+	  table = document.getElementById("tasklist");
+	  console.log("table",table)
+	  tr = table.getElementsByTagName("tr");
+	  console.log(tr)
+	  console.log(tr.length)
+	  for (j = 0; j < tr.length; j++) {
+	    td = tr[j].getElementsByTagName("td")[0];
+	    console.log(td)
+	    td1 = tr[j].getElementsByTagName("td")[1];
+	    console.log(td1)
+	    if (td || td1) {
+	      txtValue = td.textContent || td.innerHTML;
+	      txtValue1 =td1.textContent || td1.innerHTML;
+	      if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue1.toUpperCase().indexOf(filter)> -1){
+	    	  tr[j].style.display = "";
+	      } 
+	      else {
+	        tr[j].style.display = "none";
+	      }
+	    }       
+	  }
+	 }

@@ -19,12 +19,22 @@ module WeeksHelper
     if stat.nil?
       return "NEW"
     elsif stat == "EDIT"
-      return @hours_sum
+      return @hours_sum.round(2)
     else
       return stat
     end
   end
   
+  def total_hours(week)
+    @time_entries = TimeEntry.where(week_id: week.id).order(:date_of_activity)
+    @hours_sum = 0
+    @time_entries.each do |t|
+      if !t.hours.nil?
+        @hours_sum += t.hours
+      end
+    end
+    @hours_sum.round(1)
+  end 
 
   def current_week_available(current_user)
     #logger.debug "weeks_helper - current_week_available - See if current user #{current_user.email}, has time entered for this week."

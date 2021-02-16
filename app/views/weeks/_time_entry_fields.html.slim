@@ -33,13 +33,13 @@
       - if f.object.task_id != nil
         = Task.find(f.object.task_id).description
     - else
-     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: f.object.project_id), "id", "description", f.object.task_id), {}, {:class =>'task_id form-control'})
+     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: f.object.project_id), "id", "description", f.object.task_id),  {},{:include_blank => true,:multiple =>false,:'data-live-search' => true,:class =>'task_id form-control selectpicker show-menu-arrow'} )
    - else
     - if f.object.week.status_id == 2 || f.object.week.status_id == 3
       - if f.object.task_id != nil
         = Task.find(f.object.task_id).description
     - else
-     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: @week_user.default_project), "id", "description", @week_user.default_task ), {}, {:class =>'task_id form-control'})
+     = f.select(:task_id, options_from_collection_for_select(Task.where(project_id: @week_user.default_project), "id", "description", @week_user.default_task ), {},{:class =>'task_id form-control selectpicker show-menu-arrow',:include_blank =>true,:multiple => false, :'data-live-search'=> true})
   td(class="hour")
 
     div(class="toggle hours-field")
@@ -83,4 +83,10 @@
    = f.button "Enter Time", id: "add_time", class: "tiny secondary add-time orange-button", type: "button"
   = f.hidden_field :updated_by, value: current_user.id
 
+javascript:
+ $(document).ready(function(){
+  $('.selectpicker').selectpicker('refresh');    
+  });
+  
+  
 

@@ -11,7 +11,7 @@ class Ability
            :get_notification, :show_user_weekly_reports, :manage_profiles, 
            :invite_sub_users, :login_user, :assign_project, :single_vacation_request, :add_multiple_user_recommendation, :add_multiple_user_disciplinary,:add_multiple_user_inventory,:set_selected_users,:set_inventory_submitted_date,:inventory_and_equipment_reports,:accept_terms_and_condition], User
       can [:read, :available_tasks], Task
-      can [:read, :edit, :create, :update, :new, :report, :copy_timesheet, :clear_timesheet, :previous_comments, :add_previous_comments, :expense_records, :delete_expense, :edit_expense, :delete_attachment], Week
+      can [:read, :edit, :create, :update, :new, :report, :copy_timesheet, :clear_timesheet, :previous_comments, :add_previous_comments, :expense_records, :delete_expense, :edit_expense, :delete_attachment, :time_entry_week_hours], Week
       can [:read, :permission_denied, :show_old_timesheets], Project
       can [:vacation_request, :pre_vacation_request, :cancel_vacation_request, :shift_change_request, :shift_request], Customer
       can [:single_vacation_request,:open_previous_week_modal], Week
@@ -35,8 +35,8 @@ class Ability
       end
       if user.pm
        can :manage, TimeEntry
-       can :manage, Task
-       can [:manage, :read, :edit, :update,:show_hours, :permission_denied, :show_project_reports,:approve, :add_adhoc_pm, :dynamic_project_update,:send_project_users_email], Project
+       can :manage, Task       
+       can [:manage, :read, :edit, :update,:show_hours, :permission_denied, :show_project_reports,:approve, :add_adhoc_pm, :dynamic_project_update,:send_project_users_email, :add_configuration, :remove_configuration,:refresh_task_path], Project
        can [:new, :create, :edit, :update, :time_reject, :show_all_timesheets, :open_previous_week_modal], Week
        can [:accept_terms_and_condition], User
       end
