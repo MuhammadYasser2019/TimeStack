@@ -1,7 +1,7 @@
 defaults: &defaults
   adapter: mysql2
   encoding: utf8
-  username: root
+  username: yasser
   password: rsi1111
   pool: 5
   host: localhost
@@ -13,7 +13,7 @@ test: &test
 
 development:
   <<: *defaults
-  database: timestack_development_2
+  database: timestack
 
 
 cucumber:

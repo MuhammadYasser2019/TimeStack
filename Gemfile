@@ -2,8 +2,8 @@ source 'https://rubygems.org'
 
 #gem 'mysql 2', '0.3.21' ###
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-# ruby '2.4.1'
-ruby '2.4.10'
+ruby '2.4.1'
+# ruby '2.4.10'
 gem 'rails', '5.2.2'
 gem 'react-rails'
 gem "omniauth", '~> 1.0.0pr2'
