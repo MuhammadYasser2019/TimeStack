@@ -66,7 +66,8 @@ module Api
 		api :GET, '/get_time_entry_status', "Get status for the time entry"		
 		def get_time_entry_status
 			begin				
-				@entry_detail = TimeEntry.where('user_id = ? and DATE(date_of_activity) = ? ', @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d")).select("id as entryID,activity_log as description, hours as totalHours, project_id as projectID, task_id as taskID").as_json
+				@entry_detail = TimeEntry.joins("left JOIN projects ON time_entries.project_id = projects.id left JOIN tasks ON tasks.id = time_entries.task_id") .where('time_entries.user_id = ? and DATE(date_of_activity) = ? ', @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d")).select("time_entries.id, time_entries.activity_log as description, time_entries.hours as totalHours, projects.name as projectName , time_entries.project_id as projectID, tasks.code as taskName, time_entries.task_id as taskID").as_json
+				#TimeEntry.where('user_id = ? and DATE(date_of_activity) = ? ', @user.id, Time.now.in_time_zone.strftime("%Y-%m-%d")).select("id as entryID,activity_log as description, hours as totalHours, project_id as projectID, task_id as taskID").as_json
 
 				render json: format_response_json({
 					message: 'Entry detail retrieved!',

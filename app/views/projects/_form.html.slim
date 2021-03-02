@@ -109,7 +109,13 @@
 							  	      =x.code
 							  	    td
 							  	      =x.description
-
+			    
+				div class=' alert' id="task-alert" style="padding: 20px; background:#ffffff;color:green;display:block;"
+				 -if @refresh_massage.present?
+				 	 = @refresh_massage
+				 -elsif @task_update_massage.present?
+				 	 = @task_update_massage
+				
 				<input  type="text" placeholder="search task id or description..." style="width:30em;height:3em;margin-bottom:10px;" id="mytaskInput" onkeyup="mytaskfunc()" />
 				- if @project.external_type_id.present?
 					div = link_to "Refresh Task", 'javascript:void(0)',class: "btn btn-primary refresh_task" ,id: "#{@project.id}"

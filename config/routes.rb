@@ -103,6 +103,14 @@ Rails.application.routes.draw do
   get '/dynamic_customer_update' => 'customers#dynamic_customer_update'
   post '/add_configuration' => 'projects#add_configuration', as: :add_configuration
   post '/add_configuration_customers' => 'customers#add_configuration_customers', as: :add_configuration_customers
+  post '/usio_payment_path' => 'customers#usio_payment' , as: :usio_payment
+  get '/remove_payment_details' => 'customers#remove_payment_details'
+  get '/download_invoice' => 'customers#download_invoice'
+  get '/show_daily_invoice' => 'customers#show_daily_invoice' 
+
+  get '/edit_payment_details' => 'customers#edit_payment_details'
+  get '/active_payment_detail' => 'customers#active_payment_detail'
+  
   get '/remove_configuration' => 'projects#remove_configuration', as: :remove_configuration
   get '/refresh_task' => 'projects#refresh_task'
   
@@ -241,6 +249,8 @@ Rails.application.routes.draw do
   post "customer/:customer_id/add_adhoc_pm_by_cm" => "customers#add_adhoc_pm_by_cm", as: :add_adhoc_pm_by_cm
   get "/copy_timesheet/:id" => "weeks#copy_timesheet"
   post "/time_entry_week_hours" => "weeks#time_entry_week_hours"
+  post "/time_entry_week_hours" => "projects#time_entry_week_hours"
+  post "/time_entry_week_hours" => "customers#time_entry_week_hours"
   
   get "/show_all_projects" => "projects#show_all_projects"
   post "assign_employment_types/" => "customers#assign_employment_types", as: :assign_employment_types

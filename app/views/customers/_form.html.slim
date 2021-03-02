@@ -21,7 +21,13 @@ ul(class="nav nav-tabs" id="customer-tabs" role="tablist" )
   li class="nav-item"
   	 a class="nav-link" id="vacation_types-tab" aria-selected="true" role="tab" data-toggle="tab" href="#vacation_types" Vacation Types
   li class="nav-item"
-  	 a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" configuration  
+  	 a class="nav-link" id="configuration-tab" aria-selected="true" role="tab" data-toggle="tab" href="#configuration" Configuration 
+  -if @customer.allow_payment?	 
+	  li class="nav-item"
+	  	 a class="nav-link" id="payment-tab" aria-selected="true" role="tab" data-toggle="tab" onclick="paymentDisclaimer(#{@payment_count});" href="#payment" Payment
+  	  li class="nav-item"
+	  	 a class="nav-link" id="invoice-tab" aria-selected="true" role="tab" data-toggle="tab"  href="#invoice" Invoice
+
 
 div.tab-content.white-background
   div class="tab-pane fade show active" role="tabpanel" aria-labelledby="information-tab" id="information"
@@ -230,6 +236,12 @@ div.tab-content.white-background
   div class="tab-pane fade" role="tabpanel" aria-labelledby="configuration-tab" id="configuration"
 			 div(id="dynamic_add_configuration_types")
 			 	== render partial: 'add_configuration'
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="payment-tab" id="payment" 
+			 div(id="dynamic_add_payment_types")
+			 	== render partial: 'add_payment'
+  div class="tab-pane fade" role="tabpanel" aria-labelledby="payment-tab" id="invoice" 
+			 div(id="dynamic_invoice_detail_types")
+			 	== render partial: 'invoice_detail'
 
   		 	
   - if !current_user.default_project? && current_user.parent_user_id.blank?
@@ -241,11 +253,27 @@ div id = "add_previous_week"
 
 div id= "edit_customer_form"
 
+div(id="paymentDisclaimer" class="modal" aria-hidden="true" role="dialog" data-reveal data-close-on-esc="false")
+	div class="modal-dialog" role="document"
+	  div.modal-content style="width: 800px !important;left:-135px;"
+	    div.modal-header
+	      h1 class="modal-title" Payment Disclaimer
+	      button.close type="button" aria-label="Close" data-dismiss="modal"  
+	      span aria-hidden="true"  &times;	   	   	
+		table
+		  thead
+		      
+		  tbody
+		     tr
+		        td ="Your security is important to us. We do not store your credit card information. Online payments are passed via a secure socket layer to a payment processor where your information is tokenized (whereby a random number is generated to represent your payment). The payment processor is PCI compliant which ensures that your information is being handled in accordance with industry security standards."
+		     tr
+	        	td = button_tag "OK", class:"orange-button", style: "width: 84px"
 coffee:
 	$('.datepicker').datepicker({
     	autoclose: true,
     	format: "yyyy-mm-dd"
     })
+    
 
 javascript:
   function myFunction() {
@@ -271,6 +299,15 @@ javascript:
     }
   }
   }
+  function paymentDisclaimer(count){
+	if (count == 0)
+	{$('#paymentDisclaimer').modal('show');}  	
+  }
+  $(function () {
+		$(".orange-button").click(function () {
+			$("#paymentDisclaimer").modal("hide");
+		});
+   });
 
   
 				

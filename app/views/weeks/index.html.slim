@@ -142,10 +142,11 @@ div(id="newWeekTime" class="modal" aria-hidden="true" role="dialog" data-reveal 
 
 
 coffee:
-	$("tbody").on("click", ".week_time_entry", ->    	
-		week_id = $(this).attr('id');		
-		$("#week_id").val(week_id);
-   	 	$('#newWeekTime').modal('show');
-
-
-  	)
+	$("tbody").on("click", ".week_time_entry", ->     
+	    week_id = $(this).attr('id');
+	    value = $(this).text(); 
+	    $("#hours").val(value);
+	    $("#hours").focus();
+	    $("#week_id").val(week_id);
+	    $('#newWeekTime').modal('show');     
+    )

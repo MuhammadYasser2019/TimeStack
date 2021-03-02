@@ -32,6 +32,19 @@ class ApprovalMailer < ActionMailer::Base
 
   end
 
+  def mail_to_user_payment_status(customer_id,billing_period_id,status)    
+    @status = status
+    @customer= Customer.where(id: customer_id).first
+    @invoice_detail = InvoiceDetail.where(customer_id: customer_id, billing_period_id:billing_period_id).first
+    @user= User.find(@customer.user_id)    
+    attachments[@invoice_detail.attachment] = File.read(open(Rails.root.join('public', @invoice_detail.attachment)))
+
+    if status
+       mail(to: @user.email, subject: "Payment Successfull")
+    else
+      mail(to: @user.email, subject: "Payment Failed")
+    end
+  end
   def invitation_accepted(inviter,user)
     @invited_by = User.find(inviter)
     inviter_email = User.find(inviter).email

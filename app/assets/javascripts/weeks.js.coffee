@@ -44,13 +44,17 @@ jQuery ($) ->
         console.log "data is  " + data.length + " my_data is  " + $my_data.length
         for item in $my_data
           console.log "data is "+item.code + "  "  + item.description
-          $('#'+field_id).append($("<option></option>").attr("value",item.id).text(item.description))
+          $('select#'+field_id).append($("<option></option>").attr("value",item.id).text(item.description))
         #task_id = $('#'+field_id+' :selected').val()
-        $('#'+field_id).selectpicker('refresh')    
-        $('.selectpicker').selectpicker('refresh');  
+        $('#'+field_id).selectpicker('refresh')   
+        $('.selectpicker').selectpicker('refresh'); 
+        $('.selectpicker').selectpicker('refresh');
+        $('#'+field_id).children('button').remove()
+        $('#'+field_id).children('.dropdown-menu').remove()
+         
       else
         $('#'+field_id).selectpicker('refresh')
-        $('.selectpicker').selectpicker('refresh');
+        #$('.selectpicker').selectpicker('refresh');
   
   check_holidays = (project_id, date, tr) ->
     url = "/check_holidays/" + project_id
@@ -81,13 +85,21 @@ jQuery ($) ->
 
   $("tbody").on("click", ".add_row", ->
     t = $(this).parent().parent("tr")
+    #sole.log("this is T"+t)
     i = $(this).parent().parent("tr").next()
+    console.log("this is T"+t.val())
     copy = t.clone()
     r= copy.children(".date2").next()
-    console.log("the value of r = " +r.attr('value'))
+    console.log("the value of r = " +copy)
     hidden_field= r.remove()
 
     copy.children(".hour").children(".hours-field").remove()
+    copy.children(".task").children().children("select").find('option').remove()
+    copy.children(".task").children().children('.dropdown-menu').remove()
+    copy.children(".task").children().children('button').children().children().children().text("").css('height','20px')
+    #console.log("FILTER:"+filter)
+    
+
     
     toggle_text = $(this).parent().children(".add-time").text()
     console.log("ADD ROW- Check toggle-text: " + toggle_text)
@@ -95,7 +107,7 @@ jQuery ($) ->
     remove_add_row = copy.children(".add").children(".add_row").remove()
 
 
-    console.log(i.is("input"))
+    console.log("ITS IS INPUT" +i.is("input"))
     if value == 0
       value = parseInt($("table input:last").attr("value")) + 1
     else
@@ -116,7 +128,9 @@ jQuery ($) ->
     copy.children(".project").children().attr("id", "week_time_entries_attributes_" + count + "_project_id").val("")
     copy.children(".task").children().attr("name", "week[time_entries_attributes][" + count + "][task_id]")
     copy.children(".task").children().attr("id", "week_time_entries_attributes_" + count + "_task_id").val("")
-
+    copy.children(".task").children().children('select').attr("name", "week[time_entries_attributes][" + count + "][task_id]")
+    copy.children(".task").children().children('select').attr("id", "week_time_entries_attributes_" + count + "_task_id").val("")
+    copy.children(".task").children().attr("id", "week_time_entries_attributes_" + count + "_task_id").val("") 
     #copy.children(".hour").children(".hours-field").children().attr("name", "week[time_entries_attributes][" + count + "][hours]")
     #copy.children(".hour").children(".hours-field").children().attr("id", "week_time_entries_attributes_" + count + "_hours")
 

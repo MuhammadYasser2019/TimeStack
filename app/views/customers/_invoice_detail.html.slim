@@ -1,0 +1,78 @@
+h5 Invoice Details
+-if @daily_invoice_detail.present?
+	table.table
+		tr 
+			th ="No. of Active Users: #{@user_count}"
+			th ="Payment Due Date: #{Date.new(DateTime.now().year,DateTime.now().month,1).next_month.prev_day.strftime("%d-%m-%Y")}"
+			th = "Month to Date Total: #{@month_date_total.present? ? @month_date_total : "0.0"}"			
+
+	table.table
+		tr 
+			th Customer Name
+			th Invoice Date
+			th Start Date
+			th End Date
+			th Status
+			th Invoice Link
+		- @daily_invoice_detail.each do |invoice|
+			-invoice_attchement = monthly_invoice_details(invoice.billing_period_id,@customer.id) 		
+			tr
+				td = @customer.name
+				td = invoice_attchement.present? ?invoice_attchement.invoice_date.strftime("%d-%b-%Y") : ""
+				td = invoice.start_date.present? ? invoice.start_date.strftime("%d-%b-%Y"): ""
+				td = invoice.end_date.present? ? invoice.end_date.strftime("%d-%b-%Y"): ""
+				-if invoice_attchement.present? 
+					td = invoice_attchement.status
+				-else 
+					td = link_to 'Unpaid', show_daily_invoice_path(billing_period_id: invoice.id ,customer_id: @customer.id), remote: true
+				-if invoice_attchement.present? 
+					td = link_to 'Download', download_invoice_path(attachment: invoice_attchement.attachment) ,target: "_blank" 
+				-else
+					td
+
+				
+-else
+	p There are curreltly no invoce details that have been setup	
+
+-if @daily_invoice_details.present?
+	div(id="daily_invoice_detail" class="modal" aria-hidden="true" role="dialog" data-reveal data-close-on-esc="false")
+		div class="modal-dialog" role="document"
+		  div.modal-content style="width: 800px !important;left:-135px;"
+		    div.modal-header
+		      h1 class="modal-title" Daily Invoice Details
+		      button.close type="button" aria-label="Close" data-dismiss="modal"  
+		      span aria-hidden="true"  &times;	
+
+		
+			table.table
+			  tr
+			      th Customer Name
+				  th Date
+				  th Active User
+				  th Per User Amount
+				  th Amount		  
+			  - @daily_invoice_details.each do |invoice|
+					tr
+						td = @customer.name
+						td = invoice.created_at.strftime("%d-%b-%Y")
+						td = invoice.active_user
+						td = "$#{invoice.amount_per_user.round(2)}"
+						td = "$#{invoice.daily_amount.round(2)}"
+			  tr
+		           td
+		           td
+		           td 
+		           td = "Total amount"
+		           td = "$#{@total_amount}"
+			  tr
+		           td
+		           td
+		           td = button_tag "OK", class:"orange-button", style: "width: 84px"
+		           td
+		           td
+javascript:
+	  $(function () {
+			$(".orange-button").click(function () {
+				$("#daily_invoice_detail").modal("hide");
+			});
+	   });

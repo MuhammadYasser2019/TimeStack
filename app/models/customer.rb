@@ -364,6 +364,139 @@ class Customer < ApplicationRecord
         end #End If for vacation_type.length
   end
 
+  def self.create_payment_invoice
+    customer_details = Customer.where(allow_payment: true)
+    billing_period =BillingPeriod.where("status = ? and DATE(start_date) = ? ","Active",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first
+    customer_details.each do |customer_detail|
+      begin
+        active_users = User.where(customer_id: customer_detail.id, is_active: true).count       
+        daily_invoice_details = DailyInvoiceDetail.where("billing_period_id = ? and customer_id=?", billing_period.id,customer_detail.id)
+        if daily_invoice_details.present?
+            total_amount = daily_invoice_details.sum(:daily_amount).round(2)
+            PaymentPdf.new(billing_period.start_date,
+                            billing_period.end_date,
+                            customer_detail,
+                            daily_invoice_details,
+                            total_amount)
+            file_path ="invoice_#{Date.today.strftime("%m%y")}_#{customer_detail.id}.pdf"
+            invoce_detail = InvoiceDetail.where(billing_period_id: billing_period.id,customer_id: customer_detail.id).first
+            unless invoce_detail.present?
+              invoce_detail = InvoiceDetail.new  
+            end            
+            invoce_detail.attachment = file_path
+            invoce_detail.status = "Unpaid"
+            invoce_detail.total_amount = total_amount
+            invoce_detail.active_user = active_users
+            invoce_detail.amount_per_user = 2
+            invoce_detail.billing_period_id = billing_period.id
+            invoce_detail.invoice_date = DateTime.now.strftime("%Y-%m-%d %H:%M")
+            invoce_detail.start_date = billing_period.start_date
+            invoce_detail.end_date = billing_period.end_date
+            invoce_detail.customer_id= customer_detail.id
+            invoce_detail.save
+        end
+     rescue =>ex
+        logger.debug("Payment invoice failed for customer ID : #{customer_detail.id} Exception :  #{ex}")
+      end
+    end
+    if DateTime.now.strftime("%Y-%m-%d") == Date.new(DateTime.now().year,DateTime.now().month,1).next_month.prev_day.strftime("%Y-%m-%d")
+      billing_period.update(status: "Close")
+    end
+  end   
+  def self.create_Daily_invoice
+    customer_details= Customer.where(allow_payment: true)
+    billing_period =BillingPeriod.where("DATE(start_date) = ? ",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first
+    unless billing_period.present?
+      billing_period = BillingPeriod.new        
+      billing_period.status = "Active"        
+      billing_period.start_date = Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")
+      billing_period.end_date = DateTime.now.strftime("%Y-%m-%d")
+      billing_period.save
+    else
+      billing_period.end_date = DateTime.now.strftime("%Y-%m-%d")
+      billing_period.save
+    end 
+    customer_details.each do |customer|
+      begin        
+        active_users = User.where(customer_id:customer.id, is_active: true)
+        if billing_period.status=="Active"
+          daily_invoice = DailyInvoiceDetail.where("billing_period_id = ? and customer_id = ? and date(created_at) =?", billing_period.id, customer.id ,DateTime.now.strftime("%Y-%m-%d")).first
+          unless daily_invoice.present?
+              daily_invoice = DailyInvoiceDetail.new
+          end
+          daily_invoice.active_user = active_users.count
+          daily_invoice.billing_period_id = billing_period.id
+          daily_invoice.customer_id = customer.id
+          daily_invoice.amount_per_user = (2.to_f/Date.new(Date.today.year, Date.today.month,-1).day).round(2).to_f
+          daily_invoice.daily_amount = ((2.to_f/Date.new(Date.today.year, Date.today.month,-1).day).to_f*active_users.count).round(2)
+          daily_invoice.save
+        end
+     rescue => ex
+        logger.debug("Payment invoice failed for customer ID : #{customer.id} Exception :  #{ex}")
+      end
+    end
+  end 
+
+def self.subscription_payment
+      invoice_details= InvoiceDetail.where(status: "Unpaid")
+      invoice_details.each do |invoice|
+        customer = Customer.find(invoice.customer_id)
+        begin      
+          payment = PaymentDetail.where(default_card:true,customer_id: invoice.customer_id).first
+          if payment.present?
+            payment_status= UsioPayment.submit_token_payment(payment.token,invoice.total_amount,"Resourcestack subscription payment.")           
+            if payment_status[:success] == true
+              invoice.paid_date = DateTime.now.strftime("%Y-%m-%d %H:%M")
+              invoice.status = "Paid"
+              invoice.payment_confirmation_id = payment_status[:confirmation_id]
+              invoice.save
+              ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, true).deliver
+            else
+              invoice.update(status: "overdue")
+              logger.debug("Payment failed for customer ID : #{invoice.customer_id}")
+              ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, false).deliver
+            end
+          end
+        rescue => ex
+          invoice.update(status: "overdue")
+          logger.debug("Payment failed for customer ID : #{invoice.customer_id} Exception :  #{ex}")
+          ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, false).deliver
+        end
+
+    end   
+
+  end
+
+  def self.overdue_subscription_payment
+      invoice_details= InvoiceDetail.where(status: "overdue")
+      invoice_details.each do |invoice|
+        customer = Customer.find(invoice.customer_id)
+        begin          
+          payment = PaymentDetail.where(default_card:true,customer_id: invoice.customer_id).first
+          if payment.present?
+            payment_status= UsioPayment.submit_token_payment(payment.token,invoice.total_amount,"Resourcestack subscription payment.")           
+              if payment_status[:success] == true
+                invoice.paid_date = DateTime.now.strftime("%Y-%m-%d %H:%M")
+                invoice.status = "Paid"
+                invoice.payment_confirmation_id = payment_status[:confirmation_id]
+                invoice.save
+                ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, true).deliver
+              else
+                invoice.update(status: "overdue")
+                logger.debug("Payment failed for customer ID : #{invoice.customer_id}")
+                ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, false).deliver
+              end
+          end
+        rescue => ex
+          invoice.update(status: "overdue")
+          logger.debug("Payment failed for customer ID : #{invoice.customer_id} Exception :  #{ex}")
+          ApprovalMailer.mail_to_user_payment_status(customer.id,invoice.billing_period_id, false).deliver
+        end
+
+    end   
+
+  end
+
   def build_inventory_hash(start_date,end_date,users,projects, submitted_type=nil,current_month=nil)
     all_inventories_hash = {}
     if current_month == "current_month"

@@ -1,0 +1,4 @@
+$('#dynamic_invoice_detail_types').html("<%= j render(:partial => 'customers/invoice_detail') %>")
+<% if @daily_invoice_details.present? %> 
+$('#daily_invoice_detail').modal('show');
+<% end %>

@@ -1,0 +1,17 @@
+
+	Dear <%= @customer.name %>,
+	<br>
+
+	<% if @status== true %>
+		Thank you for the recent payment. This is a confirmation that payment has been  done successfully.
+
+	<% else %>
+		<%= "\n"%>
+		<p>Sorry to inform you, that your payment has been failed.</p>
+		
+	<% end %>
+
+	<%if @invoice_detail.present? %><br>
+	Download Your Invoice 
+	<%=link_to "Download", attachments[@invoice_detail.attachment].url %>
+	<% end %>

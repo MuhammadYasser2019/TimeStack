@@ -230,6 +230,8 @@ jQuery ($) ->
       data:  {project_id: project_id}
   )
 
+  
+
   $(document).on("click", ".project_for_pm", ->
     user_id = $(this).attr("id").split("_")[1];
     
@@ -360,6 +362,8 @@ jQuery ($) ->
     project_id = $(this).closest('tr').attr('id')
     $("#pm_user_id_"+project_id).val(pm_user_id)
   )
+
+  
 
   $(document).on('click', '.assign_pm', (event)->
     event.preventDefault()

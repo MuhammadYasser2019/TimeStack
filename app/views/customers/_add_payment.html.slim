@@ -1,0 +1,117 @@
+h1 Payment	
+span class=' alert' id="payment-alert" style=""
+ 	- if @payment_message.present?
+ 		= @payment_message 	
+= form_tag usio_payment_path, id: "usio_payment_path_form", method: :post, remote: true
+ 	- if @payment.present?
+		= hidden_field_tag 'payment_id',@payment.id
+	- if @customer.present?
+		= hidden_field_tag 'customer_id',@customer.id
+	table {style="border:1px;"}
+		tr
+			th Credit or Debit Cards
+			th Expiry Date
+			th CVV
+			th Card Type
+	  		th Active Users
+
+  		tr
+		    td= text_field_tag :card_number, nil, placeholder: @payment.present? ? "XXXX-XXXX-XXXX-#{@payment.card_number}":"Card Number" ,label: false, class: "form-control", onkeypress: "return onlyNumberkey(event)",maxlength: 17,minlength: 14, required: true 
+
+		    td= text_field_tag :exp_date, nil,placeholder: "MM/YYYY" ,label: false,class: "form-control",onkeypress: "return Datekey(event,this)",minlength: 7,maxlength: 7,required: true
+		    
+		    td= text_field_tag :cvv, nil, label: false,class: "form-control",onkeypress: "return onlyNumberkey(event)",maxlength: 4,minlength: 3,required: true
+		    
+		    td= select_tag :card_type, options_for_select({"VISA" => "VISA", "Master Card" => "MSTR", "DISC" =>"DISC", "AMEX" => "AMEX"}, "VISA"), required: true
+			
+			td= text_field_tag :active_user, nil, label: false,class: "form-control" , value: @user_count , readonly: true
+		
+		tr
+			td= submit_tag "Save Card" ,style: "float:left;margin-left:32em;width:120px;"
+		   
+h5 Card Details
+-if @payment_detail.present?
+	table.table
+		tr 
+			th Card number
+			th Card type
+			th Default
+			th Action		
+		- @payment_detail.each do |payment|
+			tr
+				td = "XXXX-XXXX-XXXX-#{payment.card_number}"
+				td = payment.card_type
+				td 
+					input id= "#{payment.id}" checked= payment.default_card  name="active"  class="payment_active" onclick="javascript:void(0);" type="radio" 
+				td =link_to 'Edit', edit_payment_details_path(payment_id: payment.id), remote: true
+				td= link_to 'Remove', remove_payment_details_path(payment_id: payment.id), remote: true
+- else
+	p There are curreltly no card details that have been setup	
+   
+coffee:
+	$("tbody").on("change", ".payment_active", ->
+	    console.log "Payment detail active" + $(this).attr('id')
+	    payment_id = $(this).attr('id')	    
+	    $.ajax
+	      url: '/active_payment_detail',
+	      type: 'GET'
+	      data:  {payment_id: payment_id} 
+  	)
+
+javascript:
+	function onlyNumberkey(evt) { 
+          
+        // Only ASCII charactar in that range allowed 
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode 
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57)) 
+            return false; 
+        return true; 
+    } 
+    function Datekey(evt,str) {
+    	
+    	//console.log(evt.target.value.length)
+    	var x = event.which || event.keyCode;
+    	var a = event.charCode;
+        var ab = str.value + String.fromCharCode(a)
+        var date = new Date()
+        var current_year = date.getFullYear()
+        var current_month = date.getMonth()
+    	if (ab.length == 2)
+    	{
+    	 if(parseInt(ab)<1 || parseInt(ab) >12)
+    	 {
+    	  return false;
+    	 }
+    	}
+    	if(ab.length == 7){
+    	spli = ab.split("/");
+    	//console.log(parseInt(spli[0]))
+    	if(parseInt(spli[1]) == current_year ){
+    	console.log("true year")
+    	if(parseInt(spli[0]) > current_month+1){
+    	return true;
+    	}
+    	else{
+    	return false;
+    	}
+    	}
+    	else{
+    	if (parseInt(spli[1]) > current_year)
+    	return true;
+    	else
+    	return false;
+    	}
+    	}
+
+
+    	if(evt.target.value.length === 2){
+    		evt.target.value += '/';
+    			
+    	} 
+          
+        // Only ASCII charactar in that range allowed 
+        var ASCIICode = (evt.which) ? evt.which : evt.keyCode 
+        if (ASCIICode > 31 && (ASCIICode < 48  || ASCIICode > 57)) 
+            return false;  
+    } 
+

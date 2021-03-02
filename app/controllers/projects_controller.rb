@@ -77,6 +77,35 @@ end
     @configuration = user_detail.external_configurations.where(system_type: 'jira').first
 
   end
+  
+  def time_entry_week_hours          
+     @hours = params[:hours]
+
+     @week = Week.find(params[:week_id])     
+     
+     @week_user = User.find(@week.user_id)
+     
+     @time_entries = TimeEntry.where("user_id= ? and week_id= ?",current_user.id,@week.id)
+     if @time_entries.present?
+        time_entry_days = @time_entries.count - 2
+        @dayhour = (@hours.to_f/time_entry_days).round(1)
+      end      
+     @time_entries.each do |time_entry|
+      if time_entry.date_of_activity.wday == 6
+      elsif time_entry.date_of_activity.wday == 0
+      else
+        time_entry.hours = @dayhour
+        time_entry.project_id = current_user.default_project
+        time_entry.task_id = current_user.default_task 
+        time_entry.status_id = 5
+        time_entry.save
+      end
+
+     end
+      @week.status_id=5
+      @week.save
+      redirect_to root_path
+  end
 
   def show_projects
     
@@ -339,7 +368,7 @@ end
       ProjectShift.create(shift_id: params[:shift_id], capacity: nil, location: nil, shift_supervisor_id: current_user.id , project_id: params[:project_id])
       end
     end
-
+     @task_update_massage ='Task updated successfully!'
 	  @customers = Customer.all
     @tasks_on_project = Task.where(project_id: @project_id)
     @proxies = User.where("customer_id =? and proxy =?", @project.customer.id, true)
@@ -856,9 +885,7 @@ def add_configuration
           end
         end
       end          
-      unless @true_but_done.present?
-          @refresh_massage ='Task updated successfully!'
-      end
+     @refresh_massage ='Task refresh successfully!'
 
       @users_assignied_to_project = User.joins("LEFT OUTER JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = 1").select("users.email,first_name,email,users.id id,user_id, projects_users.project_id, projects_users.active,project_id")
       @tasks_on_project = Task.where(project_id: @project_id)

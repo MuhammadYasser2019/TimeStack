@@ -1,12 +1,10 @@
 source 'https://rubygems.org'
 
-#gem 'mysql 2', '0.3.21' ###
+#gem 'mysql 2', '0.3.21'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 ruby '2.4.1'
-# ruby '2.4.10'
 gem 'rails', '5.2.2'
 gem 'react-rails'
-gem "omniauth", '~> 1.0.0pr2'
 gem 'rest-client'
 gem 'webpacker'
 gem 'jwt'
@@ -14,6 +12,8 @@ gem 'apipie-rails'
 gem 'sprockets-rails' #, '2.3.3'
 gem 'sprockets-es6'
 gem 'exponent-server-sdk'
+gem 'prawn', '~> 1.2.1'
+gem 'prawn-table', '~> 0.1.0'
 # Use sqlite3 as the database for Active Record
 # Use SCSS for stylesheets
 gem 'sass-rails'
@@ -101,6 +101,7 @@ gem 'axlsx_styler', '~> 0.1.2'
 gem "omniauth-google-oauth2"
 gem 'ckeditor', '~> 4.3.0'
 gem 'airbrake', '~> 7.2'
+gem 'newrelic_rpm'
 
 #Authentication 
 gem 'rack-cors', :require => 'rack/cors'
@@ -108,6 +109,7 @@ gem 'simple_token_authentication', '~> 1.0'
 gem 'jira-ruby'
 gem 'devise-security'
 gem "simple_calendar", "~> 2.0"
+gem 'dotenv-rails'
 
 group :development do
   gem 'better_errors'

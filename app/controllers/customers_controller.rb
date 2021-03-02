@@ -36,7 +36,16 @@ class CustomersController < ApplicationController
       logger.debug("************User requesting VACATION: #{@vacation_requests.inspect} ")
       logger.debug("TRYING TO FIND CUSTOMER LOGGGGGOOOOOOOOOO: #{@customer.logo}")
       @current_systems = ExternalConfiguration.where(customer_id: @customer.id)
-      @terms_modal_show = current_user.terms_and_condition
+      @terms_modal_show = current_user.terms_and_condition      
+      #@invoice_detail = InvoiceDetail.billing_periods.where(customer_id: @customer.id)
+      #@invoice_detail = BillingPeriod.joins("left JOIN invoice_details ON invoice_details.billing_period_id = billing_periods.id").select("billing_periods.id,billing_periods.start_date,billing_periods.end_date,invoice_details.invoice_date,invoice_details.status,invoice_details.attachment").where("invoice_details.customer_id = ?" , @customer.id)
+      @daily_invoice_detail = BillingPeriod.joins("JOIN daily_invoice_details ON daily_invoice_details.billing_period_id = billing_periods.id").select("distinct (daily_invoice_details.billing_period_id) as billing_period_id ,billing_periods.id,billing_periods.start_date,billing_periods.end_date").where("daily_invoice_details.customer_id = ?" ,@customer.id)      
+      @payment_detail = PaymentDetail.where(customer_id: @customer.id)
+      @user_count = User.where(customer_id: @customer.id, is_active: true).count      
+      billing_period = BillingPeriod.where("DATE(start_date) = ? ",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first      
+      @month_date_total = (billing_period.daily_invoice_details.where("customer_id = ?" ,@customer.id)).sum(:daily_amount).round(2) if billing_period
+
+      @payment_count=@payment_detail.count
       @announcement = Announcement.where("active = true").last
       
     end
@@ -73,6 +82,74 @@ class CustomersController < ApplicationController
     logger.debug("TRYING TO FIND CUSTOMER LOGGGGGOOOOOOOOOO: #{@customer.logo}")
   end
 
+  def time_entry_week_hours          
+     @hours = params[:hours]
+
+     @week = Week.find(params[:week_id])     
+     
+     @week_user = User.find(@week.user_id)
+     
+     @time_entries = TimeEntry.where("user_id= ? and week_id= ?",current_user.id,@week.id)
+     if @time_entries.present?
+        time_entry_days = @time_entries.count - 2
+        @dayhour = (@hours.to_f/time_entry_days).round(1)
+      end      
+     @time_entries.each do |time_entry|
+      if time_entry.date_of_activity.wday == 6
+      elsif time_entry.date_of_activity.wday == 0
+      else
+        time_entry.hours = @dayhour
+        time_entry.project_id = current_user.default_project
+        time_entry.task_id = current_user.default_task 
+        time_entry.status_id = 5
+        time_entry.save
+      end
+
+     end
+      @week.status_id=5
+      @week.save
+      redirect_to root_path
+  end
+  def usio_payment    
+    @customer = Customer.where(id: params[:customer_id]).first    
+    @user= User.where(id: @customer.user_id).first
+    register_card = UsioPayment.register_new_card(params[:card_number],params[:card_type],params[:cvv],params[:exp_date].gsub('/',''),@user.first_name,@user.last_name,@user.email,@customer.address,@customer.city,@customer.state,@customer.zipcode)
+
+      if params[:payment_id].present? && register_card[:token].present?
+          @payment_detail = PaymentDetail.where(id: params[:payment_id]).first
+          @payment_detail.card_number = params[:card_number].last(4)
+          @payment_detail.token = register_card[:token]
+          @payment_detail.card_type = params[:card_type]        
+          @payment_detail.user_id = current_user.id
+          @payment_detail.customer_id = @customer.id
+          @payment_detail.save
+          @payment_message = 'Payment details successfully updated!'       
+      elsif register_card[:token].present?    
+          @payment_detail = PaymentDetail.new
+          @payment_detail.card_number = params[:card_number].last(4)
+          @payment_detail.token = register_card[:token]
+          @payment_detail.card_type = params[:card_type]
+          unless PaymentDetail.where(customer_id: @customer.id).present?
+            @payment_detail.default_card = true
+          else
+            @payment_detail.default_card = false
+          end
+          @payment_detail.user_id = current_user.id
+          @payment_detail.customer_id = @customer.id
+          @payment_detail.save
+          @payment_message = 'Payment details successfully saved!' 
+      else
+          @payment_message = register_card[:message].present? ? register_card[:message] : "Card registration failed.Please try again!"
+      end      
+      @payment_detail = PaymentDetail.where(customer_id: @customer.id)
+      @user_count = User.where(customer_id: @customer.id, is_active: true).count      
+      @payment_count=@payment_detail.count
+      respond_to do |format|
+      format.js {render :file => "customers/usio_payment.js.erb" }
+    end           
+  end
+
+  
   # POST /customers
   # POST /customers.json
   def create
@@ -117,7 +194,54 @@ class CustomersController < ApplicationController
       format.js {render :file => "customers/add_configuration.js.erb" }
     end  
   end
+  def remove_payment_details
+      payment = PaymentDetail.find(params[:payment_id])
+      @customer = Customer.where(id: payment.customer_id).first
+      payment.destroy
+      @payment_detail = PaymentDetail.where(customer_id: @customer.id)      
+      @user_count = User.where(customer_id: @customer.id, is_active: true).count      
+      @payment_count=@payment_detail.count
 
+  end
+  def active_payment_detail
+      payment = PaymentDetail.find(params[:payment_id])
+      payment.update(default_card: true)      
+      @customer = Customer.where(id: payment.customer_id).first
+      payment_detail = PaymentDetail.where.not(id:params[:payment_id]).where(customer_id: @customer.id ,default_card: true)
+      payment_detail.update(default_card: false)
+      @payment_detail = PaymentDetail.where(customer_id: @customer.id)      
+      @user_count = User.where(customer_id: @customer.id, is_active: true).count      
+      @payment_count=@payment_detail.count
+
+  end
+  def download_invoice
+    send_file("#{Rails.root}/public/#{params[:attachment]}",
+      filename: params[:attachment],
+      type: "application/pdf",
+      disposition: 'inline'
+    )
+  end 
+  def show_daily_invoice    
+    @daily_invoice_details = DailyInvoiceDetail.where(billing_period_id: params[:billing_period_id], customer_id: params[:customer_id])
+    @customer = Customer.where(id: params[:customer_id]).first  
+     @daily_invoice_detail = BillingPeriod.joins("JOIN daily_invoice_details ON daily_invoice_details.billing_period_id = billing_periods.id").select("distinct (daily_invoice_details.billing_period_id) as billing_period_id ,billing_periods.id,billing_periods.start_date,billing_periods.end_date").where("daily_invoice_details.customer_id = ?" ,@customer.id)      
+     billing_period = BillingPeriod.where("DATE(start_date) = ? ",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first      
+      @month_date_total = (billing_period.daily_invoice_details.where("customer_id = ?" ,@customer.id)).sum(:daily_amount).round(2) if billing_period
+    @total_amount = @daily_invoice_details.sum(:daily_amount).round(2)
+     respond_to do |format|
+      format.js {render :file => "customers/show_daily_invoice.js.erb" }
+    end
+
+  end 
+  
+  
+  def edit_payment_details  
+    @payment = PaymentDetail.where(id: params[:payment_id]).first
+    @customer = Customer.where(id: @payment.customer_id).first    
+    @payment_detail = PaymentDetail.where(customer_id: @customer.id)      
+    @user_count = User.where(customer_id: @customer.id, is_active: true).count      
+    @payment_count=@payment_detail.count
+  end
   # PATCH/PUT /customers/1
   # PATCH/PUT /customers/1.json
   def update
@@ -146,6 +270,14 @@ class CustomersController < ApplicationController
     @vacation_types = VacationType.where("customer_id=? && active=?", @customer.id, true)
     logger.debug("CHECK FOR CUSTOMER params#{@cutomer.inspect}")
     @current_systems = ExternalConfiguration.where(customer_id: @customer.id)
+    #@invoice_detail = InvoiceDetail.where(customer_id: @customer.id)
+    #@invoice_detail = BillingPeriod.joins("left JOIN invoice_details ON invoice_details.billing_period_id = billing_periods.id").select("billing_periods.id,billing_periods.start_date,billing_periods.end_date,invoice_details.invoice_date,invoice_details.status,invoice_details.attachment").where("invoice_details.customer_id = ?" , @customer.id)
+    @daily_invoice_detail = BillingPeriod.joins("JOIN daily_invoice_details ON daily_invoice_details.billing_period_id = billing_periods.id").select("distinct (daily_invoice_details.billing_period_id) as billing_period_id ,billing_periods.id,billing_periods.start_date,billing_periods.end_date").where("daily_invoice_details.customer_id = ?" ,@customer.id)
+      @payment_detail = PaymentDetail.where(customer_id: @customer.id)
+      @user_count = User.where(customer_id: @customer.id, is_active: true).count   
+      billing_period = BillingPeriod.where("DATE(start_date) = ? ",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first      
+      @month_date_total = (billing_period.daily_invoice_details.where("customer_id = ?" ,@customer.id)).sum(:daily_amount).round(2) if billing_period
+      @payment_count=@payment_detail.count
     respond_to do |format|
       if @customer.update(customer_params)
     	  @projects = @customer.projects
@@ -969,6 +1101,14 @@ class CustomersController < ApplicationController
 	  @current_systems = ExternalConfiguration.where(customer_id: @customer.id)
     @default_project = current_user.default_project
     @project_tasks = Task.where(project_id: @default_project)
+    #@invoice_detail = InvoiceDetail.where(customer_id: @customer.id)
+    #@invoice_detail = BillingPeriod.joins("left JOIN invoice_details ON invoice_details.billing_period_id = billing_periods.id").select("billing_periods.id,billing_periods.start_date,billing_periods.end_date,invoice_details.invoice_date,invoice_details.status,invoice_details.attachment").where("invoice_details.customer_id = ?" , @customer.id)
+    @daily_invoice_detail = BillingPeriod.joins("JOIN daily_invoice_details ON daily_invoice_details.billing_period_id = billing_periods.id").select("distinct (daily_invoice_details.billing_period_id) as billing_period_id ,billing_periods.id,billing_periods.start_date,billing_periods.end_date").where("daily_invoice_details.customer_id = ?" ,@customer.id)
+    @payment_detail = PaymentDetail.where(customer_id: @customer.id)
+    @user_count = User.where(customer_id:@customer.id, is_active: true).count   
+    billing_period = BillingPeriod.where("DATE(start_date) = ? ",Date.new(Date.today.year, Date.today.month, 1).strftime("%Y-%m-%d")).first      
+      @month_date_total = (billing_period.daily_invoice_details.where("customer_id = ?" ,@customer.id)).sum(:daily_amount).round(2) if billing_period  
+    @payment_count=@payment_detail.count
     respond_to do |format|  
       format.js
     end

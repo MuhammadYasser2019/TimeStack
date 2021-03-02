@@ -117,13 +117,21 @@ class Week < ApplicationRecord
   end
 
   def self.weekly_time_entry_submit
-    weeks = Week.where("Date(start_date)=? && status_id = ?",Time.now.beginning_of_week.to_date, 5)
+    weeks = Week.joins("INNER JOIN users ON users.id = weeks.user_id INNER JOIN customers ON customers.id = users.customer_id and allow_submit_hours_last_dayofweek = true").where("Date(start_date)=? && status_id = ?",Time.now.beginning_of_week.to_date, 5)
     if weeks.present?
-    weeks.each do |week|
-      week.time_entries.where(status_id: [nil,1,4,5]).each do |time_entry|
-          time_entry.update(status_id: 2)
+      weeks.each do |week|
+        time_entries = week.time_entries.where(status_id: [nil,1,4,5])
+        hours_sum = 0
+        time_entries.each do |time_entry|
+            if !time_entry.hours.nil?
+                hours_sum += time_entry.hours
+            end
+            #time_entry.update(status_id: 2)
         end
-        week.update(status_id: 2)
+          if hours_sum >0
+            time_entries.update(status_id: 2)
+            week.update(status_id: 2)  
+          end        
       end
     end
   end

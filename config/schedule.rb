@@ -32,6 +32,15 @@ every 15.minute do
   runner "UserDevice.send_shift_notification"
 end
 
+every 5.minute do
+  runner "UserDevice.send_estimate_time_out_notification"
+end
+
+
+every '59 23 28-31 * *' do
+  runner "Customer.create_payment_invoice"
+end
+
 every :friday, :at => "11:59 pm" do
   Rails.logger.debug "FRIDAY FRIDAY FRIDAY"
   runner "Week.weekly_time_entry_submit"
@@ -44,4 +53,13 @@ end
 every 1.day do
   runner "User.send_password_reminder_email"
   runner "User.update_shift_request"
+end
+
+every 1.day, :at=> "11:00PM" do
+  runner "Customer.create_Daily_invoice"
+  runner "Customer.overdue_subscription_payment"
+end
+
+every '0 2 1 * *' do
+  runner "Customer.subscription_payment"
 end
