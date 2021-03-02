@@ -102,6 +102,7 @@ gem "omniauth-google-oauth2"
 gem 'ckeditor', '~> 4.3.0'
 gem 'airbrake', '~> 7.2'
 gem 'newrelic_rpm'
+gem "omniauth", '~> 1.0.0pr2'
 
 #Authentication 
 gem 'rack-cors', :require => 'rack/cors'
