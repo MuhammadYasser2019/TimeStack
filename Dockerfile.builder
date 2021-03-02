@@ -1,4 +1,4 @@
-FROM image-registry.openshift-image-registry.svc:5000/openshift/ruby:2.4.1
+FROM ruby:2.4.1
 
 # Add NodeJS to sources list
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
