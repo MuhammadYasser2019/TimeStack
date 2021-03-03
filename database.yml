@@ -15,6 +15,5 @@ development:
   <<: *defaults
   database: <%= ENV['DATABASE'] %> 
 
-
 cucumber:
   <<: *test
