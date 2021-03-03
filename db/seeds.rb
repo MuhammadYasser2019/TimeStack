@@ -97,3 +97,20 @@ end
 Feature.find_or_initialize_by(id: 12, feature_type: "FAQ for User") do |f|
   f.save!
 end
+
+User.find_or_initialize_by(email: 'technicalsupport@resourcestack.com') do |f|
+  f.first_name = "Technical"
+  f.last_name = "Support"
+  f.user = true
+  f.cm = true
+  f.admin =true
+  f.password= 'pass@123'
+  f.encrypted_password
+  f.save
+end
+
+Customer.find_or_initialize_by(name: 'Chronstack') do |c|
+  c.zipcode = '20170'
+  c.user_id = User.find_by(email: 'technicalsupport@resourcestack.com').id
+  c.save
+end
