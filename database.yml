@@ -6,7 +6,6 @@ defaults: &defaults
   pool: 5
   host: mysql
 
-
 test: &test
   <<: *defaults
   database: timestack_test
