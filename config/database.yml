@@ -11,7 +11,11 @@ test: &test
   <<: *defaults
   database: timestack_test
 
-development:
+# development:
+#   <<: *defaults
+#   database: <%= ENV['DATABASE'] %> 
+
+production:
   <<: *defaults
   database: <%= ENV['DATABASE'] %> 
 
