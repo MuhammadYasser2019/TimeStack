@@ -7,6 +7,7 @@ class ProjectsController < ApplicationController
     logger.debug("project-index- PROJECT ID IS #{params.inspect}")
     @projectsss = Project.where(user_id: current_user.id, inactive: [false, nil]).order(created_at: :asc)
     @projects = Project.where(user_id: current_user.id)
+    #@projects = Project.where("customer_id = ? AND user_id = ?",params[:customeer_id],current_user.id)
     @weeks  = Week.where("user_id = ?", current_user.id).order(start_date: :desc).limit(5)
     @adhoc_pm_projects = Project.where(adhoc_pm_id: current_user.id)
     @adhoc_pm_project = @adhoc_pm_projects.first
@@ -29,7 +30,7 @@ class ProjectsController < ApplicationController
       @project = Project.includes(:tasks).find(@project_id)
       #@applicable_week = Week.joins(:time_entries).where("(weeks.status_id = ? or weeks.status_id = ?) and time_entries.project_id IN (#{@projects.collect(&:id).join(",")}) and time_entries.status_id=?", "2", "4","2").select(:id, :user_id, :start_date, :end_date , :comments).distinct
       @users_on_project = User.joins("LEFT OUTER JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = #{@project.id}").select("users.email,first_name,email,users.id id,user_id, projects_users.project_id, projects_users.active,project_id")
-      available_users = User.where("parent_user_id IS ? && (customer_id IS ? OR customer_id = ?)", nil, nil , @project.customer.id) 
+      available_users = User.where("parent_user_id IS ? && customer_id = ? && is_active =?", nil , @project.customer.id, true) 
       shared_users = SharedEmployee.where(customer_id: @project.customer.id).collect{|u| u.user_id}
       shared_user_array = Array.new
       shared_users.each do |su|
@@ -73,7 +74,7 @@ end
     @project = Project.new
     @users_on_project = User.where("parent_user_id IS null").all
     user_detail =User.find(current_user.id)
-    @customer = Customer.find current_user.customer_id
+    @customer = Customer.find(current_user.customer_id)
     @configuration = user_detail.external_configurations.where(system_type: 'jira').first
 
   end
@@ -301,14 +302,12 @@ end
     if params[:project][:tasks_attributes]
       params[:project][:tasks_attributes].each do |t, k|
         logger.debug "T1: #{params[:project][:tasks_attributes][t][:code]}"
-
         if params[:project][:tasks_attributes][t][:code] == ""
           params[:project][:tasks_attributes].delete t
         end
       end
     end
     @project = Project.new(project_params)
-
     respond_to do |format|
       if @project.save
         format.html { redirect_to projects_path, notice: 'Project was successfully created.' }
@@ -325,6 +324,7 @@ end
   def update
     params[:project_id] = @project_id = params[:id]
     @project = Project.includes(:tasks).find(params[:id])
+    @customer = Customer.find(@project.customer_id)
     pname = params[:project][:name]
     logger.debug "NAME----------------------- #{pname.inspect}"
     @project.update_attributes(name: pname)
@@ -342,18 +342,21 @@ end
         if Task.where(id: t[1]["id"]).present? && !t[1]["imported_from"].present? 
           @task = Task.find(t[1]["id"]).update(code: t[1]["code"], description: t[1]["description"], default_comment: t[1]["default_comment"], active: t[1]["active"], billable: t[1]["billable"], estimated_time: t[1]["estimated_time"], overtime: t[1]["overtime"], imported_from: t[1]["imported_from"])
         elsif t[1]["imported_from"].present?
-          @task = Task.find(t[1]["id"]).update( default_comment: t[1]["default_comment"], billable: t[1]["billable"], overtime: t[1]["overtime"], active: t[1]["active"])
-                   
+          @task = Task.find(t[1]["id"]).update( default_comment: t[1]["default_comment"], billable: t[1]["billable"], overtime: t[1]["overtime"], active: t[1]["active"])           
         else
-            @task_details =@project.tasks.where(imported_from: nil, description: issue.summary).first
+            @task_details =@project.tasks.where(imported_from: nil, description: t[1]["description"]).first
             if @task_details.present?                     
-                        @task_details.code = issue.key
-                        @task_details.active = active
-                        @task_details.estimated_time = estimate
-                        @task_details.imported_from = issue.id
+                        @task_details.code = t[1]['code']
+                        @task_details.active = t[1]['active']
+                        @task_details.estimated_time = t[1]['estimated_time']
+                        @task_details.imported_from = ""
                         @task_details.save
             else
-            @task = Task.create(code: t[1]["code"], description: t[1]["description"], default_comment: t[1]["default_comment"], active: t[1]["active"], billable: t[1]["billable"],estimated_time: t[1]["estimated_time"], overtime: t[1]["overtime"], imported_from: t[1]["imported_from"], project_id: @project.id)
+              if @customer.allow_default_on_all_project_tasks?
+                @task = Task.create(code: t[1]["code"], description: t[1]["description"], default_comment: t[1]["default_comment"], active: t[1]["active"], billable: t[1]["billable"],estimated_time: t[1]["estimated_time"], overtime: true, imported_from: t[1]["imported_from"], project_id: @project.id)
+              else
+                @task = Task.create(code: t[1]["code"], description: t[1]["description"], default_comment: t[1]["default_comment"], active: t[1]["active"], billable: t[1]["billable"],estimated_time: t[1]["estimated_time"], overtime: t[1]["overtime"], imported_from: t[1]["imported_from"], project_id: @project.id)
+              end
             end
         end
       end
@@ -389,7 +392,7 @@ end
     @project = Project.includes(:tasks).find(params[:id])
     @projects = Project.where(id: params[:project_id])
     @current_systems = ExternalConfiguration.where(user_id: current_user.id)
-    @available_users = User.where("parent_user_id IS ? && (customer_id IS ? OR customer_id = ?)", nil, nil , @project.customer.id)
+    @available_users = User.where("parent_user_id IS ? && customer_id = ? && is_active =?", nil, @project.customer.id, true) 
     respond_to do |format|
       if @project.update(customer_id: project_params["customer_id"], proxy: params["proxy"], deactivate_notifications: @notifications)
 				format.js
@@ -549,7 +552,7 @@ end
       @customers = Customer.all
       @project = Project.includes(:tasks).find(@project_id)
       @users_on_project = User.joins("LEFT OUTER JOIN projects_users ON users.id = projects_users.user_id AND projects_users.project_id = #{@project.id}").select("users.email,first_name,email,users.id id,user_id, projects_users.project_id, projects_users.active,project_id")
-      available_users = User.where("parent_user_id IS ? && (customer_id IS ? OR customer_id = ?)", nil, nil , @project.customer.id) 
+      available_users = User.where("parent_user_id IS ? && customer_id = ? && is_active =?", nil, @project.customer.id, true) 
       shared_users = SharedEmployee.where(customer_id: @project.customer.id).collect{|u| u.user_id}
       shared_user_array = Array.new
       shared_users.each do |su|
@@ -600,7 +603,7 @@ end
   def add_multiple_users_to_project
     logger.debug(" add_multiple_user_to_project - #{params.inspect}")
     @project = Project.find(params[:project_id])
-    available_users = User.where("parent_user_id IS ? && (shared =? or customer_id IS ? OR customer_id = ?)",nil, true, nil , @project.customer.id)     
+    available_users = User.where("parent_user_id IS ? && is_active =? && (shared =? or customer_id = ?)",nil, true, true, @project.customer.id)     
     shared_users = SharedEmployee.where(customer_id: @project.customer.id).collect{|u| u.user_id}
     shared_user_array = Array.new
     shared_users.each do |su|
@@ -639,7 +642,7 @@ end
   def shift_modal
     user_count = params[:user_count].to_i - 1
     @project = Project.find(params["project_id"])
-    @available_users = User.where("parent_user_id IS ? && (shared =? or customer_id IS ? OR customer_id = ?)",nil, true, nil , @project.customer.id)
+    @available_users = User.where("parent_user_id IS ? && is_active =? && (shared =? or customer_id = ?)",nil, true, true, @project.customer.id)
     (0..user_count).each do |i|
       projects_user = ProjectsUser.where(user_id: params["user_id_#{i}"], project_id: params["project_id"], current_shift: true).last
       projects_user.project_shift_id = params["project_shift_id_#{i}"].to_i
@@ -655,7 +658,7 @@ end
   def remove_multiple_users_from_project
     logger.debug(" remove_multiple_user_from_project - #{params.inspect}")
     @project = Project.find(params[:project_id])
-    @available_users = User.where("parent_user_id IS ? && (shared=? or customer_id IS ? OR customer_id = ?)", nil, true, nil , @project.customer.id)
+    @available_users = User.where("parent_user_id IS ? && is_active=? && (shared=? or customer_id = ?)", nil, true, true, @project.customer.id)
       (0..@project.users.active_users.count).each  do |i|
       if params["remove_user_id_#{i}"].present?
         user = User.find(params["remove_user_id_#{i}"])
@@ -898,7 +901,7 @@ def add_configuration
     #@applicable_week = Week.joins(:time_entries).where("(weeks.status_id = ? or weeks.status_id = ?) and time_entries.project_id= ? and time_entries.status_id=?", "2", "4",@project_id,"2").select(:id, :user_id, :start_date, :end_date , :comments).distinct
     @users_on_project = User.joins("LEFT OUTER JOIN projects_users ON users.id = projects_users.user_id AND current_shift is true AND projects_users.project_id = #{@project.id}").select("users.email,first_name,email,users.id id,user_id, projects_users.project_id, projects_users.active,project_id")
     #@available_users = User.where("customer_id IS ? OR customer_id = ?", nil , @project.customer.id)
-    available_users = User.where("parent_user_id IS ? && (customer_id IS ? OR customer_id = ?)", nil, nil , @project.customer.id) 
+    available_users = User.where("parent_user_id IS ? && customer_id = ? && is_active=?", nil, @project.customer.id, true) 
     shared_users = SharedEmployee.where(customer_id: @project.customer.id).collect{|u| u.user_id}
     shared_user_array = Array.new
     shared_users.each do |su|
@@ -946,7 +949,7 @@ def add_configuration
     #@applicable_week = Week.joins(:time_entries).where("(weeks.status_id = ? or weeks.status_id = ?) and time_entries.project_id= ? and time_entries.status_id=?", "2", "4",@project_id,"2").select(:id, :user_id, :start_date, :end_date , :comments).distinct
     @users_on_project = User.joins("LEFT OUTER JOIN projects_users ON users.id = projects_users.user_id AND current_shift is true AND projects_users.project_id = #{@project.id}").select("users.email,first_name,email,users.id id,user_id, projects_users.project_id, projects_users.active,project_id")
     #@available_users = User.where("customer_id IS ? OR customer_id = ?", nil , @project.customer.id)
-    available_users = User.where("parent_user_id IS ? && (customer_id IS ? OR customer_id = ?)", nil, nil , @project.customer.id) 
+    available_users = User.where("parent_user_id IS ? && customer_id = ? && is_active =?", nil , @project.customer.id, true) 
     shared_users = SharedEmployee.where(customer_id: @project.customer.id).collect{|u| u.user_id}
     shared_user_array = Array.new
     shared_users.each do |su|

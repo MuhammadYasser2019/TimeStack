@@ -275,7 +275,13 @@ class Project < ApplicationRecord
 
 
   def create_default_task
-    self.tasks.build({code: "Default", description: "Default", active: true})
+    customer=Customer.find(self.customer_id)
+    if customer.allow_default_on_all_project_tasks?
+    self.tasks.build({code: "Default", description: "Default", active: true,overtime: true})
+    else
+      self.tasks.build({code: "Default", description: "Default", active: true})
+    end
+
     self.save
   end
 end

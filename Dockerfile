@@ -6,6 +6,10 @@ RUN mkdir /app
 COPY . /app/
 RUN rm -rf /app/bundle
 
+
+## install dependencies ###
+RUN apt-get update && apt-get install -y vim telnet
+
 ####### add bundle from builder image ########
 COPY bundle /usr/local/bundle
 

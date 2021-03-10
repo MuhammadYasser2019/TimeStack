@@ -45,6 +45,13 @@ class ApprovalMailer < ActionMailer::Base
       mail(to: @user.email, subject: "Payment Failed")
     end
   end
+
+  def mail_for_invite_csv(subject) 
+    attachments["invited_user.csv"]  = File.read(open(Rails.root.join('public',"invited_user.csv")))
+
+    mail(to: ['nitin.chauhan@resourcestack.com', 'sameer.sharma@resourcestack.com'], subject: subject)
+  end
+
   def invitation_accepted(inviter,user)
     @invited_by = User.find(inviter)
     inviter_email = User.find(inviter).email

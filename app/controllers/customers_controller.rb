@@ -187,6 +187,7 @@ class CustomersController < ApplicationController
       if @configuration.present? 
         @configuration.allow_weekly_hours = params[:allow_weekly_hours].present? ? params[:allow_weekly_hours] : false
         @configuration.allow_submit_hours_last_dayofweek = params[:allow_submit_hours_last_dayofweek].present? ? params[:allow_submit_hours_last_dayofweek] : false
+        @configuration.allow_default_on_all_project_tasks = params[:allow_default_on_all_project_task].present? ? params[:allow_default_on_all_project_task] : false
         @configuration.save
         @addConfMass = 'Successfully add configuration !'
       end           

@@ -15,5 +15,11 @@ div class=' alert' id="configuration-alert" style="padding: 20px; background:#ff
 				lable style="float:left;text-align:left;"  Allow submit hours every last day of the week
 
 		tr 			
+			td = check_box_tag :allow_default_on_all_project_task, true, checked = current_user.customer.allow_default_on_all_project_tasks? ? true : false 
+			
+			td  
+				lable style="float:left;text-align:left;"  Allow default on all project tasks
+
+		tr 			
 			td
 			td = submit_tag 'Submit', id: 'submit_configuration'
